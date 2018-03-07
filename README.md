@@ -1,8 +1,8 @@
-# Salt Package Builder (salt-pack)
+# Salt Package Builder for Python 3 (salt-pack-py3)
 
-Salt-pack is an open-source package builder for most commonly used Linux platforms, for example: Redhat/CentOS and Debian/Ubuntu families, utilizing SaltStack states and execution modules to build Salt and a specified set of dependencies, from which a platform specific repository can be built.
+Salt-pack-py3 is an open-source package builder for Python 3 for most commonly used Linux platforms, for example: Redhat/CentOS and Debian/Ubuntu families, utilizing SaltStack states and execution modules to build Salt and a specified set of dependencies, from which a platform specific repository can be built.
 
-Salt-pack relies on SaltStack’s Master-Minion functionality to build the desired packages and repository, and can install the required tools to build the packages and repository for that platform.
+Salt-pack-py3 relies on SaltStack’s Master-Minion functionality to build the desired packages and repository, and can install the required tools to build the packages and repository for that platform.
 
 The Salt state file which drives the building process is found in salt/states/pkgbuild.py, which provides a typical salt virtual interface to perform the build process.  The virtual interface is satisfied by execution modules for the appropriate supported platform, for example :
 
@@ -12,9 +12,9 @@ Redhat / CentOS
 Debian / Ubuntu
 : salt/modules/debbuild.py
 
-The Redhat/CentOS and Debian/Ubuntu platform families build process are internally specified differently, however the external build commands are the same, with keyword arguments for platform specification, for example: rhel6, ubuntu1204.  
+The Redhat/CentOS and Debian/Ubuntu platform families build process are internally specified differently, however the external build commands are the same, with keyword arguments for platform specification, for example: rhel7, ubuntu1604.  
 
-The salt-pack project is maintained in GitHub at https://github.com/saltstack/salt-pack.git. 
+The salt-pack-py3 project is maintained in GitHub at https://github.com/saltstack/salt-pack-py3.git. 
 
 # Overview
 
@@ -39,20 +39,17 @@ where:
 | Operating System(OS) | Description       |
 |----------------------|-------------------|
 | rhel7                | Redhat 7          |
-| rhel6                | Redhat 6          |
-| rhel5                | Redhat            |
+| debian9              | Debian 9 (stretch)|
 | debian8              | Debian 8 (jessie) |
-| debian7              | Debian 7 (wheezy) |
 | ubuntu1604           | Ubuntu 16.04 LTS  |
 | ubuntu1404           | Ubuntu 14.04 LTS  |
-| ubuntu1204           | Ubuntu 12.04 LTS  |
 
 
 For example:
 
-`file_roots/pkg/salt/2015_8_8/rhel7/spec/salt.spec`
+`file_roots/pkg/salt/2018_3_0/rhel7/spec/salt.spec`
 
-`file_roots/pkg/salt/2015_8_8/debian8/spec/salt_debian.tar.xz`
+`file_roots/pkg/salt/2018_3_0/debian9/spec/salt_debian.tar.xz`
 
 Currently the Redhat/CentOS and Debian/Ubuntu platforms are internally built differently.  The Redhat/CentOS builds are pillar data driven state files (pkgbuild.sls contained in pillar_roots) and makes heavy use of Jinja macro’s to define the package to be built, the location of sources and the output that should be produced when the build succeeds.  The Debian/Ubuntu builds are driven only driven by the state files and their contents.  The Debian/Ubuntu builds shall eventually also be driven by pillar data, similar to Redhat/CentOS, but to date there has been insufficient time to achieve this goal.
 
@@ -64,15 +61,15 @@ There are currently three highstate SLS files for the three main platforms. Thes
   `debian_pkg.sls`
   `ubuntu_pkg.sls`
 
-Specific versions of these files for salt builds can be found in directory `file_roots/versions/<salt version/` , e.g. `file_roots/2015_8_8/redhat_pkg.sls` and can be specified on the command line, as shown in examples below.
+Specific versions of these files for salt builds can be found in directory `file_roots/versions/<salt version/` , e.g. `file_roots/2018_3_0/redhat_pkg.sls` and can be specified on the command line, as shown in examples below.
 
-The current families of operating systems, Redhat/CentOS, Debian and Ubuntu have default assumptions as to the most current for those platforms, with older versions being specified by use of command line pillar data. The default values can be overridden by using build_release keyword.
+The current families of operating systems with Python 3 supprt, Redhat/CentOS, Debian and Ubuntu have default assumptions as to the most current for those platforms, with older versions being specified by use of command line pillar data. The default values can be overridden by using build_release keyword.
 
 | Platform        | Default    | Overrides    |
 |-----------------|------------|--------------|
-| Redhat / CentOS |  rhel7     | rhel6, rhel5 |
-| Debian          | debian8    | debian7      |
-| Ubuntu          | ubuntu1604 | ubuntu1404, ubuntu1204   |
+| Redhat / CentOS |  rhel7     | -            |
+| Debian          | debian9    | debian8      |
+| Ubuntu          | ubuntu1604 | ubuntu1404   |
 
 The pillar data to drive the build process for Redhat can be found in the following locations:
 
@@ -85,11 +82,11 @@ If the file pillar_roots / pkgbuild.sls has the field build_version set, then th
 
 The tools required to build salt and it’s dependencies for the various minions and their operating system/platform is handled by state files and macros which can be found in the setup directory and it’s respective operating system/platform sub-directories.  
 
-For example to install the required tools for Redhat 6, Debian 8 and Ubuntu 12 based minions, respectively :
+For example to install the required tools for Redhat 7, Debian 9 and Ubuntu 16.04 based minions, respectively :
 
-> `salt rh6_minion state.sls setup.redhat.rhel6`
-  `salt jessie_minion state.sls setup.debian.debian8`
-  `salt ubuntu12_minion state.sls setup.ubuntu.ubuntu12`
+> `salt rh7_minion state.sls setup.redhat.rhel7`
+  `salt stretch_minion state.sls setup.debian.debian9`
+  `salt ubuntu1604_minion state.sls setup.ubuntu.ubuntu1604`
 
 The files used to install the tools for each platform are as follows:
 
@@ -105,7 +102,7 @@ Helper macro definitions utilized in building Salt and it’s dependencies from 
 
 ### setup/redhat/map.jinja
 
-Helper macro definitions for building Redhat 5, 6 and 7 releases
+Helper macro definitions for building Redhat 7 releases
 
 ### setup/redhat/init.sls
 
@@ -123,7 +120,7 @@ Initialization state files install the relevant platform tools on the minion to 
 
 ### setup/debian/map.jinja
 
-Helper macro definitions for building Debian 8 (jessie) and 7 (wheezy) releases. 
+Helper macro definitions for building Debian 9 (stretch) and Debian 8 (jessie) releases. 
 
 ### setup/debian/init.sls
 
@@ -145,11 +142,9 @@ Helper macro definitions for building Ubuntu releases.
 
 Common ubuntu initialization state files that install the relevant platform tools on the minion to build salt and it’s dependencies, for example: build-essential, dh-make, pbuilder, debhelper, devscripts, gnupg, gnupg-agent, python-gnupg, etc.
 
-### setup/ubuntu/ubuntu16/init.sls
+### setup/ubuntu/ubuntu1604/init.sls
 
-### setup/ubuntu/ubuntu14/init.sls
-
-### setup/ubuntu/ubuntu12/init.sls
+### setup/ubuntu/ubuntu1404/init.sls
 
 Initialization state files install the relevant platform tools on the minion to build salt and it’s dependencies, install apt-preferences, pbuilder hooks, other repositories to access, etc.
 
@@ -164,10 +159,10 @@ The following are command line pillar data overrides available for controlling b
 | build_dest    | Any absolute path             | /srv/pkgs                 | Path describing location to place the product of the build.                                                                                                  |
 | build_runas   | Any user                      | Redhat / CentOS - builder | User to use when building - non-root on Redhat and CentOS platforms.                                                                                         |
 |               |                               | Debian / Ubuntu - root    | Currently root on Debian and Ubuntu platforms (eventually shall allow for non-root building)                                                                 |
-| build_version | Any format not containing ‘.’ | none                      | Typically version of package with dot ( ‘.’ ) replaced by underscore ( ‘_’ ) to accommodate Salt parsing, for example: 2015_8_8 for 2015.8.8, 1_0_3 for 1.0.3 |
-| build_release | rhel7, rhel6, rhel5           | rhel7                     | Redhat / CentOS platforms                                                                                                                                    |
-|               | debian8, debian7              | debian8                   | Debian platforms                                                                                                                                             |
-|               | ubuntu1604, ubuntu1404, ubuntu1204        | ubuntu1604                | Ubuntu platforms                                                                                                                                             |
+| build_version | Any format not containing ‘.’ | none                      | Typically version of package with dot ( ‘.’ ) replaced by underscore ( ‘_’ ) to accommodate Salt parsing, for example: 2018_3_0 for 2018.3.0, 1_0_3 for 1.0.3 |
+| build_release | rhel7                         | rhel7                     | Redhat / CentOS platforms                                                                                                                                    |
+|               | debian9, debian8              | debian9                   | Debian platforms                                                                                                                                             |
+|               | ubuntu1604, ubuntu1404        | ubuntu1604                | Ubuntu platforms                                                                                                                                             |
 | build_arch    | i386, x86_64                  | x86_64                    | Redhat / CentOS platforms                                                                                                                                    |
 |               | amd64                         | amd64                     | Debian platforms                                                                                                                                             |
 |               | amd64                         | amd64                     | Ubuntu platforms                                                                                                                                             |
@@ -176,12 +171,12 @@ The following are command line pillar data overrides available for controlling b
 
 The tools required to create repositories for salt and it’s dependencies for the various platforms are handled by state files and macros which can be found in the repo directory.
 
-For example to create a repository for Redhat 6, Debian 8 and Ubuntu 12 based minions, respectively :
+For example to create a repository for Redhat 7, Debian 9 and Ubuntu 16.04 based minions, respectively :
 
-> `salt rh6_minion state.sls repo.redhat.rhel6 pillar='{ "keyid" : "ABCDEF12", "build_release" : "rhel6" }'`
-  `salt jessie_minion state.sls repo.debian.debian8 pillar='{ "keyid" : "ABCDEF12" }'`
-  `salt wheezy_minion state.sls repo.debian.debian7  pillar='{ "keyid" : "ABCDEF12" , "build_release" : "debian7"  }'`
-  `salt ubuntu12_minion state.sls setup.ubuntu.ubuntu12 pillar='{ "build_release" : "ubuntu1204" }'`
+> `salt rh7_minion state.sls repo.redhat.rhel7 pillar='{ "keyid" : "ABCDEF12", "build_release" : "rhel7" }'`
+  `salt stretch_minion state.sls repo.debian.debian9 pillar='{ "keyid" : "ABCDEF12" }'`
+  `salt jessie_minion state.sls repo.debian.debian8  pillar='{ "keyid" : "ABCDEF12" , "build_release" : "debian8"  }'`
+  `salt ubuntu16_minion state.sls setup.ubuntu.ubuntu1604 pillar='{ "build_release" : "ubuntu1604" }'`
 
 Where the keyid to sign the repository built is an example value `ABCDEF12`, and where the platform is other than the default, the build release is specified.
 
@@ -251,7 +246,7 @@ base:   '*':
         - mode
 ```
 
-4 Optional parameters for signing packages is controlled from each platform's `init.sls` repo state file. It allows for whether a passphrase is used, the particular directory for the Public and Private keys to be found (transferred securely from the salt-master as pillar data). Examples for Redhat 6, Ubuntu 14.04 and Debian 8 based minions can be found in the respective files :
+4 Optional parameters for signing packages is controlled from each platform's `init.sls` repo state file. It allows for whether a passphrase is used, the particular directory for the Public and Private keys to be found (transferred securely from the salt-master as pillar data). Examples for Redhat 7, Ubuntu 14.04 and Debian 8 based minions can be found in the respective files :
 
 > `repo/redhat/rhel7/init.sls`
 > `repo/ubuntu/ubuntu1404/init.sls`
@@ -286,7 +281,7 @@ include:
         DESCRIPTION : 'SaltStack Debian 8 package repo'
 ```
 
-Example contents from Redhat 6's `init.sls` state.file :
+Example contents from Redhat 7's `init.sls` state.file :
 
 ```yaml
 {% import "setup/redhat/map.jinja" as buildcfg %}
@@ -340,7 +335,7 @@ pkg/python-timelib/
 
 └── 0_2_4
 
-    ├── debian7
+    ├── debian9
 
     │   ├── init.sls
 
@@ -368,30 +363,6 @@ pkg/python-timelib/
 
     │       └── timelib_0.2.4-1.dsc
 
-    ├── rhel5
-
-    │   ├── init.sls
-
-    │   ├── sources
-
-    │   │   └── timelib-0.2.4.zip
-
-    │   └── spec
-
-    │       └── python-timelib.spec
-
-    ├── rhel6
-
-    │   ├── init.sls
-
-    │   ├── sources
-
-    │   │   └── timelib-0.2.4.zip
-
-    │   └── spec
-
-    │       └── python-timelib.spec
-
     ├── rhel7
 
     │   ├── init.sls
@@ -400,7 +371,7 @@ pkg/python-timelib/
 
     │       └── python-timelib.spec
 
-    ├── ubuntu1204
+    ├── ubuntu1604
 
     │   ├── init.sls
 
@@ -456,7 +427,7 @@ For example, the section of pillar data information to build salt on rhel7 in `p
 
 ```yaml
     salt:
-      version: 2015.8.8-1
+      version: 2018.3.0-1
       noarch: True
       build_deps:
         - python-crypto
@@ -529,7 +500,6 @@ The salt `init.sls` file for Redhat 7 is as follows, and is primarily driven by 
     - sources:
       ## - salt://{{slspath}}/sources/{{pkg_name}}-{{version}}.tar.gz
       - {{ macros.pypi_source(pypi_name, version) }}
-      - {{ macros.pypi_source("SaltTesting", "2015.7.10") }}
       - salt://{{slspath}}/sources/{{pkg_name}}-common.logrotate
       - salt://{{slspath}}/sources/README.fedora
       - salt://{{slspath}}/sources/{{pkg_name}}-api
@@ -554,18 +524,18 @@ The initial part of the init.sls expands required values which are then used to 
 
 For example, if the base path is `/srv/salt` for this example, `slspath` would expand as follows :
 
-`/srv/salt/pkg/salt/2015_8_8`
+`/srv/salt/pkg/salt/2018_3_0`
 
 ### Debian / Ubuntu - init.sls
 
-On Debian and Ubuntu the build process has not yet been converted to be driven by pillar data (it is hoped to upgrade to being by pillar data in the future when time allows), it is entirely driven by the `init.sls` file.  Hence, using Salt’s 2015.8.8 `init.sls` file for Debian 8 as an example :
+On Debian and Ubuntu the build process has not yet been converted to be driven by pillar data (it is hoped to upgrade to being by pillar data in the future when time allows), it is entirely driven by the `init.sls` file.  Hence, using Salt’s 2018.3.0 `init.sls` file for Debian 8 as an example :
 
 ```yaml
 {% import "setup/debian/map.jinja" as buildcfg %}
 {% set force = salt['pillar.get']('build_force.all', False) or salt['pillar.get']('build_force.' ~ slspath, False) %}
 
 {% set name = 'salt' %}
-{% set version = '2015.8.8' %}
+{% set version = '2018.3.0' %}
 {% set release_nameadd = '+ds' %}
 {% set release_ver = '2' %}
 
@@ -632,7 +602,7 @@ Individual packages can be built separately or all packages can be built using h
 
 The highstate is controlled by `redhat_pkg.sls`, `debian_pkg.sls` and `ubuntu_pkg.sls` as stated in the Overview, and contain all of the dependencies for salt on that platform, for example Ubuntu :
 
-`versions/2015_8_8/ubuntu_pkg.sls` 
+`versions/2018_3_0/ubuntu_pkg.sls` 
 
 ```yaml
 {% import "setup/ubuntu/map.jinja" as buildcfg %}
@@ -645,7 +615,7 @@ include:
     - pkg.python-libnacl.4_1.ubuntu1604
     - pkg.python-raet.0_6_5.ubuntu1604
     - pkg.python-timelib.0_2_4.ubuntu1604
-    - pkg.salt.2015_8_8.ubuntu1604
+    - pkg.salt.2018_3_0.ubuntu1604
 
 {% elif buildcfg.build_release == 'ubuntu1404' %}
 
@@ -659,35 +629,12 @@ include:
     - pkg.python-raet.0_6_3.ubuntu1404
     - pkg.python-timelib.0_2_4.ubuntu1404
     - pkg.python-tornado.4_2_1.ubuntu1404
-    - pkg.salt.2015_8_8.ubuntu1404
+    - pkg.salt.2018_3_0.ubuntu1404
     - pkg.zeromq.4_0_4.ubuntu1404
-
-{% elif buildcfg.build_release == 'ubuntu1204' %}
-
-    - pkg.libsodium.1_0_3.ubuntu1204
-    - pkg.python-backports-ssl_match_hostname.3_4_0_2.ubuntu1204
-    - pkg.python-croniter.0_3_4.ubuntu1204
-    - pkg.python-crypto.2_6_1.ubuntu1204
-    - pkg.python-enum34.1_0_4.ubuntu1204
-    - pkg.python-future.0_14_3.ubuntu1204
-    - pkg.python-futures.3_0_3.ubuntu1204
-    - pkg.python-ioflo.1_3_8.ubuntu1204
-    - pkg.python-libcloud.0_14_1.ubuntu1204
-    - pkg.python-libnacl.4_1.ubuntu1204
-    - pkg.python-msgpack.0_3_0.ubuntu1204
-    - pkg.python-mako.0_7_0.ubuntu1204
-    - pkg.python-pyzmq.14_0_1.ubuntu1204
-    - pkg.python-raet.0_6_3.ubuntu1204
-    - pkg.python-requests.2_0_0.ubuntu1204
-    - pkg.python-timelib.0_2_4.ubuntu1204
-    - pkg.python-tornado.4_2_1.ubuntu1204
-    - pkg.python-urllib3.1_7_1.ubuntu1204
-    - pkg.salt.2015_8_8.ubuntu1204
-    - pkg.zeromq.4_0_4.ubuntu1204
 
 {% endif %}
 ```
-Hence to build salt 2015.8.8 and it’s dependencies for Ubuntu 12.04 and then sign packages and create a repository with a passphrase, using state file `repo/ubuntu/ubuntu1204/init.sls`:
+Hence to build salt 2018.3.0 and it’s dependencies for Ubuntu 16.04 and then sign packages and create a repository with a passphrase, using state file `repo/ubuntu/ubuntu1604/init.sls`:
 
 ```yaml
 {% import "setup/ubuntu/map.jinja" as buildcfg %}
@@ -708,39 +655,30 @@ include:
     - env:
         OPTIONS : 'ask-passphrase'
         ORIGIN : 'SaltStack'
-        LABEL : 'salt_ubuntu12'
-        CODENAME : 'precise'
+        LABEL : 'salt_ubuntu1604'
+        CODENAME : 'xenial'
         ARCHS : 'amd64 i386 source'
         COMPONENTS : 'main'
-        DESCRIPTION : 'SaltStack Ubuntu 12 package repo'
+        DESCRIPTION : 'SaltStack Ubuntu 16.04 package repo'
 ```
 
 
 ```bash
-salt u12m state.highstate pillar='{ "build_dest" : "/srv/ubuntu/2015.8.8/pkgs", "build_release" : "ubuntu1204" , "build_version" : "2015_8_8" }'
+salt u16m state.highstate pillar='{ "build_dest" : "/srv/ubuntu/2018.3.0/pkgs", "build_release" : "ubuntu1604" , "build_version" : "2018_3_0" }'
 ```
 
 ```bash
-salt u12m state.sls repo.ubuntu.ubuntu12  pillar='{ "build_dest" : "/srv/ubuntu/2015.8.8/pkgs", "build_release" : "ubuntu1204", "keyid" : "ABCDEF12" , "build_version" : "2015_8_8", "gpg_passphrase" : "my-pass-phrase" }'
+salt u16m state.sls repo.ubuntu.ubuntu12  pillar='{ "build_dest" : "/srv/ubuntu/2018.3.0/pkgs", "build_release" : "ubuntu1604", "keyid" : "ABCDEF12" , "build_version" : "2018_3_0", "gpg_passphrase" : "my-pass-phrase" }'
 ```
 
-This command shall place the product of building in destination /srv/ubuntu/2015.8.8/pkgs.
+This command shall place the product of building in destination /srv/ubuntu/2018.3.0/pkgs.
 
-Similarly for Redhat 6 32-bit :
+
+To individually build Salt 2018.3.0 for Redhat 7 :
 
 ```bash
-salt redhat7_minion state.highstate  pillar='{ "build_dest" : "/srv/redhat/2015.8.8/pkgs", "build_release" : "rhel6", "build_arch" : "i386" , "build_version" : "2015_8_8"  }'
+salt redhat7_minion state.sls pkg.salt.2018_3_0.rhel7  pillar='{ "build_dest" : "/srv/redhat/2018.3.0/pkgs" , "build_version" : "2018_3_0" }'
 ```
 
-```bash
-salt redhat7_minion state.sls repo.redhat.rhel6  pillar='{ "build_dest" : "/srv/redhat/2015.8.8/pkgs", "keyid" : "ABCDEF12", "build_release" : "rhel6", "build_arch" : "i386"  , "build_version" : "2015_8_8", "gpg_passphrase" : "my-pass-phrase" }'
-```
-
-To individually build Salt 2015.8.8 for Redhat 7 :
-
-```bash
-salt redhat7_minion state.sls pkg.salt.2015_8_8.rhel7  pillar='{ "build_dest" : "/srv/redhat/2015.8.8/pkgs" , "build_version" : "2015_8_8" }'
-```
-
-Note: that currently the building of 32-bit packages on Debian and Ubuntu does not work.  It had worked in early development of salt-pack but for some as yet undetermined reason it stopped working.  Given the movement to 64-bit architectures, 32-bit support is a low priority task.
+Note: Given the movement to 64-bit architectures, 32-bit support is a low priority task.
 
