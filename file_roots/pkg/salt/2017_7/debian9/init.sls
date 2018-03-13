@@ -23,8 +23,10 @@
       - {{name}}-syndic_{{version}}{{release_nameadd}}-{{release_ver}}_all.deb
     - force: {{force}}
     - dest_dir: {{buildcfg.build_dest_dir}}
-    - spec: salt://{{slspath}}/spec/{{name}}_debian.tar.xz
+    - spec: salt://{{slspath}}/spec/{{buildcfg.build_py_ver}}/{{name}}_debian.tar.xz
     - tgt: {{buildcfg.build_tgt}}
+    - env:
+        DEB_BUILD_OPTIONS : 'nocheck'
     - template: jinja
     - sources:
       - salt://{{slspath}}/sources/{{name}}-{{version}}.tar.gz
