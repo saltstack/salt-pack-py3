@@ -1,8 +1,19 @@
 %bcond_without pgm
 
+%global _description    \
+The 0MQ lightweight messaging kernel is a library which extends the \
+standard socket interfaces with features traditionally provided by  \
+specialized messaging middle-ware products. 0MQ sockets provide an  \
+abstraction of asynchronous message queues, multiple messaging      \
+patterns, message filtering (subscriptions), seamless access to     \
+multiple transport protocols and more.                              \
+\
+This package contains the ZeroMQ shared library.
+
+
 Name:           zeromq
 Version:        4.1.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Software library for fast, message-based applications
 
 Group:          System Environment/Libraries
@@ -30,33 +41,25 @@ BuildRequires:  openpgm-devel
 BuildRequires:  krb5-devel
 %endif
 
-%description
-The 0MQ lightweight messaging kernel is a library which extends the
-standard socket interfaces with features traditionally provided by
-specialized messaging middle-ware products. 0MQ sockets provide an
-abstraction of asynchronous message queues, multiple messaging
-patterns, message filtering (subscriptions), seamless access to
-multiple transport protocols and more.
+%description    %{_description}
 
-This package contains the ZeroMQ shared library.
+%package -n %{name}-devel
+Summary:    Development files for %{name}
+Group:      Development/Libraries
+Requires:   %{name}%{?_isa} = %{version}-%{release}
+Provides:   %{name}-devel
 
-
-%package devel
-Summary:        Development files for %{name}
-Group:          Development/Libraries
-Requires:       %{name}%{?_isa} = %{version}-%{release}
-
-
-%description devel
+%description -n %{name}-devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 
 %package -n cppzmq-devel
-Summary:        Development files for cppzmq
-Group:          Development/Libraries
-License:        MIT
-Requires:       %{name}-devel%{?_isa} = %{version}-%{release}
+Summary:    Development files for cppzmq
+Group:      Development/Libraries
+License:    MIT
+Requires:   %{name}-devel%{?_isa} = %{version}-%{release}
+Provides:   cppzmq-devel
 
 
 %description -n cppzmq-devel
@@ -114,13 +117,13 @@ rm %{buildroot}%{_libdir}/libzmq.la
 %postun -p /sbin/ldconfig
 
 
-%files
+%files -n %{name}
 %doc AUTHORS ChangeLog MAINTAINERS NEWS
 %license COPYING COPYING.LESSER
 %{_bindir}/curve_keygen
 %{_libdir}/libzmq.so.*
 
-%files devel
+%files -n %{name}-devel
 %{_libdir}/libzmq.so
 %{_libdir}/pkgconfig/libzmq.pc
 %{_includedir}/zmq*.h
@@ -133,6 +136,9 @@ rm %{buildroot}%{_libdir}/libzmq.la
 
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.4-7
+- Add support for Python 3
+
 * Tue Oct 17 2017 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.4-6
 - Disabled check due to build failue on RHEL 7
 
