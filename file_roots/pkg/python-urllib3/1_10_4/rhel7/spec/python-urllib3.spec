@@ -1,4 +1,4 @@
-%global with_python3 0
+%global with_python3 1
 %{!?python2_sitelib: %global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
 
 %if 0%{?rhel} == 6

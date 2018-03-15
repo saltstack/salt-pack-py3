@@ -2,6 +2,13 @@
 %global with_python3 1
 %endif
 
+%global _description \
+Mock is a Python module that provides a core mock class. It removes the need \
+to create a host of stubs throughout your test suite. After performing an \
+action, you can make assertions about which methods / attributes were used and \
+arguments they were called with. You can also specify return values and set \
+needed attributes in the normal way.
+
 # Not yet in Fedora buildroot
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -9,7 +16,7 @@
 
 Name:           python-mock
 Version:        1.0.1
-Release:        9%{?dist}
+Release:        11%{?dist}
 Summary:        A Python Mocking and Patching Library for Testing
 
 License:        BSD
@@ -18,49 +25,37 @@ Source0:        http://pypi.python.org/packages/source/m/%{mod_name}/%{mod_name}
 Source1:        LICENSE.txt
 
 BuildArch:      noarch
+
+
+%description %{_description}
+
+%package -n python2-mock
+Summary:    %{summary}
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 # For tests
 %if 0%{?rhel} <= 7
 BuildRequires:  python-unittest2
 %endif
+%{?python_provide:%python_provide python-mock}
+%{?python_provide:%python_provide python2-mock}
+
+%description -n python2-mock %{_description}
+Python 2 version.
+
 
 %if 0%{?with_python3}
+%package -n python%{python3_pkgversion}-mock
+Summary:    %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 # For tests
 #BuildRequires:  python%{python3_pkgversion}-unittest2
-%endif
+## %{?python_provide:%python_provide python%{python3_pkgversion}-mock}
+Provides:       python%{python3_pkgversion}-mock
 
-
-%description
-Mock is a Python module that provides a core mock class. It removes the need
-to create a host of stubs throughout your test suite. After performing an
-action, you can make assertions about which methods / attributes were used and
-arguments they were called with. You can also specify return values and set
-needed attributes in the normal way.
-
-%package -n python2-mock
-Summary:        A Python Mocking and Patching Library for Testing
-%{?python_provide:%python_provide python2-%{mod_name}}
-
-%description -n python2-mock
-Mock is a Python module that provides a core mock class. It removes the need
-to create a host of stubs throughout your test suite. After performing an
-action, you can make assertions about which methods / attributes were used and
-arguments they were called with. You can also specify return values and set
-
-%if 0%{?with_python3}
-%package -n python%{python3_pkgversion}-mock
-Summary:        A Python Mocking and Patching Library for Testing
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{mod_name}}
-
-%description -n python%{python3_pkgversion}-mock
-Mock is a Python module that provides a core mock class. It removes the need
-to create a host of stubs throughout your test suite. After performing an
-action, you can make assertions about which methods / attributes were used and
-arguments they were called with. You can also specify return values and set
-needed attributes in the normal way.
+%description -n python%{python3_pkgversion}-mock %{_description}
+Python 3 version.
 %endif
 
 
@@ -102,6 +97,13 @@ cp -p %{SOURCE1} .
 
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-11
+- Add support for Python 3
+
+
+* Thu Jan 11 2018 SaltStack Packaging Team <packaging@saltstack.com> -1.0.1-10 
+- Support for Python 3 on RHEL
+
 * Wed Jan 6 2016 Orion Poplawski <orion@cora.nwra.com> - 1.0.1-9
 - Modernize spec
 - Run python2 tests, python3 failing

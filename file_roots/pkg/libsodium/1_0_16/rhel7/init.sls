@@ -2,7 +2,7 @@
 {% import "setup/macros.jinja" as macros with context %}
 {% set pkg_data = salt["pillar.get"]("pkgbuild_registry:" ~ buildcfg.build_release, {}) %}
 {% set force = salt["pillar.get"]("pkgbuild_force.all", False) or salt["pillar.get"]("pkgbuild_force." ~ slspath, False) %}
-{% set sls_name = "libtommath" %}
+{% set sls_name = "libsodium" %}
 
 {% set pkg_info = pkg_data.get(sls_name, {}) %}
 {% if "version" in pkg_info %}
@@ -23,7 +23,7 @@
 
 {{ macros.results(sls_name, pkg_data) }}
 
-    - dest_dir: {{buildcfg.build_dest_dir}}/{{buildcfg.build_py_ver}}
+    - dest_dir: {{buildcfg.build_dest_dir}}
     - spec: salt://{{slspath}}/spec/{{pkg_name}}.spec
     - template: jinja
     - tgt: {{buildcfg.build_tgt}}
@@ -32,6 +32,6 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/sources/ltm-{{version}}.tar.bz2
-      - salt://{{slspath}}/sources/libtommath-makefile.patch
+      - salt://{{slspath}}/sources/{{pkg_name}}-{{version}}.tar.gz
+      ## - https://download.libsodium.org/{{pkg_name}}/releases/{{pkg_name}}-{{version}}.tar.gz
 {% endif %}

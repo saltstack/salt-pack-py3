@@ -100,7 +100,7 @@
 pkgbuild_registry:
   rhel7:
     libsodium:
-      version: 1.0.5-1
+      version: 1.0.16-1
       results:
         - libsodium
         - libsodium-devel
@@ -143,11 +143,6 @@ pkgbuild_registry:
     python-futures:
       version: 3.0.3-1
       noarch: True
-    python-impacket:
-      version: 0.9.14-3
-      noarch: True
-      build_deps:
-        - python-crypto
     python-ioflo:
       version: 1.3.8-1
       noarch: True
@@ -222,15 +217,8 @@ pkgbuild_registry:
         - salt-api
         - salt-cloud
         - salt-ssh
-    winexe:
-      version: 1.1-b787d2
-      results:
-        - winexe
-        - winexe-debuginfo
-      build_deps:
-        - python-impacket
     zeromq:
-      version: 4.1.4-6
+      version: 4.1.4-7
       build_deps:
         - openpgm
       results:

@@ -5,16 +5,13 @@
 %global eggname %{nsname}
 %global modname Cryptodome
 
-
 %{!?python3_pkgversion:%global python3_pkgversion 3}
-
-## %global python2_pkgversion 2
-%global python2_pkgversion %{nil}
+%{!?python2_pkgversion:%global python2_pkgversion 2}
 
 
 Name:           python-%{srcname}
 Version:        3.4.3
-Release:        2%{?dist}
+Release:        4%{?dist}
 Summary:        Self-contained Python package of low-level cryptographic primitives
 
 # Only OCB blockcipher mode is patented, but according to
@@ -61,36 +58,28 @@ implemented as C extensions.
 
 %description %{_description}
 
-## DGM %package -n python2-%{eggname}
-## DGM %package -n python%{python2_pkgversion}-%{eggname}
-## DGM Summary:        %{summary}
-## DGM %{?python_provide:%python_provide python2-%{eggname}}
-## DGM BuildRequires:  python2-devel
-## DGM BuildRequires:  python2-setuptools
-## DGM 
-## DGM %description -n python2-%{eggname} %{_description}
-## DGM 
 
-%package -n python2-%{eggname}
+%package    -n  python2-%{eggname}
 Summary:        %{summary}
+%{?python_provide:%python_provide python-%{eggname}}
 %{?python_provide:%python_provide python2-%{eggname}}
+
 BuildRequires:  python%{python2_pkgversion}-devel
 BuildRequires:  python%{python2_pkgversion}-setuptools
 
 %description -n python2-%{eggname} %{_description}
-
 Python 2 version.
 
-%package -n python3-%{eggname}
+
+%package -n python%{python3_pkgversion}-%{eggname}
 Summary:        %{summary}
-## DGM %{?python_provide:%python_provide python3-%{eggname}}
-## DGM BuildRequires:  python3-devel
-## DGM BuildRequires:  python3-setuptools
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 
-%description -n python3-%{eggname} %{_description}
+##%{?python_provide:%python_provide python%{python3_pkgversion}-%{eggname}}
+Provides:       python%{python3_pkgversion}-%{eggname}
 
+%description -n python%{python3_pkgversion}-%{eggname} %{_description}
 Python 3 version.
 
 %prep
@@ -120,12 +109,19 @@ touch .separate_namespace
 %{python2_sitearch}/%{eggname}-*.egg-info/
 %{python2_sitearch}/%{modname}/
 
-%files -n python3-%{eggname}
+%files -n python%{python3_pkgversion}-%{eggname}
 %license Doc/LEGAL/
 %{python3_sitearch}/%{eggname}-*.egg-info/
 %{python3_sitearch}/%{modname}/
 
+
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.4.3-4
+- Add support for Python 3
+
+* Thu Jan 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.4.3-3
+- Support for Python 3 on Redhat
+
 * Wed Apr 26 2017 SaltStack Packaging Team <packaging@saltstack.com> - 3.4.3-2
 - Patched to allow for MD5 handling on Redhat 6 using  hashlib causing errors
 

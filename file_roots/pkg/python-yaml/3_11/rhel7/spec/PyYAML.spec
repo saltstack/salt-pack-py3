@@ -1,12 +1,27 @@
-%if 0%{?fedora} > 12 || 0%{?rhel} > 6
-%global with_python3 0
-%else
+
+%global with_python3 1
+
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
-%endif
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%global _description    \
+YAML is a data serialization format designed for human readability and  \
+interaction with scripting languages.  PyYAML is a YAML parser and      \
+emitter for Python.                                                     \
+\
+PyYAML features a complete YAML 1.1 parser, Unicode support, pickle     \
+support, capable extension API, and sensible error messages.  PyYAML    \
+supports standard YAML tags and provides Python-specific tags that      \
+allow to represent an arbitrary Python object.                          \
+\
+PyYAML is applicable for a broad range of tasks from complex            \
+configuration files to object serialization and persistance.
+
 
 Name:           PyYAML
 Version:        3.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 
 Group:          Development/Libraries
@@ -14,44 +29,27 @@ License:        MIT
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-BuildRequires:  python-devel, python-setuptools, libyaml-devel
-Provides:       python-yaml = %{version}-%{release}
-Provides:       python-yaml%{?_isa} = %{version}-%{release}
+BuildRequires:  python-devel
+BuildRequires:  python-setuptools
+BuildRequires:  libyaml-devel
+
 %if 0%{?with_python3}
-BuildRequires: python3-devel
-BuildRequires: python3-setuptools
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-setuptools
 %endif
 
-%description
-YAML is a data serialization format designed for human readability and
-interaction with scripting languages.  PyYAML is a YAML parser and
-emitter for Python.
+%description    %{_description}
 
-PyYAML features a complete YAML 1.1 parser, Unicode support, pickle
-support, capable extension API, and sensible error messages.  PyYAML
-supports standard YAML tags and provides Python-specific tags that
-allow to represent an arbitrary Python object.
-
-PyYAML is applicable for a broad range of tasks from complex
-configuration files to object serialization and persistance.
 
 %if 0%{?with_python3}
-%package -n python3-PyYAML
-Summary: YAML parser and emitter for Python
-Group: Development/Libraries
+%package    -n  python%{python3_pkgversion}-PyYAML
+Summary:        %{summary}
+Group:          {%group}
+Provides:       python%{python3_pkgversion}-yaml = %{version}-%{release}
+Provides:       python%{python3_pkgversion}-yaml%{?_isa} = %{version}-%{release}
 
-%description -n python3-PyYAML
-YAML is a data serialization format designed for human readability and
-interaction with scripting languages.  PyYAML is a YAML parser and
-emitter for Python.
-
-PyYAML features a complete YAML 1.1 parser, Unicode support, pickle
-support, capable extension API, and sensible error messages.  PyYAML
-supports standard YAML tags and provides Python-specific tags that
-allow to represent an arbitrary Python object.
-
-PyYAML is applicable for a broad range of tasks from complex
-configuration files to object serialization and persistance.
+%description -n python%{python3_pkgversion}-PyYAML %{_description}
+Support Python 3.
 %endif
 
 
@@ -90,13 +88,13 @@ popd
 rm -rf %{buildroot}
 
 
-%files
+%files -n PyYAML
 %defattr(644,root,root,755)
 %doc CHANGES LICENSE PKG-INFO README examples
 %{python_sitearch}/*
 
 %if 0%{?with_python3}
-%files -n python3-PyYAML
+%files -n python%{python3_pkgversion}-PyYAML
 %defattr(644,root,root,755)
 %doc CHANGES LICENSE PKG-INFO README examples
 %{python3_sitearch}/*
@@ -104,6 +102,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.11-2
+- Add support for Python 3
+
 * Fri Apr 27 2012 John Eckersberg <jeckersb@redhat.com> - 3.10-3
 - Add Provides for python-yaml (BZ#740390)
 
