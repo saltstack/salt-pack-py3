@@ -1,12 +1,18 @@
-%if 0%{?fedora}
 %global _with_python3 1
-%else
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
-%endif
 
-Name:           python-requests
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
+
+%global _description    \
+Most existing Python modules for sending HTTP requests are extremely verbose and    \
+cumbersome. Python’s built-in urllib2 module provides most of the HTTP              \
+capabilities you should need, but the API is thoroughly broken. This library is     \
+designed to make HTTP requests easy for developers.
+
+%global srcname requests
+
+Name:           python-%{srcname}
 Version:        2.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        HTTP library, written in Python, for human beings
 
 License:        ASL 2.0
@@ -33,26 +39,30 @@ BuildRequires:  python-ordereddict >= 1.1
 Requires:       python-ordereddict >= 1.1
 %endif
 
-%description
-Most existing Python modules for sending HTTP requests are extremely verbose and 
-cumbersome. Python’s built-in urllib2 module provides most of the HTTP 
-capabilities you should need, but the API is thoroughly broken. This library is 
-designed to make HTTP requests easy for developers.
+%description    %{_description}
+
+%package -n python2-%{srcname}
+Summary:    %{summary}
+%{?python_provide:%python_provide python-%{srcname}}
+%{?python_provide:%python_provide python2-%{srcname}}
+
+%description -n python2-%{srcname} %{_description}
+Python 2 version.
+
 
 %if 0%{?_with_python3}
-%package -n python3-requests
-Summary: HTTP library, written in Python, for human beings
-BuildRequires:  python3-devel
-BuildRequires:  python3-chardet
-BuildRequires:  python3-urllib3
-Requires:       python3-chardet
-Requires:       python3-urllib3
+%package -n python%{python3_pkgversion}-%{srcname}
+Summary:    %{summary}
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-chardet
+BuildRequires:  python%{python3_pkgversion}-urllib3
+Requires:       python%{python3_pkgversion}-chardet
+Requires:       python%{python3_pkgversion}-urllib3
+## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+Provides:       python%{python3_pkgversion}-%{srcname}
 
-%description -n python3-requests
-Most existing Python modules for sending HTTP requests are extremely verbose and
-cumbersome. Python’s built-in urllib2 module provides most of the HTTP
-capabilities you should need, but the API is thoroughly broken. This library is
-designed to make HTTP requests easy for developers.
+%description -n python%{python3_pkgversion}-%{srcname} %{_description}
+Python 3 version.
 %endif
 
 %prep
@@ -107,7 +117,8 @@ popd
 #popd
 #%%endif
 
-%files
+
+%files -n python2-%{srcname}
 %defattr(-,root,root,-)
 %doc NOTICE LICENSE README.rst HISTORY.rst
 %{python_sitelib}/*.egg-info
@@ -115,12 +126,15 @@ popd
 %{python_sitelib}/requests/*
 
 %if 0%{?_with_python3}
-%files -n python3-requests
+%files -n python%{python3_pkgversion}-%{srcname}
 %{python3_sitelib}/*.egg-info
 %{python3_sitelib}/requests/
 %endif
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-2
+- Add support for Python 3
+
 * Wed Jun 03 2015 Matej Stuchlik <mstuchli@redhat.com> - 2.6.0-1
 - Update to 2.6.0
 Resolves: rhbz#1206465

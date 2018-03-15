@@ -34,9 +34,9 @@
 %endif  ## %if ( "0%{?dist}" == "0.amzn1" )
 
 
-## Python 2 support if Redhat 7
+## Only enable Python 3 support if Redhat 7
 %if 0%{?rhel} >= 7
-%global with_python3 0
+%global with_python3 1
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 %endif
 
@@ -1042,9 +1042,6 @@ rm -rf %%{buildroot}
 
 
 %changelog
-* Mon Feb 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0rc1-0
-- Separation of Python 2 and Python 3 builds for Redhat 7
-
 * Fri Feb 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0rc1-0
 - Development build for Python 3 support
 
