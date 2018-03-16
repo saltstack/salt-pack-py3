@@ -7,12 +7,12 @@ include:
 
 {{buildcfg.build_dest_dir}}:
   pkgbuild.repo:
-{% if repo_keyid != 'None' %}
-    - keyid: {{repo_keyid}}
-    - use_passphrase: {{buildcfg.repo_use_passphrase}}
     - gnupghome: {{buildcfg.build_gpg_keydir}}
     - runas: {{buildcfg.build_runas}}
     - timeout: {{buildcfg.repo_sign_timeout}}
+{% if repo_keyid != 'None' %}
+    - keyid: {{repo_keyid}}
+    - use_passphrase: {{buildcfg.repo_use_passphrase}}
 {% endif %}
     - env:
 {%- if buildcfg.repo_use_passphrase %}    
@@ -28,5 +28,9 @@ include:
         ARCHS : 'amd64 i386 source'
 {%- endif %}
         COMPONENTS : 'main'
-        DESCRIPTION : 'SaltStack Debian 9 package repo'
+{%- if buildcfg.build_py3 %}
+        DESCRIPTION : 'SaltStack Debian 9 Python 3 package repo'
+{%- else %}
+        DESCRIPTION : 'SaltStack Debian 9 Python 2 package repo'
+{%- endif %}
 
