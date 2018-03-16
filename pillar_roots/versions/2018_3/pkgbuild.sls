@@ -126,12 +126,12 @@ pkgbuild_registry:
       version: 5.6.0-4
       noarch: True
       results:
-        - python2-cherrypy
+        - python-cherrypy
         - python34-cherrypy
       build_deps:
         - python-mock
     python-crypto:
-      version: 2.6.1-3
+      version: 2.6.1-2
       results:
         - python2-crypto
         - python34-crypto
@@ -232,7 +232,7 @@ pkgbuild_registry:
         - python2-timelib
         - python34-timelib
     python-urllib3:
-      version: 1.10.2-3
+      version: 1.10.4-3
       noarch: True
       results:
         - python2-urllib3
@@ -242,7 +242,6 @@ pkgbuild_registry:
       version: 3.11-2
       results:
         - PyYAML
-        - python34-PyYAML
     salt:
       version: 2018.3.0tobereplaced_date-0
       noarch: True
