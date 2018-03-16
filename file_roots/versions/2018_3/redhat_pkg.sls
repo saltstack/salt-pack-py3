@@ -20,12 +20,12 @@ include:
     - pkg.python-mock.1_0_1.rhel7
     - pkg.python-psutil.2_2_1.rhel7
     - pkg.python-pyzmq.15_3_0.rhel7
-    - pkg.python-raet.0_6_5.rhel7
+    - pkg.python-raet.0_6_6.rhel7
     - pkg.python-requests.2_6_0.rhel7
     - pkg.python-simplejson.3_3_3.rhel7
     - pkg.python-tornado.4_2_1.rhel7
     - pkg.python-timelib.0_2_4.rhel7
-    - pkg.python-urllib3.1_10_2.rhel7
+    - pkg.python-urllib3.1_10_4.rhel7
     - pkg.python-yaml.3_11.rhel7
     - pkg.salt.2018_3.rhel7
     - pkg.zeromq.4_1_4.rhel7

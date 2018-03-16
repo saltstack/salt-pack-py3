@@ -4,8 +4,6 @@
 # Python3 introduced in Fedora 13
 %global with_python3 1
 
-%global salt_name_post_fix  s
-%global salt_name_repo      salt
 %global srcname             crypto
 
 %global _description    \
@@ -15,7 +13,7 @@ SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 Summary:	Cryptography library for Python
 Name:		python-crypto
 Version:	2.6.1
-Release:	3.%{salt_name_repo}%{?dist}
+Release:	2%{?dist}
 # Mostly Public Domain apart from parts of HMAC.py and setup.py, which are Python
 License:	Public Domain and Python
 Group:		Development/Libraries
@@ -43,26 +41,26 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot-%(id -nu)
 
 %description    %{_description}
 
-%package -n python2%{salt_name_post_fix}-%{srcname}
+%package -n python2-%{srcname}
 Summary:	%{summary}
 Group:		%{group}
 
 %{?python_provide:%python_provide python-%{srcname}}
 %{?python_provide:%python_provide python2-%{srcname}}
 
-%description -n python2%{salt_name_post_fix}-%{srcname} %{_description}
+%description -n python2-%{srcname} %{_description}
 Supports Python 2.
 
 
 %if %{with_python3}
-%package -n python%{python3_pkgversion}%{salt_name_post_fix}-%{srcname}
+%package -n python%{python3_pkgversion}-%{srcname}
 Summary:	Cryptography library for Python 3
 Group:		%{group}
 
 ## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 Provides:   python%{python3_pkgversion}-%{srcname}
 
-%description -n python%{python3_pkgversion}%{salt_name_post_fix}-%{srcname} %{_description}
+%description -n python%{python3_pkgversion}-%{srcname} %{_description}
 Supports Python 3.
 %endif
 
@@ -132,13 +130,13 @@ cd -
 %clean
 rm -rf %{buildroot}
 
-%files -n python2%{salt_name_post_fix}-%{srcname} -f egg-info
+%files -n python2-%{srcname} -f egg-info
 %defattr(-,root,root,-)
 %doc README TODO ACKS ChangeLog LEGAL/ COPYRIGHT Doc/
 %{python_sitearch}/Crypto/
 
 %if %{with_python3}
-%files -n python%{python3_pkgversion}%{salt_name_post_fix}-%{srcname}
+%files -n python%{python3_pkgversion}-%{srcname}
 %defattr(-,root,root,-)
 %doc README TODO ACKS ChangeLog LEGAL/ COPYRIGHT Doc/
 %{python3_sitearch}/Crypto/
@@ -146,9 +144,6 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Tue Feb 06 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.1-3
-- Build product rename to identify SaltStack produced, 's' and 'salt'
-
 * Wed Feb  1 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.1-2
 - Update to 2.6.1
   - Raise warning when IV is used with ECB or CTR and ignored IV in that case (CVE-2013-7459)
