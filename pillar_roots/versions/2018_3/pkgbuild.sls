@@ -123,16 +123,23 @@ pkgbuild_registry:
       version: 2.2.1-1
       noarch: True
     python-cherrypy:
-      version: 5.6.0-2
+      version: 5.6.0-4
       noarch: True
+      results:
+        - python2-cherrypy
+        - python34-cherrypy
       build_deps:
         - python-mock
     python-crypto:
-      version: 2.6.1-2
+      version: 2.6.1-3
+      results:
+        - python2-crypto
+        - python34-crypto
     python-pycryptodome:
-      version: 3.4.3-2
+      version: 3.4.3-4
       results:
         - python2-pycryptodomex
+        - python34-pycryptodomex
       build_deps:
         - libtommath
         - libtomcrypt
@@ -144,58 +151,98 @@ pkgbuild_registry:
       version: 3.0.3-1
       noarch: True
     python-ioflo:
-      version: 1.3.8-1
+      version: 1.3.8-3
       noarch: True
+      results:
+        - python2-ioflo
+        - python34-ioflo
     python-libcloud:
       name: python2-libcloud
-      version: 2.0.0-2
+      version: 2.0.0-4
       noarch: True
+      results:
+        - python2-libcloud
+        - python34-libcloud
     python-libnacl:
-      version: 1.4.3-1
+      version: 1.4.3-3
       noarch: True
+      results:
+        - python2-libnacl
+        - python34-libnacl
       build_deps:
         - libsodium
     python-msgpack:
-      version: 0.4.6-1
+      version: 0.4.6-2
+      results:
+        - python2-msgpack
+        - python34-msgpack
     python-mock:
-      version: 1.0.1-9
+      version: 1.0.1-11
       noarch: True
       results:
         - python2-mock
+        - python34-mock
     python-psutil:
-      version: 2.2.1-1
+      version: 2.2.1-2
+      results:
+        - python2-psutil
+        - python34-psutil
     python-pyzmq:
       name: python-zmq
-      version: 15.3.0-2
+      version: 15.3.0-4
+      results:
+        - python2-zmq
+        - python34-zmq
       build_deps:
         - zeromq
     python-raet:
-      version: 0.6.5-1
+      version: 0.6.6-4
       noarch: True
+      results:
+        - python2-raet
+        - python34-raet
       build_deps:
         - python-ioflo
       additonal_deps:
         - python-libnacl
         - python-simplejson
     python-requests:
-      version: 2.6.0-1
+      version: 2.6.0-2
       noarch: True
+      results:
+        - python2-requests
+        - python34-requests
       build_deps:
         - python-chardet
         - python-urllib3
     python-simplejson:
-      version: 3.3.3-1
+      version: 3.3.3-2
+      results:
+        - python2-simplejson
+        - python34-simplejson
     python-tornado:
-      version: 4.2.1-1
+      version: 4.2.1-2
+      results:
+        - python2-tornado
+        - python34-tornado
     python-timelib:
-      version: 0.2.4-1
+      version: 0.2.4-3
       noarch: True
+      results:
+        - python2-timelib
+        - python34-timelib
     python-urllib3:
-      version: 1.10.2-1
+      version: 1.10.2-3
       noarch: True
+      results:
+        - python2-urllib3
+        - python34-urllib3
     python-yaml:
       name: PyYAML
-      version: 3.11-1
+      version: 3.11-2
+      results:
+        - PyYAML
+        - python34-PyYAML
     salt:
       version: 2018.3.0tobereplaced_date-0
       noarch: True

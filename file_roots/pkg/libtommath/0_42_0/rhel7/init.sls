@@ -23,7 +23,7 @@
 
 {{ macros.results(sls_name, pkg_data) }}
 
-    - dest_dir: {{buildcfg.build_dest_dir}}/{{buildcfg.build_py_ver}}
+    - dest_dir: {{buildcfg.build_dest_dir}}
     - spec: salt://{{slspath}}/spec/{{pkg_name}}.spec
     - template: jinja
     - tgt: {{buildcfg.build_tgt}}
