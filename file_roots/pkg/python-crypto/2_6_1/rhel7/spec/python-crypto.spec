@@ -2,7 +2,13 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" 2>/dev/null)}
 
 # Python3 introduced in Fedora 13
-%global with_python3 %([ 0%{?fedora} -gt 12 ] && echo 1 || echo 0)
+%global with_python3 1
+
+%global srcname             crypto
+
+%global _description    \
+PyCrypto is a collection of both secure hash functions (such as MD5 and \
+SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
 Summary:	Cryptography library for Python
 Name:		python-crypto
@@ -18,10 +24,12 @@ Patch1:		python-crypto-2.4-fix-pubkey-size-divisions.patch
 Patch2:		CVE-2013-7459.patch
 Provides:	pycrypto = %{version}-%{release}
 BuildRequires:	python2-devel >= 2.2, gmp-devel >= 4.1
+
 %if %{with_python3}
 BuildRequires:	python-tools
-BuildRequires:	python3-devel
+BuildRequires:	python%{python3_pkgversion}-devel
 %endif
+
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot-%(id -nu)
 
 # Don't want provides for python shared objects
@@ -31,20 +39,29 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot-%(id -nu)
 %endif
 %{?filter_setup}
 
-%description
-PyCrypto is a collection of both secure hash functions (such as MD5 and
-SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
+%description    %{_description}
+
+%package -n python2-%{srcname}
+Summary:	%{summary}
+Group:		%{group}
+
+%{?python_provide:%python_provide python-%{srcname}}
+%{?python_provide:%python_provide python2-%{srcname}}
+
+%description -n python2-%{srcname} %{_description}
+Supports Python 2.
+
 
 %if %{with_python3}
-%package -n python3-crypto
+%package -n python%{python3_pkgversion}-%{srcname}
 Summary:	Cryptography library for Python 3
-Group:		Development/Libraries
+Group:		%{group}
 
-%description -n python3-crypto
-PyCrypto is a collection of both secure hash functions (such as MD5 and
-SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
+## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+Provides:   python%{python3_pkgversion}-%{srcname}
 
-This is the Python 3 build of the package.
+%description -n python%{python3_pkgversion}-%{srcname} %{_description}
+Supports Python 3.
 %endif
 
 %prep
@@ -113,13 +130,13 @@ cd -
 %clean
 rm -rf %{buildroot}
 
-%files -f egg-info
+%files -n python2-%{srcname} -f egg-info
 %defattr(-,root,root,-)
 %doc README TODO ACKS ChangeLog LEGAL/ COPYRIGHT Doc/
 %{python_sitearch}/Crypto/
 
 %if %{with_python3}
-%files -n python3-crypto
+%files -n python%{python3_pkgversion}-%{srcname}
 %defattr(-,root,root,-)
 %doc README TODO ACKS ChangeLog LEGAL/ COPYRIGHT Doc/
 %{python3_sitearch}/Crypto/

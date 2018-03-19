@@ -1,9 +1,21 @@
-%global with_python3 0
+%global with_python3 1
 
 # we don't want to provide private python extension libs in either the python2 or python3 dirs
 %global __provides_exclude_from ^(%{python2_sitearch}|%{python3_sitearch})/.*\\.so$
 
 %global checkout 18f5d061558a176f5496aa8e049182c1a7da64f6
+
+%global _description \
+The 0MQ lightweight messaging kernel is a library which extends the \
+standard socket interfaces with features traditionally provided by \
+specialized messaging middle-ware products. 0MQ sockets provide an \
+abstraction of asynchronous message queues, multiple messaging \
+patterns, message filtering (subscriptions), seamless access to \
+multiple transport protocols and more. \
+\
+This package contains the python bindings. 
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %global srcname pyzmq
 %global modname zmq
@@ -12,7 +24,7 @@
 
 Name:           python-zmq
 Version:        15.3.0
-Release:        2%{?dist}
+Release:        4%{?dist}
 Summary:        Software library for fast, message-based applications
 
 Group:          Development/Libraries
@@ -53,66 +65,54 @@ BuildRequires:  python%{python3_pkgversion}-tornado
 %endif
 
 
-%description
-The 0MQ lightweight messaging kernel is a library which extends the
-standard socket interfaces with features traditionally provided by
-specialized messaging middle-ware products. 0MQ sockets provide an
-abstraction of asynchronous message queues, multiple messaging
-patterns, message filtering (subscriptions), seamless access to
-multiple transport protocols and more.
-
-This package contains the python bindings.
+%description    %{_description}
 
 
-%package -n python-zmq-tests
-Summary:        Software library for fast, message-based applications
-Group:          Development/Libraries
+%package -n     python2-zmq
+Summary:        %{summary}
+Group:          %{group}
 License:        LGPLv3+
-Requires:       python-zmq = %{version}-%{release}
-%{?python_provide:%python_provide python-%{modname}-tests}
-%description -n python-zmq-tests
-The 0MQ lightweight messaging kernel is a library which extends the
-standard socket interfaces with features traditionally provided by
-specialized messaging middle-ware products. 0MQ sockets provide an
-abstraction of asynchronous message queues, multiple messaging
-patterns, message filtering (subscriptions), seamless access to
-multiple transport protocols and more.
+%{?python_provide:%python_provide python-zmq}
+%{?python_provide:%python_provide python2-zmq}
 
-This package contains the testsuite for the python bindings.
+%description -n python2-zmq %{_description}
+Python 2 version.
+
+
+%package -n     python2-zmq-tests
+Summary:        %{summary}
+Group:          %{group}
+License:        LGPLv3+
+Requires:       python2-zmq = %{version}-%{release}
+%{?python_provide:%python_provide python-zmq-tests}
+%{?python_provide:%python_provide python2-zmq-tests}
+
+%description -n python2-zmq-tests %{_description}
+Python 2 version.
 
 
 %if 0%{?with_python3}
-%package -n python%{python3_pkgversion}-zmq
-Summary:        Software library for fast, message-based applications
-Group:          Development/Libraries
+%package    -n  python%{python3_pkgversion}-zmq
+Summary:        %{summary}
+Group:          %{group}
 License:        LGPLv3+
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}}
-%description -n python%{python3_pkgversion}-zmq
-The 0MQ lightweight messaging kernel is a library which extends the
-standard socket interfaces with features traditionally provided by
-specialized messaging middle-ware products. 0MQ sockets provide an
-abstraction of asynchronous message queues, multiple messaging
-patterns, message filtering (subscriptions), seamless access to
-multiple transport protocols and more.
+##%{?python_provide:%python_provide python%{python3_pkgversion}-zmq}
+Provides:       python%{python3_pkgversion}-zmq
 
-This package contains the python bindings.
+%description -n python%{python3_pkgversion}-zmq %{_description}
+Python 3 version.
 
 
-%package -n python%{python3_pkgversion}-zmq-tests
-Summary:        Software library for fast, message-based applications
-Group:          Development/Libraries
+%package    -n  python%{python3_pkgversion}-zmq-tests
+Summary:        %{summary}
+Group:          %{group}
 License:        LGPLv3+
 Requires:       python%{python3_pkgversion}-zmq = %{version}-%{release}
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}-tests}
-%description -n python%{python3_pkgversion}-zmq-tests
-The 0MQ lightweight messaging kernel is a library which extends the
-standard socket interfaces with features traditionally provided by
-specialized messaging middle-ware products. 0MQ sockets provide an
-abstraction of asynchronous message queues, multiple messaging
-patterns, message filtering (subscriptions), seamless access to
-multiple transport protocols and more.
+## %{?python_provide:%python_provide python%{python3_pkgversion}-zmq-tests}
+Provides:       python%{python3_pkgversion}-zmq-tests
 
-This package contains the testsuite for the python bindings.
+%description -n python%{python3_pkgversion}-zmq-tests %{_description}
+Python 3 version.
 
 %endif
 
@@ -155,17 +155,11 @@ chmod -x examples/pubsub/topics_sub.py
 
 %install
 %global RPATH /zmq/{backend/cython,devices}
-# Must do the python3 install first because the scripts in /usr/bin are
-# overwritten with every setup.py install (and we want the python2 version
-# to be the default for now).
+%py2_install
 %if 0%{?with_python3}
 %py3_install
-
 chrpath --delete %{buildroot}%{python3_sitearch}%{RPATH}/*.so
 %endif # with_python3
-
-
-%py2_install
 
 chrpath --delete %{buildroot}%{python_sitearch}%{RPATH}/*.so
 
@@ -191,14 +185,14 @@ rm  %{buildroot}%{python2_sitearch}/zmq/asyncio.py \
 %endif
 
 
-%files -n python-%{modname}
+%files -n python2-zmq
 %license COPYING.*
 %doc README.md examples/
 %{python2_sitearch}/%{srcname}-*.egg-info
 %{python2_sitearch}/zmq
 %exclude %{python2_sitearch}/zmq/tests
 
-%files -n python-%{modname}-tests
+%files -n python2-zmq-tests
 %{python2_sitearch}/zmq/tests
 
 %if 0%{?with_python3}
@@ -216,6 +210,12 @@ rm  %{buildroot}%{python2_sitearch}/zmq/asyncio.py \
 
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 15.3.0-4
+- Add support for Python 3
+
+* Tue Jan 16 2018 SaltStack Packaging Team <packaging@saltstack.com> - 15.3.0-3
+- Support for Python 3 on RHEL 7 & 6
+
 * Tue Jul 19 2016 SaltStack Packaging Team <packagin@saltstack.com> - 15.3.0-2
 - Disabled python3, tests and reverted output python2-* to python-*
 

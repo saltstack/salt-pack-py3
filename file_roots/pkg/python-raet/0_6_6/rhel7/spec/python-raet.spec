@@ -1,7 +1,7 @@
 %if ( "0%{?dist}" == "0.amzn1" )
 %global with_python3 0
 %else
-%global with_python3 0
+%global with_python3 1
 %endif
 
 %{!?__python2: %global __python2 /usr/bin/python%{?pybasever}}

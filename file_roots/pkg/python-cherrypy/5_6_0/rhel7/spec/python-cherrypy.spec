@@ -1,10 +1,22 @@
 %if !(0%{?fedora} > 12 || 0%{?rhel} > 5)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %endif
+
+%global with_python3 1
+
+%global _description \
+CherryPy allows developers to build web applications in much the same way \
+they would build any other object-oriented Python program. This usually \
+results in smaller source code developed in less time.
+
+%global srcname cherrypy
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 
 Name:           python-cherrypy
 Version:        5.6.0
-Release:        2%{?dist}
+Release:        4%{?dist}
 Summary:        Pythonic, object-oriented web development framework
 Group:          Development/Libraries
 License:        BSD
@@ -14,6 +26,7 @@ Source0:        http://download.cherrypy.org/cherrypy/%{version}/CherryPy-%{vers
 # tutorial will be shipped as doc instead
 Patch0:         python-cherrypy-tutorial-doc.patch
 Patch1:         python-cherrypy-expose.patch
+Patch2:         python-cherrypy-py34.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -23,25 +36,51 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-nose
 
-%description
-CherryPy allows developers to build web applications in much the same way 
-they would build any other object-oriented Python program. This usually 
-results in smaller source code developed in less time.
+
+%description %{_description}
+
+
+%if 0%{?with_python3}
+%package -n python%{python3_pkgversion}-%{srcname}
+Summary:        %{summary}
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-nose
+##%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+Provides: python%{python3_pkgversion}-%{srcname}
+
+%description -n python%{python3_pkgversion}-%{srcname} %{_description}
+Python 3 version.
+%endif
+
 
 %prep
 %setup -q -n CherryPy-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
-## %{__sed} -i 's/\r//' README.txt cherrypy/tutorial/README.txt cherrypy/tutorial/tutorial.conf
+## %%{__sed} -i 's/\r//' README.txt cherrypy/tutorial/README.txt cherrypy/tutorial/tutorial.conf
 %{__sed} -i 's/\r//' cherrypy/tutorial/README.txt cherrypy/tutorial/tutorial.conf
 
+
 %build
-%{__python} setup.py build
+## %%{__python} setup.py build
+%py2_build
+
+%if 0%{?with_python3}
+%py3_build
+%endif
+
 
 %install
-rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
+## rm -rf $RPM_BUILD_ROOT
+## %%{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
+%py2_install
+%if 0%{?with_python3}
+%py3_install
+%endif
+
 
 %check
 cd cherrypy/test
@@ -50,17 +89,36 @@ cd cherrypy/test
 PYTHONPATH='../../' nosetests -s ./ -e 'test_SIGTERM' -e \
   'test_SIGHUP_tty' -e 'test_file_stream'
 
+
 %clean
 rm -rf $RPM_BUILD_ROOT
+
 
 %files
 %defattr(-,root,root,-)
 ## %doc README.txt
 %doc cherrypy/tutorial
 %{_bindir}/cherryd
-%{python_sitelib}/*
+%{python2_sitelib}/*
+
+
+%if 0%{?with_python3}
+%files -n python%{python3_pkgversion}-%{srcname}
+%defattr(-,root,root,-)
+## %doc README.txt
+%doc cherrypy/tutorial
+%{_bindir}/cherryd
+%{python3_sitelib}/*
+%endif
+
 
 %changelog
+* Thu Feb 08 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-4
+- Adjusted support for Python 3
+
+* Thu Jan 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-3
+- Support for Python 3 on RHEL
+
 * Tue Oct 10 2017 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-2
 - Apply patch from upstream https://github.com/cherrypy/cherrypy/commit/f3c0165a372375d4ce49f70c6b00e1788db845a1
 

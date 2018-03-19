@@ -34,9 +34,9 @@
 %endif  ## %if ( "0%{?dist}" == "0.amzn1" )
 
 
-## Python 2 support if Redhat 7
+## Only enable Python 3 support if Redhat 7
 %if 0%{?rhel} >= 7
-%global with_python3 0
+%global with_python3 1
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 %endif
 
@@ -50,7 +50,7 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: 2018.2.0%{?__rc_ver}
+Version: 2018.3.0%{?__rc_ver}
 Release: 0%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
@@ -1042,10 +1042,7 @@ rm -rf %%{buildroot}
 
 
 %changelog
-* Mon Feb 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.2.0rc1-0
-- Separation of Python 2 and Python 3 builds for Redhat 7
-
-* Fri Feb 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.2.0rc1-0
+* Fri Feb 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-0
 - Development build for Python 3 support
 
 * Tue Jan 30 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2017.7.3-1
