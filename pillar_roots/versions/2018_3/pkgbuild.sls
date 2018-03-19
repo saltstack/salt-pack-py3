@@ -171,6 +171,11 @@ pkgbuild_registry:
         - python34-libnacl
       build_deps:
         - libsodium
+    python-m2crypto:
+      version: 0.28.2-2
+      results:
+        - m2crypto
+        - python34-m2crypto
     python-msgpack:
       version: 0.4.6-2
       results:
