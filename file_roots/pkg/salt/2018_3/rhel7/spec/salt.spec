@@ -1042,7 +1042,7 @@ rm -rf %%{buildroot}
 
 
 %changelog
-* Fri Feb 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0rc1-0
+* Fri Feb 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-0
 - Development build for Python 3 support
 
 * Tue Jan 30 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2017.7.3-1
