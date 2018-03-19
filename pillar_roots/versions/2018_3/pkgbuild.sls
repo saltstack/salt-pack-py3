@@ -203,8 +203,8 @@ pkgbuild_registry:
         - python34-raet
       build_deps:
         - python-ioflo
-      additonal_deps:
         - python-libnacl
+      additonal_deps:
         - python-simplejson
     python-requests:
       version: 2.6.0-2
