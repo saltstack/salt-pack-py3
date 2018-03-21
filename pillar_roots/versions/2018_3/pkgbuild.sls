@@ -135,15 +135,6 @@ pkgbuild_registry:
       results:
         - python2-crypto
         - python34-crypto
-    python-pycryptodome:
-      version: 3.4.3-4
-      results:
-        - python2-pycryptodomex
-        - python34-pycryptodomex
-      build_deps:
-        - libtommath
-        - libtomcrypt
-        - libtomcrypt-devel
     python-enum34:
       version: 1.0-4
       noarch: True
@@ -171,6 +162,13 @@ pkgbuild_registry:
         - python34-libnacl
       build_deps:
         - libsodium
+    python-m2crypto:
+      version: 0.28.2-2
+      results:
+        - m2crypto
+        - python34-m2crypto
+      build_deps:
+        - python-typing
     python-msgpack:
       version: 0.4.6-2
       results:
@@ -187,6 +185,15 @@ pkgbuild_registry:
       results:
         - python2-psutil
         - python34-psutil
+    python-pycryptodome:
+      version: 3.4.3-4
+      results:
+        - python2-pycryptodomex
+        - python34-pycryptodomex
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
     python-pyzmq:
       name: python-zmq
       version: 15.3.0-4
@@ -220,17 +227,22 @@ pkgbuild_registry:
       results:
         - python2-simplejson
         - python34-simplejson
-    python-tornado:
-      version: 4.2.1-2
-      results:
-        - python2-tornado
-        - python34-tornado
     python-timelib:
       version: 0.2.4-3
       noarch: True
       results:
         - python2-timelib
         - python34-timelib
+    python-tornado:
+      version: 4.2.1-2
+      results:
+        - python2-tornado
+        - python34-tornado
+    python-typing:
+      version: 3.6.2-2
+      noarch: True
+      results:
+        - python2-typing
     python-urllib3:
       version: 1.10.4-3
       noarch: True

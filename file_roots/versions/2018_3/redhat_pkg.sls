@@ -10,21 +10,23 @@ include:
     - pkg.python-chardet.2_2_1.rhel7
     - pkg.python-cherrypy.5_6_0.rhel7
     - pkg.python-crypto.2_6_1.rhel7
-    - pkg.python-pycryptodome.3_4_3.rhel7
     - pkg.python-enum34.1_0.rhel7
     - pkg.python-futures.3_0_3.rhel7
     - pkg.python-ioflo.1_3_8.rhel7
     - pkg.python-libcloud.2_0_0.rhel7
     - pkg.python-libnacl.1_4_3.rhel7
+    - pkg.python-m2crypto.0_28_2.rhel7
     - pkg.python-msgpack.0_4_6.rhel7
     - pkg.python-mock.1_0_1.rhel7
+    - pkg.python-pycryptodome.3_4_3.rhel7
     - pkg.python-psutil.2_2_1.rhel7
     - pkg.python-pyzmq.15_3_0.rhel7
     - pkg.python-raet.0_6_6.rhel7
     - pkg.python-requests.2_6_0.rhel7
     - pkg.python-simplejson.3_3_3.rhel7
-    - pkg.python-tornado.4_2_1.rhel7
     - pkg.python-timelib.0_2_4.rhel7
+    - pkg.python-tornado.4_2_1.rhel7
+    - pkg.python-typing.3_6_2.rhel7
     - pkg.python-urllib3.1_10_4.rhel7
     - pkg.python-yaml.3_11.rhel7
     - pkg.salt.2018_3.rhel7
