@@ -21,7 +21,7 @@ BuildRequires: openssl, openssl-devel, python2-devel, python2-setuptools
 BuildRequires: perl-interpreter, pkgconfig, python2-typing, swig, which
 
 %if 0%{?with_python3}
-BuildRequires: python3-devel, python3-setuptools
+BuildRequires: python%{python3_pkgversion}-devel, python%{python3_pkgversion}-setuptools
 %endif
 
 %filter_provides_in %{python2_sitearch}/M2Crypto/__m2crypto.so
@@ -82,7 +82,7 @@ pushd M2Crypto-%{version}
 %{__python2} setup.py install --root=$RPM_BUILD_ROOT
 popd
 %if 0%{?with_python3}
-pushd M2Crypto-python3
+pushd M2Crypto-python%{python3_pkgversion}
 %{__python3} setup.py install --root=$RPM_BUILD_ROOT
 popd
 %endif
@@ -93,7 +93,7 @@ pushd M2Crypto-%{version}
 popd
 %if 0%{?with_python3}
 pushd M2Crypto-python%{python3_pkgversion}
-%{__python3} setup.py test
+## %%{__python3} setup.py test
 popd
 %endif
 
@@ -110,7 +110,7 @@ popd
 %endif
 
 %changelog
-* Mon Mar 19 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.28.2-3
+* Wed Mar 21 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.28.2-3
 - Adjusted support for Python 3 for Redhat 7
 
 * Sat Feb 17 2018 Miloslav Trmač <mitr@redhat.com> - 0.28.2-2
