@@ -2,8 +2,8 @@
 {% import "setup/macros.jinja" as macros with context %}
 {% set pkg_data = salt["pillar.get"]("pkgbuild_registry:" ~ buildcfg.build_release, {}) %}
 {% set force = salt["pillar.get"]("pkgbuild_force.all", False) or salt["pillar.get"]("pkgbuild_force." ~ slspath, False) %}
-{% set sls_name = "python-m2crypto" %}
-{% set pypi_name = "M2crypto" %}
+{% set sls_name = "python-typing" %}
+{% set pypi_name = "typing" %}
 {% set spec_name = pypi_name|lower %}
 
 {% set pkg_info = pkg_data.get(sls_name, {}) %}
@@ -26,7 +26,7 @@
 {{ macros.results(sls_name, pkg_data) }}
 
     - dest_dir: {{buildcfg.build_dest_dir}}
-    - spec: salt://{{slspath}}/spec/m2crypto.spec
+    - spec: salt://{{slspath}}/spec/python2-{{spec_name}}.spec
     - template: jinja
     - tgt: {{buildcfg.build_tgt}}
 
@@ -34,10 +34,7 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/sources/m2crypto-0.27.0-SNI-test-race.patch
-      - salt://{{slspath}}/sources/m2crypto-0.26.4-gcc_macros.patch
-      - salt://{{slspath}}/sources/M2Crypto-0.27.0.tar.gz.asc
-      - salt://{{slspath}}/sources/M2Crypto-0.27.0.tar.gz
+      - salt://{{slspath}}/sources/typing-3.6.2.tar.gz
 ##      - {{ macros.pypi_source(pypi_name, version) }}
 
 {% endif %}
