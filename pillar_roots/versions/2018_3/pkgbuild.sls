@@ -239,10 +239,11 @@ pkgbuild_registry:
         - python2-tornado
         - python34-tornado
     python-typing:
-      version: 3.6.2-2
+      version: 3.5.2.2-3
       noarch: True
       results:
         - python2-typing
+        - python34-typing
     python-urllib3:
       version: 1.10.4-3
       noarch: True
