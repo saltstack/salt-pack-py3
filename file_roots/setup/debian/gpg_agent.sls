@@ -63,13 +63,6 @@ gpg_clear_agent_log:
     - name: {{gpg_agent_log_file}}
 
 
-retrieve_raspbian_keys:
-  cmd.run:
-    - name: |
-        /usr/bin/gpg --keyserver pgpkeys.mit.edu --recv 90FDDD2E
-        /usr/bin/gpg --export --armor 90FDDD2E | apt-key add -
-
-
 manage_priv_key:
   file.managed:
     - name: {{pkg_priv_key_absfile}}
