@@ -50,8 +50,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: 2018.3.0%{?__rc_ver}
-Release: 0%{?dist}
+Version: 2018.3%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -736,69 +736,6 @@ rm -rf %%{buildroot}
 
 # less than RHEL 8 / Fedora 16
 # not sure if RHEL 7 will use systemd yet
-%if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
-
-%preun master
-  if [ $1 -eq 0 ] ; then
-    /sbin/service salt-master stop >/dev/null 2>&1
-  fi
-
-%preun syndic
-  if [ $1 -eq 0 ] ; then
-      /sbin/service salt-syndic stop >/dev/null 2>&1
-  fi
-
-%preun minion
-  if [ $1 -eq 0 ] ; then
-      /sbin/service salt-minion stop >/dev/null 2>&1
-  fi
-
-%preun api
-  if [ $1 -eq 0 ] ; then
-      /sbin/service salt-api stop >/dev/null 2>&1
-  fi
-
-%post master
-  if [ "$1" -ge "2" ] ; then
-    /sbin/service salt-master condrestart >/dev/null 2>&1 || :
-  fi
-
-%post syndic
-  if [ "$1" -ge "2" ] ; then
-    /sbin/service salt-syndic condrestart >/dev/null 2>&1 || :
-  fi
-
-%post minion
-  if [ "$1" -ge "2" ] ; then
-    /sbin/service salt-minion condrestart >/dev/null 2>&1 || :
-  fi
-
-%post api
-  if [ "$1" -ge "2" ] ; then
-    /sbin/service salt-api condrestart >/dev/null 2>&1 || :
-  fi
-
-%postun master
-  if [ "$1" -ge "1" ] ; then
-      /sbin/service salt-master condrestart >/dev/null 2>&1 || :
-  fi
-
-%postun syndic
-  if [ "$1" -ge "1" ] ; then
-      /sbin/service salt-syndic condrestart >/dev/null 2>&1 || :
-  fi
-
-%postun minion
-  if [ "$1" -ge "1" ] ; then
-      /sbin/service salt-minion condrestart >/dev/null 2>&1 || :
-  fi
-
-%postun api
-  if [ "$1" -ge "1" ] ; then
-      /sbin/service salt-api condrestart >/dev/null 2>&1 || :
-  fi
-
-%else
 
 %preun master
 %if 0%{?systemd_preun:1}
@@ -908,11 +845,10 @@ rm -rf %%{buildroot}
   /bin/systemctl daemon-reload &>/dev/null
   [ $1 -gt 0 ] && /bin/systemctl try-restart salt-api.service &>/dev/null || :
 %endif
-%endif  ## %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 
 
 %changelog
-* Mon Mar 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-0
+* Mon Apr 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
 - Development build for Python 3 support
 
 * Tue Jan 30 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2017.7.3-1
