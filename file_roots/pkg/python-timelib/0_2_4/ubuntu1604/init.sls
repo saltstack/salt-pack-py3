@@ -5,13 +5,14 @@
 {% set name = 'python-' ~ pypi_name %}
 {% set name3 = 'python3-' ~ pypi_name %}
 {% set version = '0.2.4' %}
-{% set release_ver = '1' %}
+{% set release_ver = '2' %}
 
 {{name}}-{{version.replace('.', '_')}}:
   pkgbuild.built:
     - runas: {{buildcfg.build_runas}}
     - results: 
       - {{name}}_{{version}}-{{release_ver}}_{{buildcfg.build_arch}}.deb
+      - {{name3}}_{{version}}-{{release_ver}}_{{buildcfg.build_arch}}.deb
       - {{pypi_name}}_{{version}}.orig.tar.gz
       - {{pypi_name}}_{{version}}-{{release_ver}}.dsc
       - {{pypi_name}}_{{version}}-{{release_ver}}.debian.tar.xz

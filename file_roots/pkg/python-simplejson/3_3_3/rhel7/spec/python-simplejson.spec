@@ -2,15 +2,33 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 %endif
 
-# Python3 support is 3.3+ (which was introduced in Fedora 18)
-%if 0%{?fedora} && 0%{?fedora} >= 18
 %global with_python3 1
-%endif
+
+%global srcname             simplejson
+
+%global _description    \
+simplejson is a simple, fast, complete, correct and extensible JSON \
+<http://json.org> encoder and decoder for Python 2.5+. It is pure Python code   \
+with no dependencies, but includes an optional C extension for a serious speed  \
+boost.  \
+\
+The encoder may be subclassed to provide serialization in any kind of   \
+situation, without any special support by the objects to be serialized  \
+(somewhat like pickle). \
+\
+The decoder can handle incoming JSON strings of any specified encoding (UTF-8   \
+by default).    \
+\
+simplejson is the externally maintained development version of the json library \
+included with Python 2.6 and Python 3.0, but maintains backwards compatibility  \
+with Python 2.5.  It gets updated more regularly than the json module in the    \
+python stdlib.                                                              
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 Name:           python-simplejson
-
 Version:        3.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python
 
 Group:          System Environment/Libraries
@@ -25,57 +43,38 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-nose
 BuildRequires: python-sphinx
+
 %if 0%{?with_python3}
-BuildRequires: python3-devel
-BuildRequires: python3-setuptools
-BuildRequires: python3-nose
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-setuptools
+BuildRequires: python%{python3_pkgversion}-nose
 %endif # with_python3
 
 # we don't want to provide private python extension libs
 %global __provides_exclude_from ^(%{python_sitearch}|%{python3_sitearch}).*\\.so$
 
 
-%description
-simplejson is a simple, fast, complete, correct and extensible JSON
-<http://json.org> encoder and decoder for Python 2.5+. It is pure Python code
-with no dependencies, but includes an optional C extension for a serious speed
-boost.
+%description    %{_description}
 
-The encoder may be subclassed to provide serialization in any kind of
-situation, without any special support by the objects to be serialized
-(somewhat like pickle).
+%package    -n  python2-simplejson
+Summary:        Simple, fast, extensible JSON encoder/decoder for Python2
+Group:          %{group}
+%{?python_provide:%python_provide python-%{srcname}}
+%{?python_provide:%python_provide python2-%{srcname}}
 
-The decoder can handle incoming JSON strings of any specified encoding (UTF-8
-by default).
+%description -n python2-simplejson %{_description}
+Supports Python 2.
 
-simplejson is the externally maintained development version of the json library
-included with Python 2.6 and Python 3.0, but maintains backwards compatibility
-with Python 2.5.  It gets updated more regularly than the json module in the
-python stdlib.
 
 %if 0%{?with_python3}
-%package -n python3-simplejson
+%package    -n  python%{python3_pkgversion}-simplejson
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python3
-Group:          System Environment/Libraries
+Group:          %{group}
+##%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+Provides:       python%{python3_pkgversion}-%{srcname}
 
-%description -n python3-simplejson
-simplejson is a simple, fast, complete, correct and extensible JSON
-<http://json.org> encoder and decoder for Python 2.5+ and python3.3+ It is pure
-Python code with no dependencies, but includes an optional C extension for a
-serious speed boost.
-
-The encoder may be subclassed to provide serialization in any kind of
-situation, without any special support by the objects to be serialized
-(somewhat like pickle).
-
-The decoder can handle incoming JSON strings of any specified encoding (UTF-8
-by default).
-
-simplejson is the externally maintained development version of the json library
-included with Python 2.6 and Python 3.0, but maintains backwards compatibility
-with Python 2.5.  It gets updated more regularly than the json module in the
-python stdlib.
-
+%description -n python%{python3_pkgversion}-simplejson %{_description}
+Supports Python 3.
 %endif # with_python3
 
 %prep
@@ -122,19 +121,22 @@ popd
 rm -rf %{buildroot}
 
 
-%files
+%files -n  python2-simplejson
 %defattr(-,root,root,-)
 %doc docs LICENSE.txt
 %{python_sitearch}/*
 
 %if 0%{?with_python3}
-%files -n python3-simplejson
+%files -n python%{python3_pkgversion}-simplejson
 %defattr(-,root,root,-)
 %doc LICENSE.txt
 %{python3_sitearch}/*
 %endif # python3
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.3.3-2
+- Add support for Python 3
+
 * Wed Feb 19 2014 Luke Macken <lmacken@redhat.com> - 3.3.3-1
 - Update to 3.3.3 (#960949)
 

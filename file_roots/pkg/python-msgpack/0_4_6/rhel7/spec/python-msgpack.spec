@@ -1,8 +1,13 @@
 %global srcname msgpack
 
-%if 0%{?fedora}
+%if 0%{?fedora} || %{rhel} >= 7
 %global with_python3 1
 %endif
+
+%global _description \
+MessagePack is a binary-based efficient data interchange format that is \
+focused on high performance. It is like JSON, but very fast and small.  \
+This is a Python (de)serializer for MessagePack.
 
 %if 0%{?rhel} && 0%{?rhel} <= 6
 %{!?__python2: %global __python2 /usr/bin/python2}
@@ -10,9 +15,11 @@
 %{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 %endif
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 Name:           python-%{srcname}
 Version:        0.4.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Python MessagePack (de)serializer
 
 License:        ASL 2.0
@@ -32,22 +39,25 @@ BuildRequires:  pytest
 %filter_setup
 }
 
-%description
-MessagePack is a binary-based efficient data interchange format that is
-focused on high performance. It is like JSON, but very fast and small.
-This is a Python (de)serializer for MessagePack.
+%description %{_description}
+
+%package -n     python2-%{srcname}
+Summary:        %{summary}
+%{?python_provide:%python_provide python-%{srcname}}
+%{?python_provide:%python_provide python2-%{srcname}}
+
+%description -n python2-%{srcname} %{_description}
 
 %if 0%{?with_python3}
-%package -n python3-%{srcname}
-Summary:        A Python MessagePack (de)serializer
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-pytest
+%package -n     python%{python3_pkgversion}-%{srcname}
+Summary:        %{summary} 
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-pytest
+## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+Provides:       python%{python3_pkgversion}-%{srcname}
 
-%description -n python3-%{srcname}
-MessagePack is a binary-based efficient data interchange format that is
-focused on high performance. It is like JSON, but very fast and small.
-This is a Python (de)serializer for MessagePack.
+%description -n python%{python3_pkgversion}-%{srcname} %{_description}
 %endif
 
 %prep
@@ -61,22 +71,18 @@ find %{py3dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python3}|'
 
 
 %build
-%{__python2} setup.py build
+%py2_build
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py build
-popd
+%py3_build
 %endif
 
 
 %install
-%{__python2} setup.py install --skip-build --root %{buildroot}
+%py2_install
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py install --skip-build --root %{buildroot}
-popd
+%py3_install
 %endif
 
 %check
@@ -91,19 +97,22 @@ popd
 %endif # with_python3
 
 
-%files
+%files -n python2-%{srcname}
 %doc COPYING README.rst
 %{python2_sitearch}/%{srcname}/
 %{python2_sitearch}/%{srcname}*.egg-info
 
 %if 0%{?with_python3}
-%files -n python3-%{srcname}
+%files -n python%{python3_pkgversion}-%{srcname}
 %doc COPYING README.rst
 %{python3_sitearch}/%{srcname}/
 %{python3_sitearch}/%{srcname}*.egg-info
 %endif
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.4.6-2
+- Add support for Python 3
+
 * Fri Mar 13 2015 Ken Dreyer <ktdreyer@ktdreyer.com> - 0.4.6-1
 - Update to latest upstream version 0.4.6 (RHBZ #1201568)
 

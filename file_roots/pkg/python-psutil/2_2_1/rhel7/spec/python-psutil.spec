@@ -1,7 +1,17 @@
-%if 0%{?fedora}
+
 %global with_python3 1
-%endif
+
 %global short_name psutil
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%global _description    \
+psutil is a module providing an interface for retrieving information on all \
+running processes and system utilization (CPU, memory, disks, network, users) in    \
+a portable way by using Python, implementing many functionalities offered by    \
+command line tools such as: ps, top, df, kill, free, lsof, free, netstat,   \
+ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
+
 
 # Filter Python modules from Provides
 %{?filter_setup:
@@ -11,7 +21,7 @@
 
 Name:           python-psutil
 Version:        2.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A process and system utilities module for Python
 
 Group:          Development/Languages
@@ -20,34 +30,38 @@ URL:            http://psutil.googlecode.com/
 Source0:        https://pypi.python.org/packages/source/p/%{short_name}/%{short_name}-%{version}.tar.gz
 
 BuildRequires:  python2-devel
+
 %if 0%{?with_python3}
-BuildRequires:  python3-devel
+BuildRequires:  python%{python3_pkgversion}-devel
 %endif
 
-%description
-psutil is a module providing an interface for retrieving information on all
-running processes and system utilization (CPU, memory, disks, network, users) in
-a portable way by using Python, implementing many functionalities offered by
-command line tools such as: ps, top, df, kill, free, lsof, free, netstat,
-ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
+
+%description    %{_description}
+
+%package    -n  python2-psutil
+Summary:        %{summary}
+Group:          %{group}
+%{?python_provide:%python_provide python-%{short_name}}
+%{?python_provide:%python_provide python2-%{short_name}}
+
+%description -n python2-psutil %{_description}
+Supports Python 2.
 
 
 %if 0%{?with_python3}
-%package -n python3-psutil
-Summary:        A process and system utilities module for Python 3
-Group:          Development/Languages
+%package    -n  python%{python3_pkgversion}-psutil
+Summary:        %{summary}
+Group:          %{group}
+## %{?python_provide:%python_provide python%{python3_pkgversion}-%{short_name}}
+Provides:       python%{python3_pkgversion}-%{short_name}
 
-%description -n python3-psutil
-psutil is a module providing an interface for retrieving information on all
-running processes and system utilization (CPU, memory, disks, network, users) in
-a portable way by using Python 3, implementing many functionalities offered by
-command line tools such as: ps, top, df, kill, free, lsof, free, netstat,
-ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
+%description -n python%{python3_pkgversion}-psutil %{_description}
+Supports Python 3.
 %endif
 
 
 %prep
-%setup -q -n %{short_name}-%{version}
+%autosetup -n %{short_name}-%{version}
 
 # Remove shebangs
 for file in psutil/*.py; do
@@ -63,30 +77,23 @@ cp -a . %{py3dir}
 
 
 %build
-CFLAGS=$RPM_OPT_FLAGS %{__python} setup.py build
+CFLAGS=$RPM_OPT_FLAGS %py2_build
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-CFLAGS=$RPM_OPT_FLAGS %{__python3} setup.py build
-popd
+
+CFLAGS=$RPM_OPT_FLAGS %py3_build
 %endif
 
 
 %install
-%{__python} setup.py install \
-  --skip-build \
-  --root $RPM_BUILD_ROOT
+%py2_install
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py install \
-  --skip-build \
-  --root $RPM_BUILD_ROOT
-popd
+%py3_install
 %endif
 
 
-%files
+%files -n python2-psutil
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc CREDITS HISTORY.rst README.rst TODO
@@ -96,7 +103,7 @@ popd
 
 
 %if 0%{?with_python3}
-%files -n python3-psutil
+%files -n python%{python3_pkgversion}-psutil
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc CREDITS HISTORY.rst README.rst TODO
@@ -107,6 +114,10 @@ popd
 
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.2.1-2
+- Add support for Python 3
+
+
 * Wed Dec 09 2015 Ralph Bean <rbean@redhat.com> - 2.2.1-1
 - Update to 2.2.1 for https://bugzilla.redhat.com/1288221
 - Update names of %%doc files.

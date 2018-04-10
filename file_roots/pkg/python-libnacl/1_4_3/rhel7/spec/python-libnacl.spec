@@ -1,20 +1,25 @@
-%if 0%{?fedora} > 12 || 0%{?rhel} > 8
 %global with_python3 1
-%endif
 
-%if 0%{?rhel} == 5
-%global pybasever 2.6
-%endif
 
 %{!?__python2: %global __python2 /usr/bin/python%{?pybasever}}
 %{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 %{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
+%global _description \
+This library is used to gain direct access to the functions exposed by Daniel \
+J. Bernstein's nacl library via libsodium or tweetnacl. It has been constructed \
+to maintain extensive documentation on how to use nacl as well as being \
+completely portable. The file in libnacl/__init__.py can be pulled out and \
+placed directly in any project to give a single file binding to all of nacl.
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 %global srcname libnacl
+
 
 Name:           python-%{srcname}
 Version:        1.4.3
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        Python bindings for libsodium/tweetnacl based on ctypes
 
 Group:          Development/Libraries
@@ -25,64 +30,37 @@ Source0:        https://pypi.python.org/packages/source/l/%{srcname}/%{srcname}-
 BuildRoot:      %{_tmppath}/%{srcname}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
+
+%description %{_description}
+
+%package -n python2-%{srcname}
+Summary:        %{summary}
 BuildRequires:  libsodium
 Requires:       libsodium
 
-%if ! (0%{?rhel} == 5)
 BuildRequires:  python
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
-%endif
+%{?python_provide:%python_provide python-%{srcname}}
+%{?python_provide:%python_provide python2-%{srcname}}
+
+%description -n python2-%{srcname} %{_description}
+Python 2 version.
+
 
 %if 0%{?with_python3}
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-%endif
-
-%description
-This library is used to gain direct access to the functions exposed by Daniel
-J. Bernstein's nacl library via libsodium or tweetnacl. It has been constructed
-to maintain extensive documentation on how to use nacl as well as being
-completely portable. The file in libnacl/__init__.py can be pulled out and
-placed directly in any project to give a single file binding to all of nacl.
-
-This is the Python 2 build of the module.
-
-%if 0%{?with_python3}
-%package -n python3-%{srcname}
-Summary:  Python bindings for libsodium/tweetnacl based on ctypes
-Group:    Development/Libraries
-Requires: libsodium
-
-%description -n python3-%{srcname}
-This library is used to gain direct access to the functions exposed by Daniel
-J. Bernstein's nacl library via libsodium or tweetnacl. It has been constructed
-to maintain extensive documentation on how to use nacl as well as being
-completely portable. The file in libnacl/__init__.py can be pulled out and
-placed directly in any project to give a single file binding to all of nacl.
-
-This is the Python 3 build of the module.
-%endif
-
-%if 0%{?rhel} == 5
-%package -n python26-%{srcname}
-Summary:        Python bindings for libsodium/tweetnacl based on ctypes
-Group:          Development/Libraries
-BuildRequires:  python26
-BuildRequires:  libsodium
-BuildRequires:  python26-devel
-Requires:       python26
+%package -n python%{python3_pkgversion}-%{srcname}
+Summary:        %{summary}
 Requires:       libsodium
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+Provides: python%{python3_pkgversion}-%{srcname}
 
-%description -n python26-%{srcname}
-This library is used to gain direct access to the functions exposed by Daniel
-J. Bernstein's nacl library via libsodium or tweetnacl. It has been constructed
-to maintain extensive documentation on how to use nacl as well as being
-completely portable. The file in libnacl/__init__.py can be pulled out and
-placed directly in any project to give a single file binding to all of nacl.
-
-This is the Python 2 build of the module.
+%description -n python%{python3_pkgversion}-%{srcname} %{_description}
+Python 3 version.
 %endif
+
 
 %prep
 %setup -q -n %{srcname}-%{version}
@@ -92,47 +70,47 @@ rm -rf %{py3dir}
 cp -a . %{py3dir}
 %endif
 
-%build
-%{__python2} setup.py build
 
+%build
+%py2_build
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py build
-popd
+%py3_build
 %endif
+
 
 %install
 rm -rf %{buildroot}
-%{__python2} setup.py install --skip-build --root %{buildroot}
+%py2_install
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py install --skip-build --root %{buildroot}
-popd
+%py3_install
 %endif
+
 
 %clean
 rm -rf %{buildroot}
 
-%if 0%{?rhel} == 5
-%files -n python26-%{srcname}
-%defattr(-,root,root,-)
-%{python2_sitelib}/*
-%else
-%files
+
+%files -n python2-%{srcname}
 %defattr(-,root,root,-)
 %{python2_sitelib}/*
 %license LICENSE
-%endif
 
 %if 0%{?with_python3}
-%files -n python3-%{srcname}
+%files -n python%{python3_pkgversion}-%{srcname}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 %license LICENSE
 %endif
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.3-3
+- Add support for Python 3
+
+* Tue Jan 16 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.3-2
+- Support for Python 3 on RHEL 7 & 6
+- Removed support for RHEL 5
+
 * Wed Aug  5 2015 Packaging <pqackaging@saltstack.com> - 1.4.3-1
 - Updated to 1.4.3
 

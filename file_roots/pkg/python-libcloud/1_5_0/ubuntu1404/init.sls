@@ -3,8 +3,9 @@
 
 {% set pypi_name = 'libcloud' %}
 {% set name = 'python-' ~ pypi_name %}
+{% set name3 = 'python3-' ~ pypi_name %}
 {% set version = '1.5.0' %}
-{% set release_ver = '1' %}
+{% set release_ver = '2' %}
 {% set release_nameadd = '+ds' %}
 
 {{name}}-{{version.replace('.', '_')}}:
@@ -12,6 +13,7 @@
     - runas: {{buildcfg.build_runas}}
     - results:
       - {{name}}_{{version}}{{release_nameadd}}-{{release_ver}}_all.deb
+      - {{name3}}_{{version}}{{release_nameadd}}-{{release_ver}}_all.deb
       - {{pypi_name}}_{{version}}{{release_nameadd}}.orig.tar.bz2
       - {{pypi_name}}_{{version}}{{release_nameadd}}-{{release_ver}}.dsc
       - {{pypi_name}}_{{version}}{{release_nameadd}}-{{release_ver}}.debian.tar.gz
