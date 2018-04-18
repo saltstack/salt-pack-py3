@@ -106,7 +106,7 @@ BuildRequires: python%{?__python_ver}-tornado >= 4.2.1
 BuildRequires: python%{?__python_ver}-futures >= 2.0
 BuildRequires: python%{?__python_ver}-crypto >= 2.6.1
 BuildRequires: python%{?__python_ver}-jinja2
-BuildRequires: python%{?__python_ver}-msgpack > 0.3
+BuildRequires: python%{?__python_ver}-msgpack >= 0.4
 BuildRequires: python%{?__python_ver}-pip
 BuildRequires: python%{?__python_ver}-zmq
 
@@ -137,7 +137,7 @@ BuildRequires: python%{?__python_ver}-devel
 
 
 Requires: python%{?__python_ver}-jinja2
-Requires: python%{?__python_ver}-msgpack > 0.3
+Requires: python%{?__python_ver}-msgpack >= 0.4
 Requires: python%{?__python_ver}-crypto >= 2.6.1
 
 %if ( "0%{?dist}" == "0.amzn1" )
@@ -194,7 +194,7 @@ BuildRequires: python%{python3_pkgversion}-PyYAML
 BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
-Requires: python%{python3_pkgversion}-msgpack > 0.3
+Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
@@ -848,6 +848,9 @@ rm -rf %%{buildroot}
 
 
 %changelog
+* Wed Apr 18 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.x-0
+- Revised minimum msgpack version >= 0.4
+
 * Mon Apr 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
 - Development build for Python 3 support
 
