@@ -18,7 +18,7 @@ include:
     - pkg.python-m2crypto.0_28_2.rhel7
     - pkg.python-msgpack.0_4_6.rhel7
     - pkg.python-mock.1_0_1.rhel7
-    - pkg.python-pycryptodome.3_4_3.rhel7
+    - pkg.python-pycryptodome.3_4_11.rhel7
     - pkg.python-psutil.2_2_1.rhel7
     - pkg.python-pyzmq.15_3_0.rhel7
     - pkg.python-raet.0_6_6.rhel7
@@ -47,7 +47,7 @@ include:
     - pkg.python-cherrypy.5_6_0.rhel6
     - pkg.python-crypto.2_6_1.rhel6
 {% if buildcfg.build_arch == 'x86_64' %}
-    - pkg.python-pycryptodome.3_4_3.rhel6
+    - pkg.python-pycryptodome.3_4_11.rhel6
 {% endif %}
     - pkg.python-enum34.1_0.rhel6
     - pkg.python-futures.3_0_3.rhel6
