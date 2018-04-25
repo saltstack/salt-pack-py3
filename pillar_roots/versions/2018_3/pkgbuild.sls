@@ -158,7 +158,7 @@ pkgbuild_registry:
       version: 1.6.1-1
       noarch: True
       results:
-        - python2-libnacl
+        - python-libnacl
         - python34-libnacl
       build_deps:
         - libsodium
@@ -203,7 +203,7 @@ pkgbuild_registry:
       build_deps:
         - zeromq
     python-raet:
-      version: 0.6.6-4
+      version: 0.6.6-5
       noarch: True
       results:
         - python2-raet
