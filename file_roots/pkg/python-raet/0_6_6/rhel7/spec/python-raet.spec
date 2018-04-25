@@ -27,7 +27,7 @@ A high level, stack based communication protocol for network and IPC communicati
 
 Name:       python-%{srcname}
 Version:    0.6.6
-Release:    4%{?dist}
+Release:    5%{?dist}
 Summary:    Reliable Asynchronous Event Transport Protocol
 
 License:    ASL 2.0
@@ -48,7 +48,7 @@ BuildRequires:  python%{?__python_ver}-ioflo >= 1.3.8-1
 Requires:  python%{?__python_ver}-ioflo >= 1.3.8-1
 Requires:  python%{?__python_ver}-ioflo >= 1.3.8-1
 %else
-BuildRequires:  python2-libnacl >= 1.4.3-1
+BuildRequires:  python-libnacl >= 1.4.3-1
 BuildRequires:  python2-ioflo >= 1.3.8-1
 Requires:  python2-ioflo >= 1.3.8-1
 Requires:  python2-ioflo >= 1.3.8-1
@@ -160,6 +160,9 @@ rm -rf %{buildroot}%{_bindir}/*
 
 
 %changelog
+* Tue Apr 24 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.6-5
+- Updated build requires for libnacl
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.6-4
 - Add support for Python 3
 
