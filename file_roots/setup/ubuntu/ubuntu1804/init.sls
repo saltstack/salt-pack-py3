@@ -1,7 +1,8 @@
 # Import base config
 {% import "setup/ubuntu/map.jinja" as build_cfg %}
 
-{% set os_codename = 'xenial' %}
+{% set os_codename = 'bionic' %}
+
 {% set prefs_text = 'Package: *
         Pin: origin ""
         Pin-Priority: 1001
