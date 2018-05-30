@@ -198,7 +198,7 @@ Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
-Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 Requires: python%{python3_pkgversion}-PyYAML
