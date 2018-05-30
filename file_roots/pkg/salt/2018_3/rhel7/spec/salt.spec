@@ -102,7 +102,7 @@ Requires: yum-utils
 %if ! 0%{?with_python3}
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
-BuildRequires: python%{?__python_ver}-tornado >= 4.2.1
+BuildRequires: python%{?__python_ver}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0
 BuildRequires: python%{?__python_ver}-futures >= 2.0
 BuildRequires: python%{?__python_ver}-crypto >= 2.6.1
 BuildRequires: python%{?__python_ver}-jinja2
@@ -155,7 +155,7 @@ Requires: PyYAML
 
 Requires: python%{?__python_ver}-zmq
 Requires: python%{?__python_ver}-markupsafe
-Requires: python%{?__python_ver}-tornado >= 4.2.1
+Requires: python%{?__python_ver}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0
 Requires: python%{?__python_ver}-futures >= 2.0
 Requires: python%{?__python_ver}-six
 Requires: python%{?__python_ver}-psutil
@@ -198,7 +198,7 @@ Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
-Requires: python%{python3_pkgversion}-tornado >= 4.2.1
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 Requires: python%{python3_pkgversion}-PyYAML
