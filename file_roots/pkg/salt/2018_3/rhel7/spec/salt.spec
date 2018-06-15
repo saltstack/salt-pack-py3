@@ -50,8 +50,13 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
+<<<<<<< HEAD:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 Version: 2018.3%{?__rc_ver}
 Release: 1%{?dist}
+=======
+Version: 2018.3.0%{?__rc_ver}
+Release: 0%{?dist}
+>>>>>>> develop:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -106,7 +111,7 @@ BuildRequires: python%{?__python_ver}-tornado >= 4.2.1
 BuildRequires: python%{?__python_ver}-futures >= 2.0
 BuildRequires: python%{?__python_ver}-crypto >= 2.6.1
 BuildRequires: python%{?__python_ver}-jinja2
-BuildRequires: python%{?__python_ver}-msgpack > 0.3
+BuildRequires: python%{?__python_ver}-msgpack >= 0.4
 BuildRequires: python%{?__python_ver}-pip
 BuildRequires: python%{?__python_ver}-zmq
 
@@ -137,7 +142,7 @@ BuildRequires: python%{?__python_ver}-devel
 
 
 Requires: python%{?__python_ver}-jinja2
-Requires: python%{?__python_ver}-msgpack > 0.3
+Requires: python%{?__python_ver}-msgpack >= 0.4
 Requires: python%{?__python_ver}-crypto >= 2.6.1
 
 %if ( "0%{?dist}" == "0.amzn1" )
@@ -155,7 +160,11 @@ Requires: PyYAML
 
 Requires: python%{?__python_ver}-zmq
 Requires: python%{?__python_ver}-markupsafe
+<<<<<<< HEAD:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 Requires: python%{?__python_ver}-tornado >= 4.2.1
+=======
+Requires: python%{?__python_ver}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0
+>>>>>>> develop:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 Requires: python%{?__python_ver}-futures >= 2.0
 Requires: python%{?__python_ver}-six
 Requires: python%{?__python_ver}-psutil
@@ -194,11 +203,19 @@ BuildRequires: python%{python3_pkgversion}-PyYAML
 BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
+<<<<<<< HEAD:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 Requires: python%{python3_pkgversion}-msgpack > 0.3
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-tornado >= 4.2.1
+=======
+Requires: python%{python3_pkgversion}-msgpack >= 0.4
+Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+Requires: python%{python3_pkgversion}-zmq
+Requires: python%{python3_pkgversion}-markupsafe
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
+>>>>>>> develop:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 Requires: python%{python3_pkgversion}-PyYAML
@@ -396,6 +413,7 @@ cd $RPM_BUILD_DIR/%{name}-%{version}
 
 pushd %{py3dir}
 %py3_install
+<<<<<<< HEAD:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -457,6 +475,8 @@ popd
 ## Python 2
 
 %py2_install
+=======
+>>>>>>> develop:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -482,6 +502,70 @@ install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
 install -p -m 0640 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
 install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
 install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/salt/proxy
+<<<<<<< HEAD:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
+=======
+
+# Add the unit files
+mkdir -p %{buildroot}%{_unitdir}
+install -p -m 0644 %{SOURCE6} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE7} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE8} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE9} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/
+
+# Logrotate
+install -p %{SOURCE10} .
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
+install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
+
+# Bash completion
+mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d/
+install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/bash_completion.d/salt.bash
+
+# Fish completion (TBD remove -v)
+mkdir -p %{buildroot}%{fish_dir}
+install -p -m 0644  %{SOURCE13} %{buildroot}%{fish_dir}/salt.fish
+install -p -m 0644  %{SOURCE14} %{buildroot}%{fish_dir}/salt_common.fish
+install -p -m 0644  %{SOURCE15} %{buildroot}%{fish_dir}/salt-call.fish
+install -p -m 0644  %{SOURCE16} %{buildroot}%{fish_dir}/salt-cp.fish
+install -p -m 0644  %{SOURCE17} %{buildroot}%{fish_dir}/salt-key.fish
+install -p -m 0644  %{SOURCE18} %{buildroot}%{fish_dir}/salt-master.fish
+install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
+install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
+install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
+
+popd
+
+%else
+## Python 2
+
+%py2_install
+
+# Add some directories
+install -d -m 0755 %{buildroot}%{_var}/log/salt
+touch %{buildroot}%{_var}/log/salt/minion
+touch %{buildroot}%{_var}/log/salt/master
+install -d -m 0755 %{buildroot}%{_var}/cache/salt
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/master.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/minion.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/master
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/minion
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
+
+# Add the config files
+install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
+install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
+install -p -m 0640 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
+install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
+install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/salt/proxy
+>>>>>>> develop:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 mkdir -p %{buildroot}%{_initrddir}
@@ -848,6 +932,12 @@ rm -rf %%{buildroot}
 
 
 %changelog
+<<<<<<< HEAD:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
+=======
+* Wed Apr 18 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.x-0
+- Revised minimum msgpack version >= 0.4
+
+>>>>>>> develop:file_roots/pkg/salt/2018_3/rhel7/spec/salt.spec
 * Mon Apr 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
 - Development build for Python 3 support
 

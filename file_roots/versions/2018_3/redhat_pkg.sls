@@ -14,11 +14,19 @@ include:
     - pkg.python-futures.3_0_3.rhel7
     - pkg.python-ioflo.1_3_8.rhel7
     - pkg.python-libcloud.2_0_0.rhel7
+<<<<<<< HEAD
     - pkg.python-libnacl.1_4_3.rhel7
     - pkg.python-m2crypto.0_28_2.rhel7
     - pkg.python-msgpack.0_4_6.rhel7
     - pkg.python-mock.1_0_1.rhel7
     - pkg.python-pycryptodome.3_4_3.rhel7
+=======
+    - pkg.python-libnacl.1_6_1.rhel7
+    - pkg.python-m2crypto.0_28_2.rhel7
+    - pkg.python-msgpack.0_4_6.rhel7
+    - pkg.python-mock.1_0_1.rhel7
+    - pkg.python-pycryptodome.3_6_1.rhel7
+>>>>>>> develop
     - pkg.python-psutil.2_2_1.rhel7
     - pkg.python-pyzmq.15_3_0.rhel7
     - pkg.python-raet.0_6_6.rhel7
@@ -32,6 +40,7 @@ include:
     - pkg.salt.2018_3.rhel7
     - pkg.zeromq.4_1_4.rhel7
 
+<<<<<<< HEAD
 {% elif buildcfg.build_release == 'rhel6' %}
 
     - pkg.babel.0_9_4.rhel6
@@ -77,6 +86,8 @@ include:
     - pkg.yum-utils.1_1_30.rhel6
     - pkg.zeromq.4_0_5.rhel6
 
+=======
+>>>>>>> develop
 {% elif buildcfg.build_release == 'fedora' %}
 
     - pkg.salt.2018_3.fedora
