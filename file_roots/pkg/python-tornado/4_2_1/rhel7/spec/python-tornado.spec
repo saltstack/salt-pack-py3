@@ -1,12 +1,22 @@
-%if 0%{?fedora}
+
 %global with_python3 1
-%endif
+
+%global _description    \
+Tornado is an open source version of the scalable, non-blocking web \
+server and tools.   \
+\
+The framework is distinct from most mainstream web server frameworks    \
+(and certainly most Python frameworks) because it is non-blocking and   \
+reasonably fast. Because it is non-blocking and uses epoll, it can  \
+handle thousands of simultaneous standing connections, which means it is \
+ideal for real-time web services.
+
 
 %global pkgname tornado
 
 Name:           python-%{pkgname}
 Version:        4.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -21,49 +31,47 @@ BuildRequires:  python2-devel
 BuildRequires:  python-backports-ssl_match_hostname
 Requires:       python-backports-ssl_match_hostname
 Requires:       python-pycurl
+
 %if 0%{?with_python3}
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-devel
 %endif
 
-%description
-Tornado is an open source version of the scalable, non-blocking web
-server and tools.
+%description    %{_description}
 
-The framework is distinct from most mainstream web server frameworks
-(and certainly most Python frameworks) because it is non-blocking and
-reasonably fast. Because it is non-blocking and uses epoll, it can
-handle thousands of simultaneous standing connections, which means it is
-ideal for real-time web services.
+%package    -n  python2-%{pkgname}
+Summary:       %{summary}
+%{?python_provide:%python_provide python-%{pkgname}}
+%{?python_provide:%python_provide python2-%{pkgname}}
 
-%package doc
+%description -n python2-%{pkgname} %{_description}
+Supports Python 2.
+
+%package    -n  python2-%{pkgname}-doc
 Summary:        Examples for python-tornado
 Group:          Documentation
 Requires:       python-tornado = %{version}-%{release}
 
-%description doc
+%description -n python2-%{pkgname}-doc
 Tornado is an open source version of the scalable, non-blocking web
 server and and tools. This package contains some example applications.
 
+
 %if 0%{?with_python3}
-%package -n python3-tornado
-Summary:        Scalable, non-blocking web server and tools
-%description -n python3-tornado
-Tornado is an open source version of the scalable, non-blocking web
-server and tools.
+%package    -n  python%{python3_pkgversion}-tornado
+Summary:        %{summary} 
+## %{?python_provide:%python_provide python%{python3_pkgversion}-%{pkgname}}
+Provides:       python%{python3_pkgversion}-%{pkgname}
 
-The framework is distinct from most mainstream web server frameworks
-(and certainly most Python frameworks) because it is non-blocking and
-reasonably fast. Because it is non-blocking and uses epoll, it can
-handle thousands of simultaneous standing connections, which means it is
-ideal for real-time web services.
+%description -n python%{python3_pkgversion}-tornado %{_description}
+Supports Python 3.
 
-%package -n python3-tornado-doc
+%package    -n  python%{python3_pkgversion}-tornado-doc
 Summary:        Examples for python-tornado
 Group:          Documentation
-Requires:       python3-tornado = %{version}-%{release}
+Requires:       python%{python3_pkgversion}-tornado = %{version}-%{release}
 
-%description -n python3-tornado-doc
+%description -n python%{python3_pkgversion}-tornado-doc
 Tornado is an open source version of the scalable, non-blocking web
 server and and tools. This package contains some example applications.
 
@@ -124,28 +132,31 @@ popd
     popd
 %endif
 
-%files
+%files -n python2-%{pkgname}
 %doc python2/README.rst python2/PKG-INFO
 
 %{python2_sitearch}/%{pkgname}/
 %{python2_sitearch}/%{pkgname}-%{version}-*.egg-info
 
-%files doc
+%files  -n python2-%{pkgname}-doc
 %doc python2/demos
 
 %if 0%{?with_python3}
-%files -n python3-tornado
+%files -n python%{python3_pkgversion}-tornado
 %doc python3/README.rst python3/PKG-INFO
 
 %{python3_sitearch}/%{pkgname}/
 %{python3_sitearch}/%{pkgname}-%{version}-*.egg-info
 
-%files -n python3-tornado-doc
+%files -n python%{python3_pkgversion}-tornado-doc
 %doc python3/demos
 %endif
 
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.1-2
+- Add support for Python 3
+
 * Thu Aug 20 2015 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.1-1
 - Picking up security fix for 4.2.1-1
 

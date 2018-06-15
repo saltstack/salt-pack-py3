@@ -1,5 +1,9 @@
 # set version to build
-{% set build_version = '2017_7_4' %}
+<<<<<<< HEAD
+{% set build_version = '2018_3_0' %}
+=======
+{% set build_version = '2018_3_1' %}
+>>>>>>> develop
 
 
 {% if build_version != '' %}

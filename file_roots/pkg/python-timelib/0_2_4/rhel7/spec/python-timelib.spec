@@ -1,27 +1,39 @@
-%if 0%{?fedora} > 12
 %global with_python3 1
-%else
-
-%if 0%{?rhel} < 7
-%global pybasever 2.6
-%endif
 
 %{!?__python2: %global __python2 /usr/bin/python%{?pybasever}}
 %{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 %{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
+
+%if 0%{?rhel} == 6
+%global with_explicit_python27 1
+%global pybasever 2.7
+%global __python_ver 27
+%global __python %{_bindir}/python%{?pybasever}
+%global __python2 %{_bindir}/python%{?pybasever}
+%global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+%global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
+%global __os_install_post %{__python27_os_install_post}
 %endif
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 
 %define debug_package %{nil}
 
+%global _description \
+timelib is a short wrapper around phps internal timelib modules \
+It currently only provides a few functions: \
+\
+timelib.strtodatetime \
+timelib.strtotime
 
 %global srcname timelib
 
-Name:           python-%{srcname}
+Name:           python%{?__python_ver}-%{srcname}
 Version:        0.2.4
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        Parse English textual date descriptions
-
 Group:          Development/Languages/Python
 
 ## License:        PHP and zlib
@@ -33,20 +45,9 @@ Source0:        http://pypi.python.org/packages/source/t/%{srcname}/%{srcname}-%
 BuildRoot:      %{_tmppath}/%{srcname}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
-%if 0%{?rhel} == 5
-BuildRequires:  python26
-BuildRequires:  python26-devel
-Requires:       python26
-%else
 
-BuildRequires:  python-devel
-BuildRequires:  python-setuptools
-%endif
-
-%if 0%{?with_python3}
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-%endif
+BuildRequires:  python%{?__python_ver}-devel
+BuildRequires:  python%{?__python_ver}-setuptools
 
 
 # We don't want to provide private python extension libs
@@ -58,45 +59,34 @@ BuildRequires:  python3-setuptools
 %filter_setup
 }
 
-%description
-timelib is a short wrapper around php's internal timelib modules
-It currently only provides a few functions:
+%description    %{_description} 
 
-timelib.strtodatetime
-timelib.strtotime
+%package    -n  python2-%{srcname}
+Summary:        %{summary}
+Group:          %{group}
+BuildRequires:  python-devel
+BuildRequires:  python-setuptools
+%{?python_provide:%python_provide python-%{srcname}}
+%{?python_provide:%python_provide python2-%{srcname}}
+
+%description -n python2-%{srcname} %{_description}
+Python 2 version.
 
 
 %if 0%{?with_python3}
-%package -n python3-%{srcname}
-Summary:  Parse English textual date descriptions
-Group:    Development/Languages/Python
+%package    -n  python%{python3_pkgversion}-%{srcname}
+Summary:        %{summary}
+Group:          %{group}
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+Provides:       python%{python3_pkgversion}-%{srcname}
 
-%description -n python3-%{srcname}
-timelib is a short wrapper around php's internal timelib modules
-It currently only provides a few functions:
-
-timelib.strtodatetime
-timelib.strtotime
+%description -n python%{python3_pkgversion}-%{srcname} %{_description} 
+Python 3 version.
 %endif
-
-%if 0%{?rhel} == 5
-%package -n python26-%{srcname}
-Summary:  Parse English textual date descriptions
-Group:    Development/Languages/Python
-Requires: python26
-Requires: python26-importlib
-
-%description -n python26-%{srcname}
-timelib is a short wrapper around php's internal timelib modules
-It currently only provides a few functions:
-
-timelib.strtodatetime
-timelib.strtotime
-%endif
-
 
 %prep
-%setup -q -n %{srcname}-%{version}
+%autosetup -n %{srcname}-%{version}
 
 %if 0%{?with_python3}
 rm -rf %{py3dir}
@@ -104,52 +94,46 @@ cp -a . %{py3dir}
 %endif
 
 %build
-%{__python2} setup.py build
-
+%py2_build
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py build
-popd
+%py3_build
 %endif
 
 %install
 rm -rf %{buildroot}
+%py2_install
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py install --skip-build --root %{buildroot}
-popd
+%py3_install
 %endif
-
-%{__python2} setup.py install --skip-build --root %{buildroot}
-
 
 %clean
 rm -rf %{buildroot}
 
 
-%if 0%{?with_python3}
-%files -n python3-%{srcname}
-%defattr(-,root,root,-)
-%{python3_sitearch}/%{srcname}*.so
-%{python3_sitearch}/%{srcname}*.egg-info
-%endif
-
-%if 0%{?rhel} == 5
-%files -n python26-%{srcname}
-%defattr(-,root,root,-)
-%{python2_sitearch}/%{srcname}*.so
-%{python2_sitearch}/%{srcname}*.egg-info
-%else
-%files
+%files -n python2-%{srcname}
 %defattr(-,root,root,-)
 %{python2_sitearch}/%{srcname}*.so
 %{python2_sitearch}/%{srcname}*.egg-info
 %exclude %{_libdir}/debug/
 %exclude %{_libdir}/../src/debug/
+
+%if 0%{?with_python3}
+%files -n python%{python3_pkgversion}-%{srcname}
+%defattr(-,root,root,-)
+%{python3_sitearch}/%{srcname}*.so
+%{python3_sitearch}/%{srcname}*.egg-info
 %endif
 
 %changelog
+* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-3
+- Add support for Python 3
+
+* Tue Jan 16 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-2
+- Support for Python 3 on RHEL 7 & 6
+- Updated to use Python 2.7 on Redhat 6
+- Removed support for RHEL 5
+
 * Fri Aug  7 2015 Packaging <packaging@saltstack.com> - 0.2.4-1
 - Initial build 0.2.4 for Salt implementation
 
