@@ -6,7 +6,7 @@
 %global modname Cryptodome
 
 
-%global with_python3 0
+%global with_python3 1
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
