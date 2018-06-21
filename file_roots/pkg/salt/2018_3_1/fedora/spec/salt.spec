@@ -850,8 +850,6 @@ rm -rf %%{buildroot}
 %changelog
 * Mon Jun 11 2018 SaltStack Packaging Team <packaging@ch3ll.com> - 2018.3.1-1
 - Update to feature release 2018.3.1-1  for Python 3
-
-* Wed Apr 18 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.x-0
 - Revised minimum msgpack version >= 0.4
 
 * Mon Apr 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
