@@ -24,7 +24,7 @@ This package contains the python bindings.
 
 Name:           python-zmq
 Version:        15.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Software library for fast, message-based applications
 
 Group:          Development/Libraries
@@ -64,6 +64,7 @@ BuildRequires:  python%{python3_pkgversion}-tornado
 %endif
 %endif
 
+Requires:   zeromq >= 4
 
 %description    %{_description}
 
@@ -210,6 +211,9 @@ rm  %{buildroot}%{python2_sitearch}/zmq/asyncio.py \
 
 
 %changelog
+* Fri Aug 03 2018 SaltStack Packaging Team <packagin@saltstack.com> - 15.3.0-5
+- Added dependency on zeromq >= 4, zeromq provided by Salt
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 15.3.0-4
 - Add support for Python 3
 
