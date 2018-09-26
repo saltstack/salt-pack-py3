@@ -691,83 +691,140 @@ pkgbuild_registry:
         - zeromq-devel
 
 
-  amzn:
+  amzn2:
     libsodium:
-      version: 0.4.5-3
+      version: 1.0.16-1
       results:
         - libsodium
-        - libsodium-debuginfo
         - libsodium-devel
+    libtomcrypt:
+      version: 1.17-23
+      results:
+        - libtomcrypt
+        - libtomcrypt-devel
+    libtommath:
+      version: 0.42.0-4
+      results:
+        - libtommath
+        - libtommath-devel
+    openpgm:
+      version: 5.2.122-2
+      results:
+        - openpgm
+        - openpgm-devel
+    python-chardet:
+      version: 3.0.4-8
+      noarch: True
+      results:
+        - python2-chardet
+        - python3-chardet
     python-cherrypy:
-      name: python27-cherrypy
-      version: 3.2.2-5
+      version: 5.6.0-5
       noarch: True
-    python-enum34:
-      name: python27-enum34
-      version: 1.0-5
-      noarch: True
-    python-gnupg:
-      name: python27-gnupg
-      version: 0.3.8-4
-      noarch: True
-    python-impacket:
-      name: python27-impacket
-      version: 0.9.14-3
-      noarch: True
-    python-ioflo:
-      name: python27-ioflo
-      version: 1.3.8-2
-      noarch: True
+      results:
+        - python2-cherrypy
+        - python3-cherrypy
+    python-crypto:
+      version: 2.6.1-13
+      results:
+        - python2-crypto
+        - python3-crypto
     python-libcloud:
-      name: python27-libcloud
-      version: 2.0.0-2
+      version: 2.2.1-9
       noarch: True
       results:
-        - python27-libcloud
-    python-libnacl:
-      name: python27-libnacl
-      version: 1.6.1-1
-      noarch: True
+        - python2-libcloud
+        - python3-libcloud
+    python-m2crypto:
+      version: 0.30.1-3
+      results:
+        - m2crypto
+        - python3-m2crypto
       build_deps:
-        - libsodium
+        - python-typing
     python-msgpack:
-      name: python27-msgpack
-      version: 0.4.6-2
-    python-psutil:
-      name: python27-psutil
-      version: 5.2.2-2.ius
+      version: 0.5.6-6
       results:
-        - python27-psutil
+        - python2-msgpack
+        - python3-msgpack
+    python-psutil:
+      version: 5.4.3-7
+      results:
+        - python2-psutil
+        - python3-psutil
+    python-pycryptodome:
+      version: 3.6.1-2
+      results:
+        - python2-pycryptodomex
+        - python3-pycryptodomex
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
     python-pyzmq:
-      name: python27-zmq
-      version: 14.5.0-3
+      name: python-zmq
+      version: 17.0.0-4
+      results:
+        - python2-zmq
+        - python3-zmq
       build_deps:
         - zeromq
-    python-raet:
-      name: python27-raet
-      version: 0.6.3-3
+    python-requests:
+      version: 2.19.1-4
       noarch: True
+      results:
+        - python2-requests
+        - python3-requests
       build_deps:
-        - python-ioflo
-      additional_deps:
-        - python-libnacl
-    python-tornado:
-      name: python27-tornado
-      version: 4.2.1-2
+        - python-chardet
+        - python-urllib3
+    python-simplejson:
+      version: 3.16.0-2
+      results:
+        - python2-simplejson
+        - python3-simplejson
     python-timelib:
-      name: python27-timelib
-      version: 0.2.4-2
+      version: 0.2.4-3
       noarch: True
+      results:
+        - python2-timelib
+        - python3-timelib
+    python-tornado:
+      version: 5.0.2-5
+      results:
+        - python2-tornado
+        - python3-tornado
+    python-typing:
+      version: 3.5.2.2-3
+      noarch: True
+      results:
+        - python2-typing
+        - python3-typing
+    python-urllib3:
+      version: 1.23-5
+      noarch: True
+      results:
+        - python2-urllib3
+        - python3-urllib3
+    python-yaml:
+      name: PyYAML
+      version: 4.2-0.1.b4
+      results:
+        - python2-pyyaml
+        - python3-pyyaml
     salt:
       version: 2018.3.2-1
       noarch: True
       build_deps:
+        - python-pycryptodome
         - python-msgpack
+        - python-yaml
+        - python-requests
         - python-pyzmq
+        - python-markupsafe
         - python-tornado
-        - python-libcloud
-        - python-gnupg
         - python-futures
+        - python-libcloud
       results:
         - salt
         - salt-master
@@ -776,15 +833,10 @@ pkgbuild_registry:
         - salt-api
         - salt-cloud
         - salt-ssh
-    winexe:
-      version: 1.1-b787d2.1
-      results:
-        - winexe
-        - winexe-debuginfo
-      build_deps:
-        - python-impacket
     zeromq:
-      version: 4.0.5-4
+      version: 4.2.3-1
+      build_deps:
+        - openpgm
       results:
         - zeromq
         - zeromq-devel
