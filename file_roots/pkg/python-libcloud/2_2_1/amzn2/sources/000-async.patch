@@ -1,0 +1,41 @@
+diff -ru apache-libcloud-2.2.1/libcloud/compute/drivers/azure.py apache-libcloud-2.2.1_patched/libcloud/compute/drivers/azure.py
+--- apache-libcloud-2.2.1/libcloud/compute/drivers/azure.py	2017-09-05 17:30:14.000000000 +0200
++++ apache-libcloud-2.2.1_patched/libcloud/compute/drivers/azure.py	2018-07-16 14:43:35.384935707 +0200
+@@ -1435,7 +1435,7 @@
+ 
+         return response
+ 
+-    def _perform_post(self, path, body, response_type=None, async=False):
++    def _perform_post(self, path, body, response_type=None, **kwargs):
+         request = AzureHTTPRequest()
+         request.method = 'POST'
+         request.host = AZURE_SERVICE_MANAGEMENT_HOST
+@@ -1447,7 +1447,7 @@
+ 
+         return response
+ 
+-    def _perform_put(self, path, body, response_type=None, async=False):
++    def _perform_put(self, path, body, response_type=None, **kwargs):
+         request = AzureHTTPRequest()
+         request.method = 'PUT'
+         request.host = AZURE_SERVICE_MANAGEMENT_HOST
+@@ -1459,7 +1459,8 @@
+ 
+         return response
+ 
+-    def _perform_delete(self, path, async=False):
++    def _perform_delete(self, path, **kwargs):
++        asynch = kwargs.get("async", False)
+         request = AzureHTTPRequest()
+         request.method = 'DELETE'
+         request.host = AZURE_SERVICE_MANAGEMENT_HOST
+@@ -1470,7 +1471,7 @@
+ 
+         self.raise_for_response(response, 202)
+ 
+-        if async:
++        if asynch:
+             return self._parse_response_for_async_op(response)
+ 
+     def _perform_request(self, request):
+Only in apache-libcloud-2.2.1_patched/libcloud/compute/drivers: .azure.py.swp
