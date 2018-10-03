@@ -1,4 +1,11 @@
 %global with_python3 1
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 %global pypi_name chardet
 Name:           python-%{pypi_name}
 Version:        3.0.4
@@ -12,9 +19,16 @@ Source0:        https://files.pythonhosted.org/packages/source/c/%{pypi_name}/%{
 
 BuildArch:      noarch
 BuildRequires:  python2-devel, python2-setuptools
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
 
 %if 0%{?with_python3}
-BuildRequires:  python3-devel, python3-setuptools
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 %endif # with_python3
 
 %global _description\
@@ -30,10 +44,10 @@ Summary: %summary
 %description -n python2-%{pypi_name} %_description
 
 %if 0%{?with_python3}
-%package -n python3-%{pypi_name}
+%package -n python%{python3_pkgversion}-%{pypi_name}
 Summary:        Character encoding auto-detection in Python 3
 
-%description -n python3-%{pypi_name}
+%description -n python%{python3_pkgversion}-%{pypi_name}
 Character encoding auto-detection in Python. As 
 smart as your browser. Open source.
 
@@ -78,18 +92,18 @@ popd
 %{_bindir}/chardetect
 
 %if 0%{?with_python3}
-%files -n python3-%{pypi_name}
+%files -n python%{python3_pkgversion}-%{pypi_name}
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README.rst
 %{python3_sitelib}/*
-%{_bindir}/python3-chardetect
+%{_bindir}/python%{python3_pkgversion}-chardetect
 %endif # with_python3
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-8
-- Ported to Amazon Linux 2
+* Tue Oct 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-8
+- Ported to support Python 3 on Amazon Linux 2
 
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 3.0.4-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild

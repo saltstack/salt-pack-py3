@@ -699,6 +699,8 @@ pkgbuild_registry:
         - libsodium-devel
     libtomcrypt:
       version: 1.17-23
+      build_deps:
+        - libtommath
       results:
         - libtomcrypt
         - libtomcrypt-devel
@@ -724,6 +726,8 @@ pkgbuild_registry:
       results:
         - python2-cherrypy
         - python3-cherrypy
+##      build_deps:
+##        - python-mock
     python-crypto:
       version: 2.6.1-13
       results:
@@ -742,11 +746,26 @@ pkgbuild_registry:
         - python3-m2crypto
       build_deps:
         - python-typing
+    python-mock:
+      version: 1.0.1-12
+      noarch: True
+      results:
+        - python2-mock
+        - python3-mock
     python-msgpack:
       version: 0.5.6-6
       results:
         - python2-msgpack
         - python3-msgpack
+    python-nose:
+      version: 1.3.7-3
+      noarch: True
+      build_deps:
+        - python-setuptools
+        - python-mock
+      results:
+        - python2-nose
+        - python3-nose
     python-psutil:
       version: 5.4.3-7
       results:
@@ -784,7 +803,7 @@ pkgbuild_registry:
         - python2-simplejson
         - python3-simplejson
     python-timelib:
-      version: 0.2.4-3
+      version: 0.2.4-4
       noarch: True
       results:
         - python2-timelib
@@ -795,7 +814,7 @@ pkgbuild_registry:
         - python2-tornado
         - python3-tornado
     python-typing:
-      version: 3.5.2.2-3
+      version: 3.5.2.2-4
       noarch: True
       results:
         - python2-typing

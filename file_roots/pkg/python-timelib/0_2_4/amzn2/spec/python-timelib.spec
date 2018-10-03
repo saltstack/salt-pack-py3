@@ -18,6 +18,9 @@
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
 
 %define debug_package %{nil}
 
@@ -32,7 +35,7 @@ timelib.strtotime
 
 Name:           python%{?__python_ver}-%{srcname}
 Version:        0.2.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Parse English textual date descriptions
 Group:          Development/Languages/Python
 
@@ -66,6 +69,9 @@ Summary:        %{summary}
 Group:          %{group}
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
 %{?python_provide:%python_provide python-%{srcname}}
 %{?python_provide:%python_provide python2-%{srcname}}
 
@@ -79,6 +85,9 @@ Summary:        %{summary}
 Group:          %{group}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
+%if 0%{?with_amzn2}
+BuildRequires:  python%{python3_pkgversion}-rpm-macros
+%endif
 Provides:       python%{python3_pkgversion}-%{srcname}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description} 
@@ -86,7 +95,8 @@ Python 3 version.
 %endif
 
 %prep
-%autosetup -n %{srcname}-%{version}
+##%%autosetup -n %{srcname}-%{version}
+%setup -n %{srcname}-%{version}
 
 %if 0%{?with_python3}
 rm -rf %{py3dir}
@@ -126,6 +136,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Oct 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-4
+- Ported to support Python 3 on Amazon Linux 2
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-3
 - Add support for Python 3
 
