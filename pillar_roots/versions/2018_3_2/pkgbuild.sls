@@ -714,6 +714,11 @@ pkgbuild_registry:
       results:
         - openpgm
         - openpgm-devel
+    python-coverage:
+      version: 4.5.1-4
+      results:
+        - python2-coverage
+        - python3-coverage
     python-chardet:
       version: 3.0.4-8
       noarch: True
@@ -726,10 +731,14 @@ pkgbuild_registry:
       results:
         - python2-cherrypy
         - python3-cherrypy
-##      build_deps:
-##        - python-mock
+      build_deps:
+        - python-nose
     python-crypto:
-      version: 2.6.1-13
+      version: 2.6.1-25
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
       results:
         - python2-crypto
         - python3-crypto
@@ -758,11 +767,12 @@ pkgbuild_registry:
         - python2-msgpack
         - python3-msgpack
     python-nose:
-      version: 1.3.7-3
+      version: 1.3.7-22
       noarch: True
       build_deps:
         - python-setuptools
         - python-mock
+        - python-coverage
       results:
         - python2-nose
         - python3-nose
@@ -772,7 +782,7 @@ pkgbuild_registry:
         - python2-psutil
         - python3-psutil
     python-pycryptodome:
-      version: 3.6.1-2
+      version: 3.6.1-3
       results:
         - python2-pycryptodomex
         - python3-pycryptodomex
@@ -799,6 +809,8 @@ pkgbuild_registry:
         - python-urllib3
     python-simplejson:
       version: 3.16.0-2
+      build_deps:
+        - python-nose
       results:
         - python2-simplejson
         - python3-simplejson
@@ -856,6 +868,7 @@ pkgbuild_registry:
       version: 4.2.3-1
       build_deps:
         - openpgm
+        - libsodium
       results:
         - zeromq
         - zeromq-devel

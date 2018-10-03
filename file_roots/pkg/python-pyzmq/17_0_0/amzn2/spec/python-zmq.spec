@@ -5,6 +5,10 @@
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 %global checkout b58cb3a2ee8baaab543729e398fc1cde25ff68c3
 
 %global srcname pyzmq
@@ -31,7 +35,13 @@ BuildRequires:  gcc
 BuildRequires:  chrpath
 BuildRequires:  %{_bindir}/pathfix.py
 
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+%else
 BuildRequires:  python2-devel
+%endif
+
 BuildRequires:  python2-setuptools
 BuildRequires:  zeromq-devel
 BuildRequires:  python2-Cython
@@ -45,6 +55,9 @@ BuildRequires:  python2-tornado
 #BuildRequires:  czmq-devel
 
 %if 0%{?with_python3}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 # needed for 2to3
@@ -228,7 +241,7 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> -17.0.0-4
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> -17.0.0-4
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 17.0.0-3

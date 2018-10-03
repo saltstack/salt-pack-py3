@@ -11,6 +11,7 @@ include:
    - pkg.openpgm.5_2_122.amzn2          ## Need to check latest
    - pkg.python-chardet.3_0_4.amzn2     ## latest, 3.0.4
    - pkg.python-cherrypy.5_6_0.amzn2    ## stick with this version
+   - pkg.python-coverage.4_5_1.amzn2
    - pkg.python-crypto.2_6_1.amzn2      ## RH7 EPEL py34 2.6.1-13
 ##   - pkg.python-enum34.1_0.amzn2      ## latest 1.1.6, should not need for Py3.7
 ##   - pkg.python-futures.3_0_3.amzn2   ## should not need for Py 3 - but have it for Redhat 7 ????

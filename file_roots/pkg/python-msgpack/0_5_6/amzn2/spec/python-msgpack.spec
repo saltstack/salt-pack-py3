@@ -1,6 +1,12 @@
 %global srcname msgpack
 %global sum A Python MessagePack (de)serializer
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 Name:           python-%{srcname}
 Version:        0.5.6
 Release:        6%{?dist}
@@ -8,7 +14,8 @@ Summary:        %{sum}
 
 License:        ASL 2.0
 URL:            https://msgpack.org/
-Source0:        %pypi_source
+Source0:        http://pypi.python.org/packages/source/m/%{srcname}/%{srcname}-%{version}.tar.gz
+## Source0:        %%pypi_source
 
 BuildRequires:  gcc-c++
 BuildRequires:  Cython
@@ -16,6 +23,10 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-pytest
 BuildRequires:  python2-funcsigs
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python%{python3_pkgversion}-rpm-macros
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-pytest
@@ -81,7 +92,7 @@ py.test-%{python3_version} -v test
 %{python3_sitearch}/%{srcname}*.egg-info
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-6
+* Wed Oct 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-6
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Mon Sep 03 2018 Miro Hrončok <mhroncok@redhat.com> - 0.5.6-5

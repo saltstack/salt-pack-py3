@@ -11,7 +11,7 @@ Patch1:         %{name}-pkgconfig.patch
 Patch2:         %{name}-two-key-triple-des.patch
 
 BuildRequires:  ghostscript
-BuildRequires:  libtommath-devel >= 0.42.0-3
+BuildRequires:  libtommath-devel >= 0.42.0
 BuildRequires:  libtool
 
 %if 0%{?fedora} || 0%{?rhel} >= 7

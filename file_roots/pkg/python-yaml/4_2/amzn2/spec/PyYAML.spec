@@ -1,3 +1,8 @@
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 Name:           PyYAML
 Version:        4.2
 Release:        0.1.b4%{?dist}
@@ -15,9 +20,14 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-Cython
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-Cython
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python3-rpm-macros
+%endif
+
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-Cython
 
 
 %global _description\
@@ -51,21 +61,22 @@ Obsoletes: PyYAML < %{version}-%{release}
 %description -n python2-pyyaml %_description
 
 
-%package -n python3-pyyaml
+%package -n python%{python3_pkgversion}-pyyaml
 Summary:        %summary
-Provides:       python3-yaml = %{version}-%{release}
-Provides:       python3-yaml%{?_isa} = %{version}-%{release}
+Provides:       python%{python3_pkgversion}-yaml = %{version}-%{release}
+Provides:       python%{python3_pkgversion}-yaml%{?_isa} = %{version}-%{release}
 %{?python_provide:%python_provide python3-pyyaml}
 # Remove before F31
-Provides:       python3-PyYAML = %{version}-%{release}
-Provides:       python3-PyYAML%{?_isa} = %{version}-%{release}
-Obsoletes:      python3-PyYAML < 4.1-5
+Provides:       python%{python3_pkgversion}-PyYAML = %{version}-%{release}
+Provides:       python%{python3_pkgversion}-PyYAML%{?_isa} = %{version}-%{release}
+Obsoletes:      python%{python3_pkgversion}-PyYAML < 4.1-5
 
-%description -n python3-pyyaml %_description
+%description -n python%{python3_pkgversion}-pyyaml %_description
 
 
 %prep
-%setup -q -n %{name}-%{uversion}
+## %setup -q -n %%{name}-%%{uversion}
+%setup -n %{name}-%{uversion}
 chmod a-x examples/yaml-highlight/yaml_hl.py
 
 # remove pre-generated file
@@ -99,7 +110,7 @@ rm -rf ext/_yaml.c
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2-0.1.b4
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2-0.1.b4
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Fri Jul 13 2018 John Eckersberg <eck@redhat.com> - 4.2-0.1.b4

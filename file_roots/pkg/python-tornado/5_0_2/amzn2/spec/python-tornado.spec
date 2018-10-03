@@ -7,6 +7,10 @@
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 %global srcname tornado
 
 Name:           python-%{srcname}
@@ -27,9 +31,16 @@ Patch0:         fix-erroneous-deprecation-warnings.patch
 BuildRequires:  gcc
 
 %if %{with python2}
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python3-rpm-macros
+BuildRequires:  python-devel
+BuildRequires:  python-singledispatch
+%else
 BuildRequires:  python2-devel
-BuildRequires:  python2-backports_abc
 BuildRequires:  python2-singledispatch
+%endif
+BuildRequires:  python2-backports_abc
 BuildRequires:  python2-futures
 %endif # with python2
 BuildRequires:  python%{python3_pkgversion}-setuptools
@@ -52,7 +63,11 @@ Summary:        Scalable, non-blocking web server and tools
 
 Requires:       python2-pycurl
 Requires:       python2-backports_abc
+%if 0%{?with_amzn2}
+Requires:       python-singledispatch
+%else
 Requires:       python2-singledispatch
+%endif
 Requires:       python2-futures
 
 %description -n python2-%{srcname}
@@ -129,7 +144,7 @@ ideal for real-time web services.
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.0.2-5
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.0.2-5
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.2-4

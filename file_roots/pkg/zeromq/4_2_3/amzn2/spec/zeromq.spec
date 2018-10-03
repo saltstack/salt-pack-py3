@@ -118,7 +118,8 @@ rm %{buildroot}%{_libdir}/libzmq.la
 
 
 %files -n %{name}
-%doc AUTHORS ChangeLog MAINTAINERS NEWS
+## %%doc AUTHORS ChangeLog MAINTAINERS NEWS
+%doc AUTHORS ChangeLog NEWS
 %license COPYING COPYING.LESSER
 %{_bindir}/curve_keygen
 %{_libdir}/libzmq.so.*
@@ -136,7 +137,7 @@ rm %{buildroot}%{_libdir}/libzmq.la
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.3-1
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.3-1
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.4-7
