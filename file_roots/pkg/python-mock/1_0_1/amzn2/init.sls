@@ -2,8 +2,8 @@
 {% import "setup/macros.jinja" as macros with context %}
 {% set pkg_data = salt["pillar.get"]("pkgbuild_registry:" ~ buildcfg.build_release, {}) %}
 {% set force = salt["pillar.get"]("pkgbuild_force.all", False) or salt["pillar.get"]("pkgbuild_force." ~ slspath, False) %}
-{% set sls_name = "python-crypto" %}
-{% set pypi_name = "pycrypto" %}
+{% set sls_name = "python-mock" %}
+{% set pypi_name = "mock" %}
 
 {% set pkg_info = pkg_data.get(sls_name, {}) %}
 {% if "version" in pkg_info %}
@@ -33,12 +33,7 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/sources/pycrypto-2.6.1-CVE-2013-7459.patch
-      - salt://{{slspath}}/sources/pycrypto-2.6.1-CVE-2018-6594.patch
-      - salt://{{slspath}}/sources/pycrypto-2.6.1.tar.gz
-      - salt://{{slspath}}/sources/pycrypto-2.6.1-unbundle-libtomcrypt.patch
-      - salt://{{slspath}}/sources/python-crypto-2.4-fix-pubkey-size-divisions.patch
-      - salt://{{slspath}}/sources/python-crypto-2.4-optflags.patch
-      - salt://{{slspath}}/sources/python-crypto-2.6.1-link.patch
+      - salt://{{slspath}}/sources/LICENSE.txt
+      - salt://{{slspath}}/sources/{{pypi_name}}-{{version}}.tar.gz
 ##      - {{ macros.pypi_source(pypi_name, version) }}
 {% endif %}

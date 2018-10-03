@@ -13,10 +13,13 @@
 ## %global python2_pkgversion 2
 %global python2_pkgversion %{nil}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
 
 Name:           python-%{srcname}
 Version:        3.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Self-contained Python package of low-level cryptographic primitives
 
 # Only OCB blockcipher mode is patented, but according to
@@ -39,7 +42,7 @@ BuildRequires:  gmp-devel
 
 %global _description \
 PyCryptodome is a self-contained Python package of low-level\
-cryptographic primitives. It's a fork of PyCrypto. It brings several\
+cryptographic primitives. Its a fork of PyCrypto. It brings several\
 enhancements with respect to the last official version of PyCrypto\
 (2.6.1), for instance:\
 \
@@ -74,10 +77,14 @@ conflicts with the PyCrypto library.
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{eggname}}
 BuildRequires:  python%{python2_pkgversion}-devel
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python2-setuptools
+%else
 BuildRequires:  python%{python2_pkgversion}-setuptools
+%endif
 
 %description -n python2-%{eggname} %{_description}
-
 Python 2 version.
 
 %if 0%{?with_python3}
@@ -85,9 +92,11 @@ Python 2 version.
 Summary:        %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 
 %description -n python%{python3_pkgversion}-%{eggname} %{_description}
-
 Python 3 version.
 %endif
 
@@ -139,6 +148,9 @@ mv lib/Crypto/SelfTest/__main__.py.new lib/Crypto/SelfTest/__main__.py
 %endif
 
 %changelog
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.1-3
+- Ported for support Python 3 on Amazon Linux 2
+
 * Thu Jun 14 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.1-2
 - Update to v3.6.1, and update Python 3 version produced
 

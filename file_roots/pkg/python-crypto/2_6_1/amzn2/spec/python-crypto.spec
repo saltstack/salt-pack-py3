@@ -1,70 +1,67 @@
-%global pythonver %(%{__python} -c "import sys; print sys.version[:3]" 2>/dev/null || echo 0.0)
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" 2>/dev/null)}
+# Share docs between python2 and python3 packages
+%global _docdir_fmt %{name}
 
-# Python3 introduced in Fedora 13
-%global with_python3 1
-
+# Single python3 version in Fedora, python3_pkgversion macro not available
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
-%global srcname             crypto
+# For consistency and completeness
+%global python2_pkgversion 2
 
-%global _description    \
-PyCrypto is a collection of both secure hash functions (such as MD5 and \
-SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
 
 Summary:	Cryptography library for Python
 Name:		python-crypto
 Version:	2.6.1
-Release:	2%{?dist}
+Release:	25%{?dist}
 # Mostly Public Domain apart from parts of HMAC.py and setup.py, which are Python
 License:	Public Domain and Python
-Group:		Development/Libraries
 URL:		http://www.pycrypto.org/
 Source0:	http://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-%{version}.tar.gz
 Patch0:		python-crypto-2.4-optflags.patch
 Patch1:		python-crypto-2.4-fix-pubkey-size-divisions.patch
-Patch2:		CVE-2013-7459.patch
-Provides:	pycrypto = %{version}-%{release}
-BuildRequires:	python2-devel >= 2.2, gmp-devel >= 4.1
-
-%if %{with_python3}
-BuildRequires:	python-tools
+Patch2:		pycrypto-2.6.1-CVE-2013-7459.patch
+Patch3:		pycrypto-2.6.1-unbundle-libtomcrypt.patch
+Patch4:		python-crypto-2.6.1-link.patch
+Patch5:		pycrypto-2.6.1-CVE-2018-6594.patch
+BuildRequires:	coreutils
+BuildRequires:	findutils
+BuildRequires:	gcc
+BuildRequires:	gmp-devel >= 4.1
+BuildRequires:	libtomcrypt-devel >= 1.16
+BuildRequires:	python%{python2_pkgversion}-devel >= 2.4
 BuildRequires:	python%{python3_pkgversion}-devel
+BuildRequires:	%{_bindir}/2to3
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python3-rpm-macros
 %endif
 
-BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot-%(id -nu)
+%description
+PyCrypto is a collection of both secure hash functions (such as MD5 and
+SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
-# Don't want provides for python shared objects
-%{?filter_provides_in: %filter_provides_in %{python_sitearch}/Crypto/.*\.so}
-%if %{with_python3}
-%{?filter_provides_in: %filter_provides_in %{python3_sitearch}/Crypto/.*\.so}
-%endif
-%{?filter_setup}
+%package -n python%{python2_pkgversion}-crypto
+Summary:	Cryptography library for Python 2
+Provides:	pycrypto = %{version}-%{release}
+%{?python_provide:%python_provide python2-crypto}
 
-%description    %{_description}
+%description -n python%{python2_pkgversion}-crypto
+PyCrypto is a collection of both secure hash functions (such as MD5 and
+SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
-%package -n python2-%{srcname}
-Summary:	%{summary}
-Group:		%{group}
+This is the Python 2 build of the package.
 
-%{?python_provide:%python_provide python-%{srcname}}
-%{?python_provide:%python_provide python2-%{srcname}}
-
-%description -n python2-%{srcname} %{_description}
-Supports Python 2.
-
-
-%if %{with_python3}
-%package -n python%{python3_pkgversion}-%{srcname}
+%package -n python%{python3_pkgversion}-crypto
 Summary:	Cryptography library for Python 3
-Group:		%{group}
+%{?python_provide:%python_provide python%{python3_pkgversion}-crypto}
 
-## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
-Provides:   python%{python3_pkgversion}-%{srcname}
+%description -n python%{python3_pkgversion}-crypto
+PyCrypto is a collection of both secure hash functions (such as MD5 and
+SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
-%description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Supports Python 3.
-%endif
+This is the Python 3 build of the package.
 
 %prep
 %setup -n pycrypto-%{version} -q
@@ -75,80 +72,148 @@ Supports Python 3.
 # Fix divisions within benchmarking suite:
 %patch1 -p1
 
-# Fix CVE 2013-7459
+# AES.new with invalid parameter crashes python
+# https://github.com/dlitz/pycrypto/issues/176
+# CVE-2013-7459
 %patch2 -p1
 
-# Prepare python3 build (setup.py doesn't run 2to3 on pct-speedtest.py)
-%if %{with_python3}
-cp -a . %{py3dir}
-2to3 -wn %{py3dir}/pct-speedtest.py
-%endif
+# Unbundle libtomcrypt (#1087557)
+rm -rf src/libtom
+%patch3
+
+# log() not available in libgmp, need libm too
+%patch4
+
+# When creating ElGamal keys, the generator wasn't a square residue: ElGamal
+# encryption done with those keys cannot be secure under the DDH assumption
+# https://bugzilla.redhat.com/show_bug.cgi?id=1542313 (CVE-2018-6594)
+# https://github.com/TElgamal/attack-on-pycrypto-elgamal
+# https://github.com/Legrandin/pycryptodome/issues/90
+# https://github.com/dlitz/pycrypto/issues/253
+# Patch based on this commit from cryptodome:
+# https://github.com/Legrandin/pycryptodome/commit/99c27a3b
+# Converted to pull request for pycrypto:
+# https://github.com/dlitz/pycrypto/pull/256
+%patch5
+
+# setup.py doesn't run 2to3 on pct-speedtest.py
+cp pct-speedtest.py pct-speedtest3.py
+2to3 -wn pct-speedtest3.py
 
 %build
-CFLAGS="%{optflags} -fno-strict-aliasing" %{__python} setup.py build
-
-%if %{with_python3}
-cd %{py3dir}
-CFLAGS="%{optflags} -fno-strict-aliasing" %{__python3} setup.py build
-cd -
-%endif
+%global optflags %{optflags} -fno-strict-aliasing
+%py2_build
+%py3_build
 
 %install
-rm -rf %{buildroot}
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%py2_install
+%py3_install
 
 # Remove group write permissions on shared objects
-find %{buildroot}%{python_sitearch} -name '*.so' -exec chmod -c g-w {} \;
-
-# Build for python3 too
-%if %{with_python3}
-cd %{py3dir}
-%{__python3} setup.py install -O1 --skip-build --root %{buildroot}
-cd -
+find %{buildroot}%{python2_sitearch} -name '*.so' -exec chmod -c g-w {} \;
 find %{buildroot}%{python3_sitearch} -name '*.so' -exec chmod -c g-w {} \;
-%endif
-
-# See if there's any egg-info
-if [ -f %{buildroot}%{python_sitearch}/pycrypto-%{version}-py%{pythonver}.egg-info ]; then
-	echo %{python_sitearch}/pycrypto-%{version}-py%{pythonver}.egg-info
-fi > egg-info
 
 %check
-%{__python} setup.py test
-
-# Benchmark uses os.urandom(), which is available from python 2.4
-%if %(%{__python} -c "import sys; print sys.hexversion >= 0x02040000 and 1 or 0" 2>/dev/null || echo 0)
-PYTHONPATH=%{buildroot}%{python_sitearch} %{__python} pct-speedtest.py
-%endif
-
-# Test the python3 build too
-%if %{with_python3}
-cd %{py3dir}
+%{__python2} setup.py test
 %{__python3} setup.py test
-PYTHONPATH=%{buildroot}%{python3_sitearch} %{__python3} pct-speedtest.py
-cd -
-%endif
 
-%clean
-rm -rf %{buildroot}
+# Benchmark
+PYTHONPATH=%{buildroot}%{python2_sitearch} %{__python2} pct-speedtest.py
+PYTHONPATH=%{buildroot}%{python3_sitearch} %{__python3} pct-speedtest3.py
 
-%files -n python2-%{srcname} -f egg-info
-%defattr(-,root,root,-)
-%doc README TODO ACKS ChangeLog LEGAL/ COPYRIGHT Doc/
-%{python_sitearch}/Crypto/
+%files -n python%{python2_pkgversion}-crypto
+%license COPYRIGHT LEGAL/
+%doc README TODO ACKS ChangeLog Doc/
+%{python2_sitearch}/Crypto/
+%{python2_sitearch}/pycrypto-%{version}-py2.*.egg-info
 
-%if %{with_python3}
-%files -n python%{python3_pkgversion}-%{srcname}
-%defattr(-,root,root,-)
-%doc README TODO ACKS ChangeLog LEGAL/ COPYRIGHT Doc/
+%files -n python%{python3_pkgversion}-crypto
+%license COPYRIGHT LEGAL/
+%doc README TODO ACKS ChangeLog Doc/
 %{python3_sitearch}/Crypto/
-%{python3_sitearch}/pycrypto-*py3.*.egg-info
-%endif
+%{python3_sitearch}/pycrypto-%{version}-py3.*.egg-info
 
 %changelog
-* Wed Feb  1 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.1-2
-- Update to 2.6.1
-  - Raise warning when IV is used with ECB or CTR and ignored IV in that case (CVE-2013-7459)
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com>  - 2.6.1-25
+- Ported for Python 3 support on Amazon Linux 2
+
+* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.1-24
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 2.6.1-23
+- Rebuilt for Python 3.7
+
+* Fri Feb 23 2018 Paul Howarth <paul@city-fan.org> - 2.6.1-22
+- When creating ElGamal keys, the generator wasn't a square residue: ElGamal
+  encryption done with those keys cannot be secure under the DDH assumption
+  https://bugzilla.redhat.com/show_bug.cgi?id=1542313 (CVE-2018-6594)
+  https://github.com/TElgamal/attack-on-pycrypto-elgamal
+  https://github.com/Legrandin/pycryptodome/issues/90
+  https://github.com/dlitz/pycrypto/issues/253
+  https://github.com/dlitz/pycrypto/pull/256
+
+* Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.1-21
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Thu Jan 25 2018 Paul Howarth <paul@city-fan.org> - 2.6.1-20
+- log() not available in libgmp, need libm too
+
+* Mon Oct 23 2017 Simone Caronni <negativo17@gmail.com> - 2.6.1-19
+- Rebuild for libtomcrypt update
+
+* Tue Sep 05 2017 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 2.6.1-18
+- Depend on %%{_bindir}/2to3 instead of python2-tools
+
+* Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.1-17
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
+
+* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.1-16
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Thu Jun 29 2017 Paul Howarth <paul@city-fan.org> - 2.6.1-15
+- BR: python2-tools (for 2to3) rather than plain python-tools
+
+* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.1-14
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Wed Jan 18 2017 Paul Howarth <paul@city-fan.org> - 2.6.1-13
+- AES.new with invalid parameter crashes python (CVE-2013-7459)
+  (https://github.com/dlitz/pycrypto/issues/176)
+
+* Fri Dec 09 2016 Charalampos Stratakis <cstratak@redhat.com> - 2.6.1-12
+- Rebuild for Python 3.6
+
+* Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.1-11
+- https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.1-10
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Wed Dec 30 2015 Paul Howarth <paul@city-fan.org> - 2.6.1-9
+- Enable python3 builds from EPEL-7 (#1110373)
+- Modernize spec
+
+* Wed Nov 04 2015 Matej Stuchlik <mstuchli@redhat.com> - 2.6.1-8
+- Rebuilt for Python 3.5
+
+* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.1-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.1-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.1-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Tue May 27 2014 Paul Howarth <paul@city-fan.org> - 2.6.1-4
+- Rebuild for python3 3.4 in Rawhide again
+
+* Wed May 14 2014 Paul Howarth <paul@city-fan.org> - 2.6.1-3
+- Unbundle libtomcrypt (#1087557)
+- Drop %%defattr, redundant since rpm 4.4
+
+* Wed May 14 2014 Bohuslav Kabrda <bkabrda@redhat.com> - 2.6.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Changes/Python_3.4
 
 * Fri Oct 18 2013 Paul Howarth <paul@city-fan.org> - 2.6.1-1
 - Update to 2.6.1
@@ -376,7 +441,7 @@ rm -rf %{buildroot}
 * Wed Aug 17 2005 Thorsten Leemhuis <fedora at leemhuis dot info> - 0:2.0.1-1
 - Update to 2.0.1
 - Use Dist
-- Drop python-crypto-64bit-unclean.patch, similar patch was applied 
+- Drop python-crypto-64bit-unclean.patch, similar patch was applied
   upstream
 
 * Thu May 05 2005 Thorsten Leemhuis <fedora at leemhuis dot info> - 0:2.0-4

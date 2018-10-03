@@ -1,7 +1,13 @@
 %global srcname urllib3
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%bcond_with tests
+%else
 # When bootstrapping Python, we cannot test this yet
 %bcond_without tests
+%endif
 
 Name:           python-%{srcname}
 Version:        1.23
@@ -33,6 +39,12 @@ Requires:       python2-ipaddress
 Requires:       python2-pysocks
 
 BuildRequires:  python2-devel
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python3-rpm-macros
+BuildRequires:  python2-setuptools
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%endif
 %if %{with tests}
 BuildRequires:  python2-nose
 BuildRequires:  python2-nose-exclude
@@ -48,24 +60,24 @@ BuildRequires:  python2-tornado
 Python2 HTTP module with connection pooling and file POST abilities.
 
 
-%package -n python3-%{srcname}
+%package -n python%{python3_pkgversion}-%{srcname}
 Summary:        Python3 HTTP library with thread-safe connection pooling and file post
 
-BuildRequires:  python3-devel
+BuildRequires:  python%{python3_pkgversion}-devel
 %if %{with tests}
-BuildRequires:  python3-nose
-BuildRequires:  python3-mock
-BuildRequires:  python3-six
-BuildRequires:  python3-pysocks
-BuildRequires:  python3-pytest
-BuildRequires:  python3-tornado
+BuildRequires:  python%{python3_pkgversion}-nose
+BuildRequires:  python%{python3_pkgversion}-mock
+BuildRequires:  python%{python3_pkgversion}-six
+BuildRequires:  python%{python3_pkgversion}-pysocks
+BuildRequires:  python%{python3_pkgversion}-pytest
+BuildRequires:  python%{python3_pkgversion}-tornado
 %endif
 
 Requires:       ca-certificates
-Requires:       python3-six
-Requires:       python3-pysocks
+Requires:       python%{python3_pkgversion}-six
+Requires:       python%{python3_pkgversion}-pysocks
 
-%description -n python3-%{srcname}
+%description -n python%{python3_pkgversion}-%{srcname}
 Python3 HTTP module with connection pooling and file POST abilities.
 
 
@@ -137,7 +149,7 @@ py.test-3
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-5
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-5
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Wed Jun 20 2018 Lumír Balhar <lbalhar@redhat.com> - 1.23-4

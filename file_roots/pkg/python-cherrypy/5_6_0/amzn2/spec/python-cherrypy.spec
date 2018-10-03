@@ -13,6 +13,9 @@ results in smaller source code developed in less time.
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
 
 Name:           python-cherrypy
 Version:        5.6.0
@@ -44,6 +47,9 @@ Summary:        %{summary}
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-nose
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
@@ -51,6 +57,9 @@ Python 2 version.
 %if 0%{?with_python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-nose
@@ -121,7 +130,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-5
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-5
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Thu Feb 08 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-4

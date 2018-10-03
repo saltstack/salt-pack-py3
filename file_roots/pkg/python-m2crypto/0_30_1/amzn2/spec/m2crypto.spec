@@ -1,3 +1,9 @@
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 Summary: Support for using OpenSSL in Python 2 scripts
 Name: m2crypto
 Version: 0.30.1
@@ -11,9 +17,23 @@ Requires: python2-typing
 License: MIT
 Group: System Environment/Libraries
 URL: https://gitlab.com/m2crypto/m2crypto/
-BuildRequires: openssl, openssl-devel, python2-devel, python2-setuptools
-BuildRequires: python3-devel, python3-setuptools
+BuildRequires: openssl, openssl-devel
+
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires: python-devel
+%else
+BuildRequires: python2-devel
+%endif
+
+BuildRequires: python2-setuptools
 BuildRequires: perl-interpreter, pkgconfig, python2-typing, swig, which
+
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-setuptools
 
 %filter_provides_in %{python2_sitearch}/M2Crypto/__m2crypto.so
 %filter_setup
@@ -21,10 +41,10 @@ BuildRequires: perl-interpreter, pkgconfig, python2-typing, swig, which
 %description
 This package allows you to call OpenSSL functions from Python 2 scripts.
 
-%package -n python3-m2crypto
+%package -n python%{python3_pkgversion}-m2crypto
 Summary: Support for using OpenSSL in Python 3 scripts
 
-%description -n python3-m2crypto
+%description -n python%{python3_pkgversion}-m2crypto
 This package allows you to call OpenSSL functions from Python 3 scripts.
 
 %prep

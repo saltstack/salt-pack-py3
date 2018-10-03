@@ -1,5 +1,12 @@
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%bcond_with docs
+%else
+%bcond_without docs
+%endif
+
 Name:           python-simplejson
 
 Version:        3.16.0
@@ -10,7 +17,8 @@ Summary:        Simple, fast, extensible JSON encoder/decoder for Python
 # The docs include jquery which is licensed MIT or GPLv2
 License: (MIT or AFL) and (MIT or GPLv2)
 URL:            http://undefined.org/python/#simplejson
-Source0:        %pypi_source simplejson
+Source0:        http://pypi.python.org/packages/source/s/simplejson/simplejson-%{version}.tar.gz
+## Source0:        %%pypi_source simplejson
 
 
 %description
@@ -35,9 +43,14 @@ python stdlib.
 %package -n python2-simplejson
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python2
 BuildRequires:  gcc
-BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-nose
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+%else
+BuildRequires:  python2-devel
+%endif
 %{?python_provide:%python_provide python2-simplejson}
 
 %description -n python2-simplejson
@@ -62,9 +75,14 @@ python stdlib.
 %package -n python%{python3_pkgversion}-simplejson
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python3
 BuildRequires: python%{python3_pkgversion}-devel
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 BuildRequires: python%{python3_pkgversion}-setuptools
 BuildRequires: python%{python3_pkgversion}-nose
+%if %{with docs}
 BuildRequires: python%{python3_pkgversion}-sphinx
+%endif
 %{?python_provide:%python_provide python%{python3_pkgversion}-simplejson}
 
 %description -n python%{python3_pkgversion}-simplejson
@@ -93,10 +111,12 @@ python stdlib.
 %py2_build
 %py3_build
 
-PATH=%{_libexecdir}/python3-sphinx:$PATH %{__python3} scripts/make_docs.py
+%if %{with docs}
+PATH=%{_libexecdir}/python%{python3_pkgversion}-sphinx:$PATH %{__python3} scripts/make_docs.py
 
 rm docs/.buildinfo
 rm docs/.nojekyll
+%endif
 
 %install
 %py2_install
@@ -109,18 +129,22 @@ rm docs/.nojekyll
 
 %files -n python2-simplejson
 %license LICENSE.txt
+%if %{with docs}
 %doc docs
+%endif
 %{python2_sitearch}/simplejson/
 %{python2_sitearch}/simplejson-%{version}-py?.?.egg-info/
 
 %files -n python%{python3_pkgversion}-simplejson
 %license LICENSE.txt
+%if %{with docs}
 %doc docs
+%endif
 %{python3_sitearch}/simplejson/
 %{python3_sitearch}/simplejson-%{version}-py?.?.egg-info/
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.16.0-2
+* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.16.0-2
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Thu Aug 23 2018 Miro Hrončok <mhroncok@redhat.com> - 3.16.0-1
