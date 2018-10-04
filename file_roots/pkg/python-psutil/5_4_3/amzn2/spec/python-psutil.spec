@@ -6,6 +6,10 @@
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 Name:           python-%{srcname}
 Version:        5.4.3
 Release:        7%{?dist}
@@ -21,13 +25,20 @@ Source0:        https://github.com/giampaolo/psutil/archive/release-%{version}.t
 #Patch0:         psutil-5.4.3-disable-broken-tests.patch
 
 BuildRequires:  gcc
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python3-rpm-macros
+BuildRequires:  python-devel
+BuildRequires:  python-ipaddress
+%else
 BuildRequires:  python2-devel
+BuildRequires:  python2-ipaddress
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 # Test dependencies
 BuildRequires:  procps-ng
 BuildRequires:  python2-mock
 BuildRequires:  python%{python3_pkgversion}-mock
-BuildRequires:  python2-ipaddress
 
 %description
 psutil is a module providing an interface for retrieving information on all
@@ -82,10 +93,10 @@ done
 %py3_install
 
 
-#%check
-# the main test target causes failures, investigating
-#make test-memleaks PYTHON=%{__python2}
-#make test-memleaks PYTHON=%{__python3}
+## %%check
+##  the main test target causes failures, investigating
+## make test-memleaks PYTHON=%%{__python2}
+## make test-memleaks PYTHON=%%{__python3}
 
 
 %files -n python2-%{srcname}
@@ -103,7 +114,7 @@ done
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-7
+* Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-7
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.4.3-6

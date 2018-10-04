@@ -32,10 +32,19 @@ Requires:       ca-certificates
 
 # Previously bundled things:
 Requires:       python2-six
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+Requires:       python-backports-ssl_match_hostname
+%else
 Requires:       python2-backports-ssl_match_hostname
+%endif
 
 # Secure extra requirements
+%if 0%{?with_amzn2}
+Requires:       python-ipaddress
+%else
 Requires:       python2-ipaddress
+%endif
 Requires:       python2-pysocks
 
 BuildRequires:  python2-devel
@@ -149,7 +158,7 @@ py.test-3
 
 
 %changelog
-* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-5
+* Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-5
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Wed Jun 20 2018 Lumír Balhar <lbalhar@redhat.com> - 1.23-4
