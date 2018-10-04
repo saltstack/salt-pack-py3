@@ -714,11 +714,12 @@ pkgbuild_registry:
       results:
         - openpgm
         - openpgm-devel
-    python-coverage:
-      version: 4.5.1-4
+    python-atomicwrites:
+      version: 1.1.5-13
+      noarch: True
       results:
-        - python2-coverage
-        - python3-coverage
+        - python2-atomicwrites
+        - python3-atomicwrites
     python-chardet:
       version: 3.0.4-8
       noarch: True
@@ -733,6 +734,11 @@ pkgbuild_registry:
         - python3-cherrypy
       build_deps:
         - python-nose
+    python-coverage:
+      version: 4.5.1-4
+      results:
+        - python2-coverage
+        - python3-coverage
     python-crypto:
       version: 2.6.1-25
       build_deps:
@@ -742,8 +748,22 @@ pkgbuild_registry:
       results:
         - python2-crypto
         - python3-crypto
+    python-funcsigs:
+      version: 1.0.2-12
+      noarch: True
+      build_deps:
+        - python-unittest2
+      results:
+        - python2-funcsigs
+        - python3-funcsigs
+    python-idna:
+      version: 2.7-4
+      noarch: True
+      results:
+        - python2-idna
+        - python3-idna
     python-libcloud:
-      version: 2.2.1-9
+      version: 2.2.1-5
       noarch: True
       results:
         - python2-libcloud
@@ -763,6 +783,8 @@ pkgbuild_registry:
         - python3-mock
     python-msgpack:
       version: 0.5.6-6
+      build_deps:
+        - python-funcsigs
       results:
         - python2-msgpack
         - python3-msgpack
@@ -778,18 +800,45 @@ pkgbuild_registry:
         - python3-nose
     python-psutil:
       version: 5.4.3-7
+      build_deps:
+        - python-mock
       results:
         - python2-psutil
         - python3-psutil
     python-pycryptodome:
       version: 3.6.1-3
-      results:
-        - python2-pycryptodomex
-        - python3-pycryptodomex
       build_deps:
         - libtommath
         - libtomcrypt
         - libtomcrypt-devel
+      results:
+        - python2-pycryptodomex
+        - python3-pycryptodomex
+    python-pysocks:
+      version: 1.6.8-5
+      noarch: True
+      results:
+        - python2-pysocks
+        - python3-pysocks
+    python-pytest:
+      version: 3.6.4-2
+      build_deps:
+        - python-atomicwrites
+        - python-attrs
+        - python-hypothesis
+        - python-more-itertools
+        - python-setuptools_scm
+        - python-zope-interface
+        - python-zope-event
+        - python-pluggy
+      results:
+        - python2-pytest
+        - python3-pytest
+    python-pytest-runner:
+      version: 4.0-4
+      results:
+        - python2-pytest-runner
+        - python3-pytest-runner
     python-pyzmq:
       name: python-zmq
       version: 17.0.0-4
@@ -801,12 +850,13 @@ pkgbuild_registry:
     python-requests:
       version: 2.19.1-4
       noarch: True
+      build_deps:
+        - python-chardet
+        - python-idna
+        - python-urllib3
       results:
         - python2-requests
         - python3-requests
-      build_deps:
-        - python-chardet
-        - python-urllib3
     python-simplejson:
       version: 3.16.0-2
       build_deps:
@@ -814,6 +864,12 @@ pkgbuild_registry:
       results:
         - python2-simplejson
         - python3-simplejson
+    python-six:
+      version: 1.11.0-7
+      noarch: True
+      results:
+        - python2-six
+        - python3-six
     python-timelib:
       version: 0.2.4-4
       noarch: True
@@ -831,9 +887,20 @@ pkgbuild_registry:
       results:
         - python2-typing
         - python3-typing
+    python-unittest2:
+      version: 1.1.0-16
+      noarch: True
+      build_deps:
+        - python-six
+      results:
+        - python2-unittest2
+        - python3-unittest2
     python-urllib3:
       version: 1.23-5
       noarch: True
+      build_deps:
+        - python-six
+        - python-pysocks
       results:
         - python2-urllib3
         - python3-urllib3

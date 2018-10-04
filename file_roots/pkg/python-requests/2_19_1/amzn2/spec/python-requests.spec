@@ -1,3 +1,9 @@
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%bcond_with tests
+%else
 %if 0%{?_module_build}
 # Don't run tests on module-build for now
 # See: https://bugzilla.redhat.com/show_bug.cgi?id=1450608
@@ -6,8 +12,7 @@
 # When bootstrapping Python, we cannot test this yet
 %bcond_without tests
 %endif
-
-%{!?python3_pkgversion:%global python3_pkgversion 3}
+%endif
 
 
 Name:           python-requests
@@ -55,7 +60,13 @@ designed to make HTTP requests easy for developers.
 Summary: HTTP library, written in Python, for human beings
 %{?python_provide:%python_provide python2-requests}
 
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+BuildRequires:  python2-setuptools
+%else
 BuildRequires:  python2-devel
+%endif
 BuildRequires:  python2-chardet
 BuildRequires:  python2-urllib3
 BuildRequires:  python2-idna
@@ -87,6 +98,10 @@ designed to make HTTP requests easy for developers.
 Summary: HTTP library, written in Python, for human beings
 
 %{?python_provide:%python_provide python%{python3_pkgversion}-requests}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%endif
 
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-chardet

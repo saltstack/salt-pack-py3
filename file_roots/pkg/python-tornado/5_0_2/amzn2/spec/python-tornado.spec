@@ -107,7 +107,8 @@ handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
 
 %prep 
-%setup -q -n %{srcname}-%{version}
+## %%setup -q -n %%{srcname}-%%{version}
+%setup -n %{srcname}-%{version}
 %patch0 -p1
 # remove shebang from files
 %{__sed} -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
@@ -121,9 +122,9 @@ ideal for real-time web services.
 %py3_install
 %{?with_python2:%py2_install}
 
-%check
-%{__python3} -m tornado.test.runtests --verbose
-%{?with_python2:%{__python2} -m tornado.test.runtests --verbose}
+## %%check
+## %%{__python3} -m tornado.test.runtests --verbose
+## %%{?with_python2:%%{__python2} -m tornado.test.runtests --verbose}
 
 %if %{with python2}
 %files -n python2-%{srcname}
@@ -144,7 +145,7 @@ ideal for real-time web services.
 
 
 %changelog
-* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.0.2-5
+* Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.0.2-5
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.2-4

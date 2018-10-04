@@ -5,6 +5,9 @@
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
+%bcond_with tests
+%else
+%bcond_without tests
 %endif
 
 Name:           python-%{srcname}
@@ -21,7 +24,9 @@ BuildRequires:  gcc-c++
 BuildRequires:  Cython
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
+%if %{with tests}
 BuildRequires:  python2-pytest
+%endif
 BuildRequires:  python2-funcsigs
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
@@ -29,7 +34,9 @@ BuildRequires:  python%{python3_pkgversion}-rpm-macros
 %endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
+%if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-pytest
+%endif
 BuildRequires:  python%{python3_pkgversion}-funcsigs
 
 %description
@@ -74,10 +81,12 @@ This is a Python %{python3_version} (de)serializer for MessagePack.
 %py2_install
 %py3_install
 
+%if %{with tests}
 %check
 export PYTHONPATH=$(pwd)
 py.test-2 -v test
 py.test-%{python3_version} -v test
+%endif
 
 %files -n python2-%{srcname}
 %doc README.rst
@@ -92,7 +101,7 @@ py.test-%{python3_version} -v test
 %{python3_sitearch}/%{srcname}*.egg-info
 
 %changelog
-* Wed Oct 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-6
+* Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-6
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Mon Sep 03 2018 Miro Hrončok <mhroncok@redhat.com> - 0.5.6-5
