@@ -1,0 +1,10 @@
+--- hypothesis-python-3.12.0/docs/conf.py.orig	2017-07-06 23:59:48.000000000 -0700
++++ hypothesis-python-3.12.0/docs/conf.py	2017-07-10 22:27:58.643985059 -0700
+@@ -40,7 +40,6 @@
+     'sphinx.ext.doctest',
+     'sphinx.ext.extlinks',
+     'sphinx.ext.viewcode',
+-    'sphinx.ext.intersphinx',
+ ]
+ 
+ templates_path = ['_templates']

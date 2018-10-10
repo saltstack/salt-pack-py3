@@ -720,6 +720,12 @@ pkgbuild_registry:
       results:
         - python2-atomicwrites
         - python3-atomicwrites
+    python-attrs:
+      version: 17.4.0-8
+      noarch: True
+      results:
+        - python2-attrs
+        - python3-attrs
     python-chardet:
       version: 3.0.4-8
       noarch: True
@@ -756,6 +762,15 @@ pkgbuild_registry:
       results:
         - python2-funcsigs
         - python3-funcsigs
+    python-hypothesis:
+      version: 3.66.11-2
+      noarch: True
+      build_deps:
+        - python-attrs
+        - python-coverage
+      results:
+        - python2-hypothesis
+        - python3-hypothesis
     python-idna:
       version: 2.7-4
       noarch: True
@@ -763,8 +778,10 @@ pkgbuild_registry:
         - python2-idna
         - python3-idna
     python-libcloud:
-      version: 2.2.1-5
+      version: 2.2.1-9
       noarch: True
+      build_deps:
+        - python-pytest-runner
       results:
         - python2-libcloud
         - python3-libcloud
@@ -781,6 +798,15 @@ pkgbuild_registry:
       results:
         - python2-mock
         - python3-mock
+    python-more-itertools:
+      version: 4.1.0-5
+      noarch: True
+      build_deps:
+        - python-nose
+        - python-six
+      results:
+        - python2-more-itertools
+        - python3-more-itertools
     python-msgpack:
       version: 0.5.6-6
       build_deps:
@@ -805,6 +831,22 @@ pkgbuild_registry:
       results:
         - python2-psutil
         - python3-psutil
+    python-py:
+      version: 1.5.4-4 
+      noarch: True
+      build_deps:
+        - python-setuptools_scm
+      results:
+        - python2-py
+        - python3-py
+    python-pluggy:
+      version: 0.7.1-2
+      noarch: True
+      build_deps:
+        - python-setuptools_scm
+      results:
+        - python2-pluggy
+        - python3-pluggy
     python-pycryptodome:
       version: 3.6.1-3
       build_deps:
@@ -822,6 +864,7 @@ pkgbuild_registry:
         - python3-pysocks
     python-pytest:
       version: 3.6.4-2
+      noarch: True
       build_deps:
         - python-atomicwrites
         - python-attrs
@@ -831,11 +874,16 @@ pkgbuild_registry:
         - python-zope-interface
         - python-zope-event
         - python-pluggy
+        - python-py
       results:
         - python2-pytest
         - python3-pytest
     python-pytest-runner:
       version: 4.0-4
+      noarch: True
+      build_deps:
+        - python-pytest
+        - python-setuptools_scm
       results:
         - python2-pytest-runner
         - python3-pytest-runner
@@ -864,6 +912,12 @@ pkgbuild_registry:
       results:
         - python2-simplejson
         - python3-simplejson
+    python-setuptools_scm:
+      version: 3.1.0-2
+      noarch: True
+      results:
+        - python2-setuptools_scm
+        - python3-setuptools_scm
     python-six:
       version: 1.11.0-7
       noarch: True
@@ -910,6 +964,20 @@ pkgbuild_registry:
       results:
         - python2-pyyaml
         - python3-pyyaml
+    python-zope-event:
+      version: 4.2.0-12
+      noarch: True
+      results:
+        - python2-zope-event
+        - python3-zope-event
+    python-zope-interface:
+      version: 4.5.0-3
+      build_deps:
+        - python-nose
+        - python-zope-event
+      results:
+        - python2-zope-interface
+        - python3-zope-interface
     salt:
       version: 2018.3.2-1
       noarch: True
