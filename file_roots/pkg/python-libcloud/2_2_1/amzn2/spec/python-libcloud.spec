@@ -1,3 +1,7 @@
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
 %global tarball_name apache-libcloud
 %global srcname libcloud
 %global eggname apache_libcloud
@@ -28,7 +32,12 @@ BuildArch:      noarch
 
 %package -n python2-%{srcname}
 Summary:        %{summary}
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+%else
 BuildRequires:  python2-devel
+%endif
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-pytest-runner
 %{?python_provide:%python_provide python2-%{srcname}}
@@ -38,6 +47,9 @@ Python 2 version.
 
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-pytest-runner
@@ -83,7 +95,7 @@ rm -r $RPM_BUILD_ROOT%{python3_sitelib}/%{srcname}/test
 %{python3_sitelib}/%{eggname}-*.egg-info/
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.2.1-9
+* Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.2.1-9
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Mon Jul 16 2018 Marcel Plch <mplch@redhat.com> - 2.2.1-8

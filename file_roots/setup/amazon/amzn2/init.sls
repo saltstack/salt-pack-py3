@@ -89,6 +89,7 @@ build_additional_pkgs_{{build_cfg.build_release}}:
       - python2-gnupg
       - python2-rpm-macros
       - python3-rpm-macros
+      - gcc
 
 
 build_additional_{{build_cfg.build_release}}_{{build_cfg.build_runas}}:
