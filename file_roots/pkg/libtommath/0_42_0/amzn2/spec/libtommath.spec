@@ -1,6 +1,6 @@
 Name:           libtommath
 Version:        0.42.0
-Release:        4%{?dist}
+Release:        7%{?dist}
 Summary:        A portable number theoretic multiple-precision integer library
 License:        Public Domain
 URL:            http://www.libtom.org/?page=features&newsitems=5&whatfile=ltm
@@ -56,10 +56,7 @@ The %{name}-doc package contains PDF documentation for using %{name}.
 # no configure script ships with libtommath. Its only requirement is ANSI C.
 export CFLAGS="$RPM_OPT_FLAGS"
 make %{?_smp_mflags} LIBPATH=%{_libdir} -f makefile.shared 
-%ifnarch ppc64le
-  DOCS="docs"
-%endif
-make %{?_smp_mflags} -f makefile poster manual $DOCS
+make %{?_smp_mflags} -f makefile poster manual docs
 
 %install
 # There is no configure script that ships with libtommath but it does understand
@@ -91,8 +88,17 @@ find %{buildroot} -name '*.a' -delete
 %doc bn.pdf poster.pdf tommath.pdf
 
 %changelog
-* Mon Dec 07 2015 Jaromir Capik <jcapik@redhat.com> - 0.42.0-4
-- Workaround for ghostscript segfault on ppc64le
+* Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.42.0-7
+- Support for Python 3 on Amazon Linux 2
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.42.0-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.42.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.42.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
 * Sun Sep 29 2013 Simone Caronni <negativo17@gmail.com> - 0.42.0-3
 - Move headers to default location.

@@ -11,6 +11,8 @@ include:
    - pkg.openpgm.5_2_122.amzn2          ## Need to check latest
    - pkg.python-attrs.17_4_0.amzn2
    - pkg.python-atomicwrites.1_1_5.amzn2
+   - pkg.python-babel.2_6_0.amzn2
+   - pkg.python-bottle.0_12_13.amzn2
    - pkg.python-chardet.3_0_4.amzn2     ## latest, 3.0.4
    - pkg.python-cherrypy.5_6_0.amzn2    ## stick with this version
    - pkg.python-coverage.4_5_1.amzn2
@@ -20,8 +22,10 @@ include:
    - pkg.python-funcsigs.1_0_2.amzn2
    - pkg.python-hypothesis.3_66_11.amzn2
    - pkg.python-idna.2_7.amzn2
+   - pkg.python-jinja2.2.10.amzn2
    - pkg.python-libcloud.2_2_1.amzn2    ## latest is 2.3.0
    - pkg.python-m2crypto.0_30_1.amzn2   ## latest 0.30.1
+   - pkg.python-markupsafe.1_0.amzn2
    - pkg.python-mock.1_0_1.amzn2        ## should not be needed since Py3.3 as part of Standard Library, list as dependencies in some packages
    - pkg.python-msgpack.0_5_6.amzn2     ## latest 0.5.6
    - pkg.python-more-itertools.4_1_0.amzn2
@@ -30,6 +34,8 @@ include:
    - pkg.python-psutil.5_4_3.amzn2      ## latest 5.4.7 [5.4.8 not in PyPI yet]
    - pkg.python-py.1_5_4.amzn2
    - pkg.python-pycryptodome.3_6_1.amzn2 ## latest 3.6.6 has CVE-2018-15560 fix
+   - pkg.python-pycurl.7_43_0_2.amzn2
+   - pkg.python-pyflakes.2_0_0.amzn2
    - pkg.python-pysocks.1_6_8.amzn2
    - pkg.python-pytest.3_6_4.amzn2
    - pkg.python-pytest-runner.40.amzn2
@@ -46,5 +52,6 @@ include:
    - pkg.python-yaml.4_2.amzn2          ## latest 3.13
    - pkg.python-zope-event.4_2_0.amzn2
    - pkg.python-zope-interface.4_5_0.amzn2
+   - pkg.salt.2018_3_2.amzn2
    - pkg.zeromq.4_2_3.amzn2             ## latest 4.2.3
 
