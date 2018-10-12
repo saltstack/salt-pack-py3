@@ -722,6 +722,10 @@ pkgbuild_registry:
     python-babel:
       version: 2.6.0-6
       noarch: True
+      build_deps:
+        - python-pytz
+        - python-freezegun
+        - python-pytest
       results:
         - python3-babel
     python-bottle:
@@ -749,6 +753,7 @@ pkgbuild_registry:
     python-coverage:
       version: 4.5.1-4
       results:
+        - python2-coverage
         - python3-coverage
     python-crypto:
       version: 2.6.1-25
@@ -758,6 +763,28 @@ pkgbuild_registry:
         - libtomcrypt-devel
       results:
         - python3-crypto
+    python-dateutil:
+      version: 2.7.3-2
+      noarch: True
+      build_deps:
+        - python-six
+        - python-setuptools_scm
+        - python-hypothesis
+      results:
+        - python3-dateutil
+    python-freezegun:
+      version: 0.3.8-12
+      noarch: True
+      build_deps:
+        - python-dateutil
+        - python-sure
+        - python-nose
+        - python-coverage
+        - python-six
+        - python-mock
+      results:
+        - python2-freezegun
+        - python3-freezegun
     python-funcsigs:
       version: 1.0.2-12
       noarch: True
@@ -782,8 +809,9 @@ pkgbuild_registry:
       version: 2.10-7
       noarch: True
       build_deps:
-        - python-babel
         - python-markupsafe
+        - python-babel
+        - python-pytest
       results:
         - python3-jinja2
     python-libcloud:
@@ -803,6 +831,7 @@ pkgbuild_registry:
     python-markupsafe:
       version: 1.0-2
       results:
+        - python2-markupsafe
         - python3-markupsafe
     python-mock:
       version: 1.0.1-12
@@ -901,6 +930,13 @@ pkgbuild_registry:
         - python-setuptools_scm
       results:
         - python3-pytest-runner
+    python-pytz:
+      version: 2018.5-2
+      noarch: True
+      build_deps:
+        - python-pytest
+      results:
+        - python3-pytz
     python-pyzmq:
       name: python-zmq
       version: 17.0.0-4
@@ -917,22 +953,33 @@ pkgbuild_registry:
         - python-urllib3
       results:
         - python3-requests
+    python-setuptools_scm:
+      version: 3.1.0-2
+      noarch: True
+      results:
+        - python2-setuptools_scm
+        - python3-setuptools_scm
     python-simplejson:
       version: 3.16.0-2
       build_deps:
         - python-nose
       results:
         - python3-simplejson
-    python-setuptools_scm:
-      version: 3.1.0-2
-      noarch: True
-      results:
-        - python3-setuptools_scm
     python-six:
       version: 1.11.0-7
       noarch: True
       results:
         - python3-six
+    python-sure:
+      version: 1.4.11-4 
+      noarch: True
+      build_deps:
+        - python-mock
+        - python-six
+        - python-nose
+      results:
+        - python2-sure
+        - python3-sure
     python-timelib:
       version: 0.2.4-4
       noarch: True

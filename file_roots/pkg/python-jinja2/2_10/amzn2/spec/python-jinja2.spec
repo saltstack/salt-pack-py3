@@ -62,17 +62,24 @@ Summary:        General purpose template engine for python2
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python-devel
+BuildRequires:  python-babel >= 0.8
 %else
 BuildRequires:  python2-devel
+BuildRequires:  python2-babel >= 0.8
 %endif
 BuildRequires:  python2-setuptools
-BuildRequires:  python2-babel >= 0.8
 BuildRequires:  python2-markupsafe
 BuildRequires:  python2-pytest
 %if %{with docs}
 BuildRequires:  %{_bindir}/sphinx-build-2
 %endif
+
+%if 0%{?with_amzn2}
+Requires:       python-babel >= 0.8
+%else
 Requires:       python2-babel >= 0.8
+%endif
+
 Requires:       python2-markupsafe
 Requires:       python2-setuptools
 %{?python_provide:%python_provide python2-jinja2}
@@ -147,7 +154,7 @@ make -C docs html PYTHONPATH=$(pwd) SPHINXBUILD=sphinx-build-2
 popd
 %endif # with python2
 
-%if %{?with_python3}
+%if %{with python3}
 pushd python3
 %py3_build
 %if %{with docs}
@@ -234,7 +241,7 @@ popd
 
 
 %changelog
-* Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.10-7
+* Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.10-7
 - Support for Python 3 on Amazon Linux 2
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.10-6

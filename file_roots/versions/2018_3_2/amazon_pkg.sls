@@ -19,6 +19,8 @@ include:
    - pkg.python-crypto.2_6_1.amzn2      ## RH7 EPEL py34 2.6.1-13
 ##   - pkg.python-enum34.1_0.amzn2      ## latest 1.1.6, should not need for Py3.7
 ##   - pkg.python-futures.3_0_3.amzn2   ## should not need for Py 3 - but have it for Redhat 7 ????
+   - pkg.python-dateutil.2_7_3.amzn2
+   - pkg.python-freezegun.0_3_8.amzn2
    - pkg.python-funcsigs.1_0_2.amzn2
    - pkg.python-hypothesis.3_66_11.amzn2
    - pkg.python-idna.2_7.amzn2
@@ -38,12 +40,14 @@ include:
    - pkg.python-pyflakes.2_0_0.amzn2
    - pkg.python-pysocks.1_6_8.amzn2
    - pkg.python-pytest.3_6_4.amzn2
-   - pkg.python-pytest-runner.40.amzn2
+   - pkg.python-pytest-runner.4_0.amzn2
+   - pkg.python-pytz.2018_5.amzn2
    - pkg.python-pyzmq.17_0_0.amzn2      ## latest 17.1.2
    - pkg.python-requests.2_19_1.amzn2    ## latest 2.19.1
+   - pkg.python-setuptools_scm.3_1_0.amzn2
    - pkg.python-simplejson.3_16_0.amzn2  ## latest 3.16.0
    - pkg.python-six.1_11_0.amzn2        ## latest 
-   - pkg.python-setuptools_scm.3_1_0.amzn2
+   - pkg.python-sure.1_4_11.amzn2
    - pkg.python-tornado.5_0_2.amzn2     ## latest 5.1.1
    - pkg.python-timelib.0_2_4.amzn2
    - pkg.python-typing.3_5_2_2.amzn2

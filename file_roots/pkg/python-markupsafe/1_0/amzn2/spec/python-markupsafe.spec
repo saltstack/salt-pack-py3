@@ -1,7 +1,7 @@
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
 %endif
 
 Name:           python-markupsafe
@@ -24,11 +24,10 @@ Summary:        Implements a XML/HTML/XHTML Markup safe string for Python 2
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python-devel
-BuildRequires:  python2-setuptools
 %else
 BuildRequires:  python2-devel
-BuildRequires:  python2dist(setuptools)
 %endif
+BuildRequires:  python2-setuptools
 %{?python_provide:%python_provide python2-markupsafe}
 
 %description -n python2-markupsafe
@@ -39,12 +38,9 @@ A library for safe markup escaping. Python 2 version.
 Summary:        Implements a XML/HTML/XHTML Markup safe string for Python 3
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
-%else
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python3dist(setuptools)
-%endif
 %{?python_provide:%python_provide python%{python3_pkgversion}-markupsafe}
 
 %description -n python%{python3_pkgversion}-markupsafe
