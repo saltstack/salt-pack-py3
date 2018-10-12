@@ -32,9 +32,10 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/sources/crypt-{{version}}.tar.bz2
-      - salt://{{slspath}}/sources/libtomcrypt-makefile.patch
-      - salt://{{slspath}}/sources/libtomcrypt-pkgconfig.patch
       - salt://{{slspath}}/sources/libtomcrypt-two-key-triple-des.patch
+      - salt://{{slspath}}/sources/libtomcrypt-pkgconfig.patch
+      - salt://{{slspath}}/sources/libtomcrypt-makefile.patch
+      - salt://{{slspath}}/sources/libtomcrypt-CVE-2016-6129.patch
+      - salt://{{slspath}}/sources/crypt-1.17.tar.bz2
 
 {% endif %}

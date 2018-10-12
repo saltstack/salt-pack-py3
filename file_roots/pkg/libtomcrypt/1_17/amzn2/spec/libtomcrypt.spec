@@ -1,17 +1,18 @@
 Name:           libtomcrypt
 Version:        1.17
-Release:        23%{?dist}
+Release:        27%{?dist}
 Summary:        A comprehensive, portable cryptographic toolkit
-
 License:        Public Domain
-URL:            http://www.libtom.org/?page=features&newsitems=5&whatfile=crypt
-Source0:        http://www.libtom.org/files/crypt-%{version}.tar.bz2
+URL:            http://www.libtom.net/
+
+Source0:        https://github.com/libtom/%{name}/releases/download/%{version}/crypt-%{version}.tar.bz2
 Patch0:         %{name}-makefile.patch
 Patch1:         %{name}-pkgconfig.patch
 Patch2:         %{name}-two-key-triple-des.patch
+Patch3:         %{name}-CVE-2016-6129.patch
 
 BuildRequires:  ghostscript
-BuildRequires:  libtommath-devel >= 0.42.0
+BuildRequires:  libtommath-devel >= 0.42.0-3
 BuildRequires:  libtool
 
 %if 0%{?fedora} || 0%{?rhel} >= 7
@@ -58,21 +59,17 @@ The %{name}-doc package contains documentation for use with %{name}.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 # No configure script ships with libtomcrypt. Its only requirement is ANSI C and
 # libtommath. Explicitly force it to be built against libtommath.
-export CFLAGS="$RPM_OPT_FLAGS -DLTM_DESC"
+export CFLAGS="$RPM_OPT_FLAGS -DLTM_DESC -fno-strict-aliasing"
 make %{?_smp_mflags} LIBPATH=%{_libdir} EXTRALIBS="-ltommath" -f makefile.shared 
-
-# workaround only - ghostscript segfaults on ppc64le -> can't build docs
-%ifnarch ppc64le
-  DOCS="docs"
-%endif
-make %{?_smp_mflags} LIBPATH=%{_libdir} -f makefile $DOCS
+make %{?_smp_mflags} LIBPATH=%{_libdir} -f makefile docs
 
 %check
-export CFLAGS="$RPM_OPT_FLAGS -DLTM_DESC -DUSE_LTM"
+export CFLAGS="$RPM_OPT_FLAGS -DLTM_DESC -DUSE_LTM -fno-strict-aliasing"
 make %{?_smp_mflags} LIBPATH=%{_libdir} EXTRALIBS="-ltommath" test
 ./test
 
@@ -82,7 +79,7 @@ make %{?_smp_mflags} LIBPATH=%{_libdir} EXTRALIBS="-ltommath" test
 # INSTALL_GROUP environment variables.
 export INSTALL_USER=$(id -un)
 export INSTALL_GROUP=$(id -gn)
-export CFLAGS="$RPM_OPT_FLAGS -DLTM_DESC -DUSE_LTM"
+export CFLAGS="$RPM_OPT_FLAGS -DLTM_DESC -DUSE_LTM -fno-strict-aliasing"
 
 make install DESTDIR=%{buildroot} LIBPATH=%{_libdir} EXTRALIBS="-ltommath" -f makefile.shared
 find %{buildroot} -name '*.h' -exec chmod 644 {} \;
@@ -99,7 +96,7 @@ find %{buildroot} -name 'libtomcrypt_prof*' -delete
 %postun -p /sbin/ldconfig
 
 %files
-%doc LICENSE
+%license LICENSE
 %{_libdir}/*.so.*
 
 %files devel
@@ -111,6 +108,19 @@ find %{buildroot} -name 'libtomcrypt_prof*' -delete
 %doc LICENSE doc/crypt.pdf
 
 %changelog
+* Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.17-27
+- Support for Python 3 on Amazon Linux 2
+
+* Tue Jun 27 2017 Pavel Cahyna <pcahyna@redhat.com> - 1.17-26
+- Merge EPEL changes: fix CVE-2016-6129 (#1370955, #1370957), update URLs (#1463608, #1463547)
+- Fix strict aliasing warnings by adding -fno-strict-aliasing
+    
+* Fri May 12 2017 Pavel Cahyna <pcahyna@redhat.com> - 1.17-25
+- Rebuild for RHEL 7.4 Extras
+
+* Mon May 08 2017 Yaakov Selkowitz <yselkowi@redhat.com> - 1.17-24
+- Build on multiple architectures
+
 * Tue Dec 08 2015 Jaromir Capik <jcapik@redhat.com> - 1.17-23
 - Workaround for ghostscript segfault on ppc64le
 

@@ -1,17 +1,19 @@
 Name:          openpgm
 Version:       5.2.122
-Release:       2%{?dist}
+Release:       15%{?dist}
 Summary:       An implementation of the PGM reliable multicast protocol
 
 Group:         System Environment/Libraries
 # The license is LGPLv2.1
 License:       LGPLv2
+# New URL is https://github.com/steve-o/openpgm
 URL:           http://openpgm.googlecode.com/
 Source0:       http://openpgm.googlecode.com/files/libpgm-%{version}~dfsg.tar.gz
 
-BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: python
+BuildRequires: gcc
+BuildRequires: python2
+BuildRequires: perl-interpreter
 
 
 %description
@@ -31,6 +33,9 @@ This package contains OpenPGM related development libraries and header files.
 %prep
 %setup -q -n libpgm-%{version}~dfsg/openpgm/pgm
 
+sed -i "s:#!/usr/bin/python:#!/usr/bin/python2:" version_generator.py
+
+
 %build
 %configure
 make %{_smp_mflags}
@@ -40,14 +45,6 @@ rm -rf %{buildroot}
 make DESTDIR=%{buildroot} install
 
 rm %{buildroot}%{_libdir}/libpgm.{a,la}
-
-%clean
-rm -rf %{buildroot}
-
-
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
 
 
 %files
@@ -63,6 +60,47 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.2.122-15
+- Support for Python 3 on Amazon Linux 2
+
+* Wed Sep 19 2018 Randy Barlow <bowlofeggs@fedoraproject.org> - 5.2.122-14
+- Use python2 explicitly (#1605329).
+- Remove unnecessary calls to ldconfig.
+
+* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-13
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Mon Mar 19 2018 Iryna Shcherbina <ishcherb@redhat.com> - 5.2.122-12
+- Update Python 2 dependency declarations to new packaging standards
+  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
+
+* Thu Feb 08 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-10
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
+
+* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Sat Feb 18 2017 Jose Pedro Oliveira <jose.p.oliveira.oss at gmail.com> - 5.2.122-8
+- Add perl to the build requirements list (required by galois_generator.pl)
+
+* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.2.122-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.2.122-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.2.122-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.2.122-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
