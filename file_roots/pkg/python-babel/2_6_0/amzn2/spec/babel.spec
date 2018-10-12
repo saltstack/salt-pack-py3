@@ -6,6 +6,7 @@
 %global bootstrap 1
 %global with_python2 0
 %bcond_with docs
+%global py_setup setup.py
 %else
 
 %bcond_without docs
@@ -134,13 +135,15 @@ Documentation for Babel
 %endif
 
 %prep
-%autosetup -n %{srcname}-%{version}
+## %%autosetup -n %{srcname}-%{version}
+%setup -n %{srcname}-%{version}
 
 %build
 %if %{with_python2}
 %py2_build
 %endif
 %py3_build
+
 
 %if %{with docs}
 BUILDDIR="$PWD/built-docs"
@@ -194,7 +197,7 @@ export TZ=America/New_York
 %endif
 
 %changelog
-* Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-6
+* Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-6
 - Support for Python 3 on Amazon Linux 2
 
 * Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.0-5
