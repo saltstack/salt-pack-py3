@@ -207,7 +207,7 @@ pkgbuild_registry:
         - libtomcrypt-devel
     python-pyzmq:
       name: python-zmq
-      version: 15.3.0-4
+      version: 15.3.0-5
       results:
         - python2-zmq
         - python34-zmq
