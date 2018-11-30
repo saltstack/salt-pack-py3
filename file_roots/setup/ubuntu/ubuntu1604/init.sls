@@ -60,7 +60,10 @@ build_additional_py3_pkgs:
       - python3-sphinx
       - python3-all-dev
       - python3-debian
+<<<<<<< HEAD
+=======
       - python3-gnupg
+>>>>>>> develop
       - apt-utils
 {% endif %}
 

@@ -155,10 +155,17 @@ pkgbuild_registry:
         - python2-libcloud
         - python34-libcloud
     python-libnacl:
+<<<<<<< HEAD
+      version: 1.4.3-3
+      noarch: True
+      results:
+        - python2-libnacl
+=======
       version: 1.6.1-1
       noarch: True
       results:
         - python-libnacl
+>>>>>>> develop
         - python34-libnacl
       build_deps:
         - libsodium
@@ -186,7 +193,11 @@ pkgbuild_registry:
         - python2-psutil
         - python34-psutil
     python-pycryptodome:
+<<<<<<< HEAD
+      version: 3.4.3-4
+=======
       version: 3.6.1-2
+>>>>>>> develop
       results:
         - python2-pycryptodomex
         - python34-pycryptodomex
@@ -203,7 +214,11 @@ pkgbuild_registry:
       build_deps:
         - zeromq
     python-raet:
+<<<<<<< HEAD
+      version: 0.6.6-4
+=======
       version: 0.6.6-5
+>>>>>>> develop
       noarch: True
       results:
         - python2-raet
@@ -376,7 +391,11 @@ pkgbuild_registry:
         - python27-crypto
     python-pycryptodome:
       name: python27-pycryptodome
+<<<<<<< HEAD
+      version: 3.4.3-4
+=======
       version: 3.6.1-2
+>>>>>>> develop
       build_deps:
         - python27
         - python-setuptools
@@ -443,7 +462,11 @@ pkgbuild_registry:
         - python27-libcloud
     python-libnacl:
       name: python27-libnacl
+<<<<<<< HEAD
+      version: 1.4.3-3
+=======
       version: 1.6.1-1
+>>>>>>> develop
       noarch: True
       build_deps:
         - python27
@@ -716,7 +739,11 @@ pkgbuild_registry:
         - python27-libcloud
     python-libnacl:
       name: python27-libnacl
+<<<<<<< HEAD
+      version: 1.4.3-2
+=======
       version: 1.6.1-1
+>>>>>>> develop
       noarch: True
       build_deps:
         - libsodium
