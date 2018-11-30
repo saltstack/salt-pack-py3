@@ -228,15 +228,6 @@ pkgbuild_registry:
         - python-libnacl
       additonal_deps:
         - python-simplejson
-    python-requests:
-      version: 2.6.0-2
-      noarch: True
-      results:
-        - python2-requests
-        - python34-requests
-      build_deps:
-        - python-chardet
-        - python-urllib3
     python-simplejson:
       version: 3.3.3-2
       results:
@@ -277,7 +268,6 @@ pkgbuild_registry:
         - python-pycryptodome
         - python-msgpack
         - python-yaml
-        - python-requests
         - python-pyzmq
         - python-markupsafe
         - python-tornado
