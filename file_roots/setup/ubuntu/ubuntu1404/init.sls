@@ -5,24 +5,31 @@
 {% set prefs_text = 'Package: *
         Pin: origin ""
         Pin-Priority: 1001
+
         Package: *
-        Pin: release a=' ~ os_codename ~ '-backports
+        Pin: release n=' ~ os_codename ~ '-backports
         Pin-Priority: 750
+
         Package: *
-        Pin: release a=' ~ os_codename ~ '-security
+        Pin: release n=' ~ os_codename ~ '-security
         Pin-Priority: 740
+
         Package: *
-        Pin: release a=' ~ os_codename ~ '-updates
+        Pin: release n=' ~ os_codename ~ '-updates
         Pin-Priority: 730
+
         Package: *
         Pin: release a=main
         Pin-Priority: 700
+
         Package: *
         Pin: release a=restricted
         Pin-Priority: 650
+
         Package: *
         Pin: release a=universe
         Pin-Priority: 600
+
         Package: *
         Pin: release a=multiverse
         Pin-Priority: 550
@@ -64,7 +71,7 @@ build_pbldhooks_rm_G05:
 
 build_pbldhooks_rm_D04:
   file.absent:
-    - name: {{build_cfg.build_homedir}}t/.pbuilder-hooks/D04update_local_repo
+    - name: {{build_cfg.build_homedir}}/.pbuilder-hooks/D04update_local_repo
 
 
 build_pbldrc_rm:
@@ -75,32 +82,6 @@ build_pbldrc_rm:
 build_prefs_rm:
   file.absent:
     - name: /etc/apt/preferences
-
-
-build_pbldhooks_file_G05:
-  file.append:
-    - name: {{build_cfg.build_homedir}}/.pbuilder-hooks/G05apt-preferences
-    - makedirs: True
-    - text: |
-        #!/bin/sh
-        set -e
-        cat > "/etc/apt/preferences" << EOF
-        {{prefs_text}}
-        EOF
-
-
-build_pbldhooks_file_D04:
-  file.append:
-    - name: {{build_cfg.build_homedir}}/.pbuilder-hooks/D04update_local_repo
-    - makedirs: True
-    - text: |
-        #!/bin/sh
-        # path to local repo
-        LOCAL_REPO="{{build_cfg.build_dest_dir}}"
-        # Generate a Packages file
-        ( cd ${LOCAL_REPO} ; /usr/bin/apt-ftparchive packages . > "${LOCAL_REPO}/Packages" )
-        # Update to include any new packagers in the local repo
-        apt-get --allow-unauthenticated update
 
 
 build_pbldhooks_perms:
@@ -116,10 +97,49 @@ build_pbldhooks_perms:
         - mode
 
 
+build_pbldhooks_file_G05:
+  file.managed:
+    - name: {{build_cfg.build_homedir}}/.pbuilder-hooks/G05apt-preferences
+    - makedirs: True
+    - dir_mode: 0755
+    - mode: 0775
+    - user: {{build_cfg.build_runas}}
+    - group: {{build_cfg.build_runas}}
+    - contents: |
+        #!/bin/sh
+        set -e
+        cat > "/etc/apt/preferences" << @EOF
+        {{prefs_text}}
+        @EOF
+
+
+build_pbldhooks_file_D04:
+  file.managed:
+    - name: {{build_cfg.build_homedir}}/.pbuilder-hooks/D04update_local_repo
+    - makedirs: True
+    - dir_mode: 0755
+    - mode: 0775
+    - user: {{build_cfg.build_runas}}
+    - group: {{build_cfg.build_runas}}
+    - contents: |
+        #!/bin/sh
+        # path to local repo
+        LOCAL_REPO="{{build_cfg.build_dest_dir}}"
+        # Generate a Packages file
+        ( cd ${LOCAL_REPO} ; /usr/bin/apt-ftparchive packages . > "${LOCAL_REPO}/Packages" )
+        # Update to include any new packagers in the local repo
+        apt-get --allow-unauthenticated update
+
+
 build_pbldrc:
-  file.append:
+  file.managed:
     - name: {{build_cfg.build_homedir}}/.pbuilderrc
-    - text: |
+    - makedirs: True
+    - dir_mode: 0755
+    - mode: 0775
+    - user: {{build_cfg.build_runas}}
+    - group: {{build_cfg.build_runas}}
+    - contents: |
         DIST="{{os_codename}}"
         LOCAL_REPO="{{build_cfg.build_dest_dir}}"
 
