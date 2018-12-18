@@ -844,10 +844,12 @@ rm -rf %%{buildroot}
 
 
 %changelog
-- Revised versions of cherrypy acceptable
-
-* Wed Aug 08 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.11.0-0
+* Tue Dec 18 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.11.0-0
 - Update to feature release branch 2018.11.0-0 for Python 3
+
+* Tue Oct 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.3-1
+- Update to feature release 2018.3.3-1  for Python 3
+- Revised versions of cherrypy acceptable
 
 * Mon Jun 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.1-1
 - Update to feature release 2018.3.1-1  for Python 3
