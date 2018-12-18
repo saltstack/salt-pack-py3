@@ -50,7 +50,6 @@
 
 {% set gpg_agent_script_text = '#!/bin/sh
         killall -v -w gpg-agent
-        sleep 5
         gpg-agent --homedir ' ~ gpg_key_dir ~ ' ' ~ write_env_file_prefix ~ write_env_file ~ ' --allow-preset-passphrase --max-cache-ttl 600 --daemon
         GPG_TTY=$(tty);
         export GPG_TTY
@@ -154,13 +153,20 @@ gpg_agent_script_file_exists:
         {{gpg_agent_script_text}}
 
 
+gpg_agent_stop2:
+  cmd.run:
+    - name: killall -v -w gpg-agent
+    - use_vt: True
+    - onlyif: ps -ef | grep -v 'grep' | grep  gpg-agent
+
+
 gpg_agent_start:
   cmd.run:
    - name:  {{gpg_agent_script_file}}
    - runas: {{build_cfg.build_runas}}
    - use_vt: True
    - require:
-     - cmd: gpg_agent_stop
+     - cmd: gpg_agent_stop2
 
 
 gpg_load_pub_key:
@@ -170,6 +176,8 @@ gpg_load_pub_key:
         user: {{build_cfg.build_runas}}
         filename: {{pkg_pub_key_absfile}}
         gnupghome: {{gpg_key_dir}}
+    - require:
+        - cmd: gpg_agent_start
 
 
 gpg_load_priv_key:
