@@ -49,6 +49,8 @@
 {% set gpg_agent_script_file = build_cfg.build_homedir ~ '/gpg-agent_start.sh' %}
 
 {% set gpg_agent_script_text = '#!/bin/sh
+        killall -v -w gpg-agent
+        sleep 5
         gpg-agent --homedir ' ~ gpg_key_dir ~ ' ' ~ write_env_file_prefix ~ write_env_file ~ ' --allow-preset-passphrase --max-cache-ttl 600 --daemon
         GPG_TTY=$(tty);
         export GPG_TTY
