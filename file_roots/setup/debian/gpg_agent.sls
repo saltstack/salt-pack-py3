@@ -154,20 +154,22 @@ gpg_agent_script_file_exists:
 
 
 gpg_agent_stop2:
-  cmd.run:
-    - name: killall -v -w gpg-agent
-    - use_vt: True
+  module.run:
+    - cmd.shell:
+      - cmd: killall -v -w gpg-agent
+      - runas: 'root'
     - onlyif: ps -ef | grep -v 'grep' | grep  gpg-agent
+    - require:
+      - file: gpg_agent_script_file_exists
 
 
 gpg_agent_start:
   module.run:
-    - name: cmd.shell
+    - name : cmd.shell
     - cmd: {{gpg_agent_script_file}}
-    - kwargs:
-       runas: {{build_cfg.build_runas}}
-   - require:
-     - cmd: gpg_agent_stop2
+    - runas: {{build_cfg.build_runas}}
+    - require:
+      - module: gpg_agent_stop2
 
 
 gpg_load_pub_key:
@@ -177,6 +179,8 @@ gpg_load_pub_key:
         user: {{build_cfg.build_runas}}
         filename: {{pkg_pub_key_absfile}}
         gnupghome: {{gpg_key_dir}}
+    - require:
+        - module: gpg_agent_start
 
 
 gpg_load_priv_key:
@@ -186,6 +190,7 @@ gpg_load_priv_key:
         user: {{build_cfg.build_runas}}
         filename: {{pkg_priv_key_absfile}}
         gnupghome: {{gpg_key_dir}}
+
 
 {% endif %}
 
