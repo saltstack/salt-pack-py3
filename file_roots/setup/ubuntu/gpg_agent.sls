@@ -160,11 +160,21 @@ gpg_agent_stop2:
     - onlyif: ps -ef | grep -v 'grep' | grep  gpg-agent
 
 
+## gpg_agent_start:
+##   cmd.run:
+##    - name:  {{gpg_agent_script_file}}
+##    - runas: {{build_cfg.build_runas}}
+##    - use_vt: True
+##    - require:
+##      - cmd: gpg_agent_stop2
+
+
 gpg_agent_start:
-  cmd.run:
-   - name:  {{gpg_agent_script_file}}
-   - runas: {{build_cfg.build_runas}}
-   - use_vt: True
+  module.run:
+    - name: cmd.shell
+    - cmd: {{gpg_agent_script_file}}
+    - kwargs:
+       runas: {{build_cfg.build_runas}}
    - require:
      - cmd: gpg_agent_stop2
 
