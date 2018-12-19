@@ -87,7 +87,7 @@ manage_priv_key:
     - contents_pillar: gpg_pkg_priv_key
     - show_changes: False
     - user: {{build_cfg.build_runas}}
-    - group: adm
+    - group: {{build_cfg.build_runas}}
     - makedirs: True
 
 
@@ -99,7 +99,7 @@ manage_pub_key:
     - contents_pillar: gpg_pkg_pub_key
     - show_changes: False
     - user: {{build_cfg.build_runas}}
-    - group: adm
+    - group: {{build_cfg.build_runas}}
     - makedirs: True
 
 
@@ -154,20 +154,22 @@ gpg_agent_script_file_exists:
 
 
 gpg_agent_stop2:
-  cmd.run:
-    - name: killall -v -w gpg-agent
-    - use_vt: True
+  module.run:
+    - cmd.shell:
+      - cmd: killall -v -w gpg-agent
+      - runas: 'root'
     - onlyif: ps -ef | grep -v 'grep' | grep  gpg-agent
+    - require:
+      - file: gpg_agent_script_file_exists
 
 
 gpg_agent_start:
   module.run:
-    - name: cmd.shell
+    - name : cmd.shell
     - cmd: {{gpg_agent_script_file}}
-    - kwargs:
-       runas: {{build_cfg.build_runas}}
-   - require:
-     - cmd: gpg_agent_stop2
+    - runas: {{build_cfg.build_runas}}
+    - require:
+      - module: gpg_agent_stop2
 
 
 gpg_load_pub_key:
@@ -178,7 +180,7 @@ gpg_load_pub_key:
         filename: {{pkg_pub_key_absfile}}
         gnupghome: {{gpg_key_dir}}
     - require:
-        - cmd: gpg_agent_start
+        - module: gpg_agent_start
 
 
 gpg_load_priv_key:
