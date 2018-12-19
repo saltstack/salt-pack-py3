@@ -49,6 +49,7 @@
 {% set gpg_agent_script_file = build_cfg.build_homedir ~ '/gpg-agent_start.sh' %}
 
 {% set gpg_agent_script_text = '#!/bin/sh
+        killall -v -w gpg-agent
         gpg-agent --homedir ' ~ gpg_key_dir ~ ' ' ~ write_env_file_prefix ~ write_env_file ~ ' --allow-preset-passphrase --max-cache-ttl 600 --daemon
         GPG_TTY=$(tty);
         export GPG_TTY
@@ -152,13 +153,21 @@ gpg_agent_script_file_exists:
         {{gpg_agent_script_text}}
 
 
-gpg_agent_start:
+gpg_agent_stop2:
   cmd.run:
-   - name:  {{gpg_agent_script_file}}
-   - runas: {{build_cfg.build_runas}}
-   - use_vt: True
+    - name: killall -v -w gpg-agent
+    - use_vt: True
+    - onlyif: ps -ef | grep -v 'grep' | grep  gpg-agent
+
+
+gpg_agent_start:
+  module.run:
+    - name: cmd.shell
+    - cmd: {{gpg_agent_script_file}}
+    - kwargs:
+       runas: {{build_cfg.build_runas}}
    - require:
-     - cmd: gpg_agent_stop
+     - cmd: gpg_agent_stop2
 
 
 gpg_load_pub_key:
