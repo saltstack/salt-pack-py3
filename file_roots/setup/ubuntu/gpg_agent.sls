@@ -72,6 +72,7 @@
 ' %}
 {% endif %}
 
+
 gpg_agent_stop:
   cmd.run:
     - name: {{kill_gpg_agent_text}}
