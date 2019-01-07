@@ -6,7 +6,7 @@ include:
     - pkg.python-ioflo.1_7_4.ubuntu1804
     - pkg.python-raet.0_6_8.ubuntu1804
     - pkg.python-timelib.0_2_4.ubuntu1804
-    - pkg.salt.2018_11.ubuntu1804
+    - pkg.salt.2019_2.ubuntu1804
 
 {% elif buildcfg.build_release == 'ubuntu1604' %}
 
@@ -17,6 +17,6 @@ include:
     - pkg.python-raet.0_6_8.ubuntu1604
     - pkg.python-timelib.0_2_4.ubuntu1604
 ##    - pkg.python-tornado.4_2_1.ubuntu1604 ## xenial 4.2.1-1ubuntu3
-    - pkg.salt.2018_11.ubuntu1604
+    - pkg.salt.2019_2.ubuntu1604
 
 {% endif %}

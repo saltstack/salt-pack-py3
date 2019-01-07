@@ -7,6 +7,6 @@ include:
     - pkg.python-jinja2.2_9_4.debian9
     - pkg.python-raet.0_6_8.debian9         ## need update to latest, was 0.6.3
     - pkg.python-timelib.0_2_4.debian9
-    - pkg.salt.2018_11.debian9
+    - pkg.salt.2019_2.debian9
 
 {% endif %}

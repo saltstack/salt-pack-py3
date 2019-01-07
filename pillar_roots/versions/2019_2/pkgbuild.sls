@@ -247,7 +247,7 @@ pkgbuild_registry:
       results:
         - PyYAML
     salt:
-      version: 2018.11.0tobereplaced_date-0
+      version: 2019.2.0tobereplaced_date-0
       noarch: True
       build_deps:
         - python-pycryptodome
@@ -614,7 +614,7 @@ pkgbuild_registry:
       results:
         - PyYAML27
     salt:
-      version: 2018.11.0tobereplaced_date-0
+      version: 2019.2.0tobereplaced_date-0
       noarch: True
       build_deps:
         - python27
@@ -749,7 +749,7 @@ pkgbuild_registry:
       version: 0.2.4-2
       noarch: True
     salt:
-      version: 2018.11.0tobereplaced_date-0
+      version: 2019.2.0tobereplaced_date-0
       noarch: True
       build_deps:
         - python-msgpack
