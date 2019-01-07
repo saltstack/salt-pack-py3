@@ -28,11 +28,11 @@ include:
 ##    - pkg.python-typing.3_5_2_2.rhel7 ## EPEL python34-typing 3.5.2.2-3.el7
 ##    - pkg.python-urllib3.1_10_4.rhel7 ## EPEL python34-urllib3 1.19.1-4.el7, python36-urllib3 1.19.1-4.el7
     - pkg.python-yaml.3_11.rhel7
-    - pkg.salt.2018_11.rhel7
+    - pkg.salt.2019_2.rhel7
     - pkg.zeromq.4_1_4.rhel7
 
 {% elif buildcfg.build_release == 'fedora' %}
 
-    - pkg.salt.2018_11.fedora
+    - pkg.salt.2019_2.fedora
 
 {% endif %}
