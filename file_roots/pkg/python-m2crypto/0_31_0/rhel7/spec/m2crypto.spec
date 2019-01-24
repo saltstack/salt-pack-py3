@@ -1,36 +1,53 @@
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
+%global with_python3 1
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
+Summary: Support for using OpenSSL in Python 3 scripts
 Name: m2crypto
-Version: 0.29.0
-Release: 1%{?dist}
-Summary: Support for using OpenSSL in python scripts
-Source0: https://pypi.python.org/packages/01/bd/a41491718f9e2bebab015c42b5be7071c6695acfa301e3fc0480bfd6a15b/M2Crypto-0.27.0.tar.gz
-Source1: https://pypi.python.org/packages/01/bd/a41491718f9e2bebab015c42b5be7071c6695acfa301e3fc0480bfd6a15b/M2Crypto-0.27.0.tar.gz.asc
+Version: 0.31.0
+Release: 2%{?dist}
+Source0: https://files.pythonhosted.org/packages/0a/d3/ecef6a0eaef77448deb6c9768af936fec71c0c4b42af983699cfa1499962/M2Crypto-0.31.0.tar.gz
+Source1: https://files.pythonhosted.org/packages/0a/d3/ecef6a0eaef77448deb6c9768af936fec71c0c4b42af983699cfa1499962/M2Crypto-0.31.0.tar.gz.asc
 # This is only precautionary, it does fix anything - not sent upstream
-## Patch0: m2crypto-0.26.4-gcc_macros.patch
-# https://gitlab.com/m2crypto/m2crypto/merge_requests/141
-## Patch1: m2crypto-0.27.0-SNI-test-race.patch
+
+Patch0: m2crypto-0.31.0-gcc_macros.patch
 Requires: python2-typing
- 
+Requires: openssl >= 1:1.0.2
+
 License: MIT
 Group: System Environment/Libraries
 URL: https://gitlab.com/m2crypto/m2crypto/
-BuildRequires: openssl, openssl-devel, python2-devel, python-setuptools
+BuildRequires: openssl >= 1:1.0.2
+BuildRequires: openssl-devel >= 1:1.0.2
+BuildRequires: python2-devel, python2-setuptools
 BuildRequires: perl-interpreter, pkgconfig, python2-typing, swig, which
 
-%filter_provides_in %{python_sitearch}/M2Crypto/__m2crypto.so
+%if 0%{?with_python3}
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-typing
+%endif
+
+%filter_provides_in %{python2_sitearch}/M2Crypto/__m2crypto.so
 %filter_setup
 
-
 %description
-This package allows you to call OpenSSL functions from python scripts.
+This package allows you to call OpenSSL functions from Python 2 scripts.
 
+%if 0%{?with_python3}
+%package -n python%{python3_pkgversion}-m2crypto
+Summary:    Support for using OpenSSL in Python 3 scripts
+Requires:   python%{python3_pkgversion}-typing
+
+%description -n python%{python3_pkgversion}-m2crypto
+This package allows you to call OpenSSL functions from Python 3 scripts.
+%endif
 
 %prep
-%setup -q -n M2Crypto-%{version}
-## %patch0 -p1 -b .gcc_macros
-## %patch1 -p1 -b .SNI-test-race
+%%setup -q -T -c -a 0
+
+pushd M2Crypto-%{version}
+%patch0 -p1 -b .gcc_macros
 
 # __REGISTER_PREFIX__ is defined to unquoted $ on some platforms; gcc handles
 # this fine, but swig chokes on it.
@@ -42,7 +59,8 @@ This package allows you to call OpenSSL functions from python scripts.
 # be the same as the glibc ones.
 gcc -E -dM - < /dev/null | grep -v '__\(STDC\|REGISTER_PREFIX\|GNUC\|STDC_HOSTED\)__' \
 	| sed 's/^\(#define \([^ ]*\) .*\)$/#undef \2\n\1/' > SWIG/gcc_macros.h
-
+popd
+cp -a M2Crypto-%{version} M2Crypto-python%{python3_pkgversion}
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" ; export CFLAGS
@@ -51,7 +69,14 @@ if pkg-config openssl ; then
 	LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
 fi
 
-%{__python} setup.py build
+pushd M2Crypto-%{version}
+%{__python2} setup.py build
+popd
+%if 0%{?with_python3}
+pushd M2Crypto-python%{python3_pkgversion}
+%{__python3} setup.py build
+popd
+%endif
 
 %install
 CFLAGS="$RPM_OPT_FLAGS" ; export CFLAGS
@@ -60,22 +85,65 @@ if pkg-config openssl ; then
 	LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
 fi
 
-%{__python} setup.py install --root=$RPM_BUILD_ROOT
-
+pushd M2Crypto-%{version}
+%{__python2} setup.py install --root=$RPM_BUILD_ROOT
+popd
+%if 0%{?with_python3}
+pushd M2Crypto-python%{python3_pkgversion}
+%{__python3} setup.py install --root=$RPM_BUILD_ROOT
+popd
+%endif
 
 %check
-%{__python} setup.py test
-
+pushd M2Crypto-%{version}
+%{__python2} setup.py test
+popd
+%if 0%{?with_python3}
+pushd M2Crypto-python%{python3_pkgversion}
+## %%{__python3} setup.py test
+popd
+%endif
 
 %files
-%doc CHANGES LICENCE README.rst
-%{python_sitearch}/M2Crypto
-%{python_sitearch}/M2Crypto-*.egg-info
+%doc M2Crypto-%{version}/CHANGES M2Crypto-%{version}/LICENCE M2Crypto-%{version}/README.rst
+%{python2_sitearch}/M2Crypto
+%{python2_sitearch}/M2Crypto-*.egg-info
 
+%if 0%{?with_python3}
+%files -n python%{python3_pkgversion}-m2crypto
+%doc M2Crypto-python%{python3_pkgversion}/CHANGES M2Crypto-python%{python3_pkgversion}/LICENCE M2Crypto-python%{python3_pkgversion}/README.rst
+%{python3_sitearch}/M2Crypto
+%{python3_sitearch}/M2Crypto-*.egg-info
+%endif
 
 %changelog
-* Mon Mar 19 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.29.0-1
-- Add support for Python 3
+* Thu Jan 24 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.31.0-2
+- Adjusted support for Python 3 for Redhat 7 and update to 0.31.0
+- Added version check >= openssl 1:1.0.2
+
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.30.1-2
+- Rebuilt for Python 3.7
+
+* Sat May 19 2018 Miloslav Trmač <mitr@redhat.com> - 0.30.1-1
+- Update to M2Crypto-0.30.1
+
+
+* Tue Mar 27 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.28.2-3
+- Adjusted support for Python 3 for Redhat 7
+
+* Sat Feb 17 2018 Miloslav Trmač <mitr@redhat.com> - 0.28.2-2
+- Add a python3-m2crypto subpackage
+
+* Sat Feb 17 2018 Miloslav Trmač <mitr@redhat.com> - 0.28.2-1
+- Update to M2Crypto-0.28.2 (minimal update of Python 2 for now,
+  Python 3 to come)
+
+* Thu Feb 08 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.27.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Tue Jan 09 2018 Iryna Shcherbina <ishcherb@redhat.com> - 0.27.0-2
+- Update Python 2 dependency declarations to new packaging standards
+  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
 
 * Sat Oct 7 2017 Miloslav Trmač <mitr@redhat.com> - 0.27.0-1
 - Update to M2Crypto-0.27.0

@@ -34,7 +34,9 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/sources/M2Crypto-0.29.0.tar.gz
+      - salt://{{slspath}}/sources/M2Crypto-0.31.0.tar.gz
+      - salt://{{slspath}}/sources/M2Crypto-0.31.0.tar.gz.asc
+      - salt://{{slspath}}/sources/m2crypto-0.31.0-gcc_macros.patch
 ##      - {{ macros.pypi_source(pypi_name, version) }}
 
 {% endif %}

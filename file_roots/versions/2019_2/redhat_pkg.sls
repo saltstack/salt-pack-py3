@@ -15,7 +15,7 @@ include:
     - pkg.python-ioflo.1_3_8.rhel7
     - pkg.python-libcloud.2_0_0.rhel7
     - pkg.python-libnacl.1_6_1.rhel7
-    - pkg.python-m2crypto.0_28_2.rhel7
+    - pkg.python-m2crypto.0_31_0.rhel7
 ##    - pkg.python-msgpack.0_4_6.rhel7  ## EPEL python34-msgpack 0.5.6-4.el7
 ##    - pkg.python-mock.1_0_1.rhel7     ## EPEL python34-mock 1.0.1-9.el7
     - pkg.python-pycryptodome.3_6_1.rhel7
