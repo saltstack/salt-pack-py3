@@ -11,7 +11,6 @@ build_pkgs:
       - gnupg2
 
 
-<<<<<<< HEAD
 ensure_pub_gpg_rights:
   module.run:
     - name: file.check_perms
@@ -37,6 +36,3 @@ ensure_build_dest_dir:
         - group
         - mode
 
-
-=======
->>>>>>> Continuing work in progress for Python 3 support on Amazon Linux 2
