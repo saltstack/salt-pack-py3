@@ -1,38 +1,30 @@
 # Import base config
 {% import "setup/amazon/map.jinja" as build_cfg %}
 
+{% set pkg_pub_key_file = pillar.get('gpg_pkg_pub_keyname', None) %}
+{% set pkg_priv_key_file = pillar.get('gpg_pkg_priv_keyname', None) %}
+
+{% set gpg_key_dir = build_cfg.build_gpg_keydir %}
+{% set pkg_pub_key_absfile = gpg_key_dir ~ '/' ~ pkg_pub_key_file %}
+{% set pkg_priv_key_absfile = gpg_key_dir ~ '/' ~ pkg_priv_key_file %}
+
 
 build_pkgs:
   pkg.installed:
     - pkgs:
       - createrepo
+      - mock
       - rpmdevtools
       - rpm-sign
       - gnupg2
+      - python2-gnupg
 
 
-ensure_pub_gpg_rights:
-  module.run:
-    - name: file.check_perms
-    - m_name: {{gpg_key_dir}}/gpg_pkg_key.pub
-    - user: {{build_cfg.build_runas}}
-    - group: {{build_cfg.build_runas}}
-    - mode: 644
-    - ret: False
+{{build_cfg.build_runas}}:
+  user.present:
+    - groups:
+      - mock
     - require:
-      - file: ensure_gpg_rights
+      - pkg: build_pkgs
 
-
-ensure_build_dest_dir:
-  file.directory:
-    - name: {{build_cfg.build_dest_dir}}
-    - user: {{build_cfg.build_runas}}
-    - group: {{build_cfg.build_runas}}
-    - dir_mode: 755
-    - file_mode: 644
-    - makedirs: True
-    - recurse:
-        - user
-        - group
-        - mode
 

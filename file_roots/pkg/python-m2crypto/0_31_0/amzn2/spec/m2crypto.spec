@@ -1,11 +1,16 @@
 %global with_python3 1
 
-%{!?python3_pkgversion:%global python3_pkgversion 3}
+## %%{!?python3_pkgversion:%%global python3_pkgversion 3}
+%global python3_pkgversion 3
+
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
 
 Summary: Support for using OpenSSL in Python 3 scripts
 Name: m2crypto
 Version: 0.31.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Source0: https://files.pythonhosted.org/packages/0a/d3/ecef6a0eaef77448deb6c9768af936fec71c0c4b42af983699cfa1499962/M2Crypto-0.31.0.tar.gz
 Source1: https://files.pythonhosted.org/packages/0a/d3/ecef6a0eaef77448deb6c9768af936fec71c0c4b42af983699cfa1499962/M2Crypto-0.31.0.tar.gz.asc
 # This is only precautionary, it does fix anything - not sent upstream
@@ -17,14 +22,26 @@ Requires: openssl >= 1:1.0.2
 License: MIT
 Group: System Environment/Libraries
 URL: https://gitlab.com/m2crypto/m2crypto/
-BuildRequires: openssl >= 1:1.0.2
-BuildRequires: openssl-devel >= 1:1.0.2
-BuildRequires: python2-devel, python2-setuptools
-BuildRequires: perl-interpreter, pkgconfig, python2-typing, swig, which
+BuildRequires: openssl, openssl-devel
+
+%if 0%{?with_amzn2}
+BuildRequires: python2-rpm-macros
+BuildRequires: python-devel
+BuildRequires: perl
+%else
+BuildRequires: python2-devel
+BuildRequires: perl-interpreter
+%endif
+
+BuildRequires: python2-setuptools
+BuildRequires: pkgconfig, python2-typing, swig, which
 
 %if 0%{?with_python3}
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-typing
 %endif
 
@@ -42,6 +59,7 @@ Requires:   python%{python3_pkgversion}-typing
 %description -n python%{python3_pkgversion}-m2crypto
 This package allows you to call OpenSSL functions from Python 3 scripts.
 %endif
+
 
 %prep
 %setup -q -T -c -a 0
@@ -116,20 +134,19 @@ popd
 %{python3_sitearch}/M2Crypto-*.egg-info
 %endif
 
+
 %changelog
-* Thu Jan 24 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.31.0-2
-- Adjusted support for Python 3 for Redhat 7 and update to 0.31.0
-- Added version check >= openssl 1:1.0.2
+* Tue Feb 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.31.0-3
+- Ported to Amazon Linux 2 for Python 3 support
+
+* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.30.1-3
+- Ported to Amazon Linux 2 for Python 3 support
 
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.30.1-2
 - Rebuilt for Python 3.7
 
 * Sat May 19 2018 Miloslav Trmač <mitr@redhat.com> - 0.30.1-1
 - Update to M2Crypto-0.30.1
-
-
-* Tue Mar 27 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.28.2-3
-- Adjusted support for Python 3 for Redhat 7
 
 * Sat Feb 17 2018 Miloslav Trmač <mitr@redhat.com> - 0.28.2-2
 - Add a python3-m2crypto subpackage

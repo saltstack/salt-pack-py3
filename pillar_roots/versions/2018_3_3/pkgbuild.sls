@@ -781,7 +781,7 @@ pkgbuild_registry:
 
   amzn2:
     libsodium:
-      version: 1.0.16-6
+      version: 1.0.16-1
       results:
         - libsodium
         - libsodium-devel

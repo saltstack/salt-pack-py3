@@ -57,11 +57,13 @@ BuildRequires:  python2-tornado
 %if 0%{?with_python3}
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
+## Amazon Python 3.7.1-9 python3-devel provides 2to3
+%else
+# needed for 2to3
+BuildRequires:  python2-tools
 %endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
-# needed for 2to3
-BuildRequires:  python2-tools
 %if 0%{?run_tests}
 BuildRequires:  python%{python3_pkgversion}-pytest
 BuildRequires:  python%{python3_pkgversion}-tornado
@@ -241,7 +243,7 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 
 
 %changelog
-* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> -17.0.0-4
+* Wed Feb 06 2019 SaltStack Packaging Team <packaging@saltstack.com> -17.0.0-4
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 17.0.0-3

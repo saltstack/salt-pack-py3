@@ -15,78 +15,10 @@ include:
   - setup.amazon
 
 
-centos7_deps:
-  file.managed:
-    - name: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-    - source: salt://setup/amazon/RPM-GPG-KEY-CentOS-7
-    - source_hash: sha256=8b48b04b336bd725b9e611c441c65456a4168083c4febc28e88828d8ec14827f
-    - makedirs: True
-    - user: root
-    - group: root
-    - file_mode: 644
-    - dir_mode: 755
-
-
-epel7_deps:
-  file.managed:
-    - name: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
-    - source: salt://setup/amazon/RPM-GPG-KEY-EPEL-7
-    - source_hash: sha256=028b9accc59bab1d21f2f3f544df5469910581e728a64fd8c411a725a82300c2
-    - makedirs: True
-    - user: root
-    - group: root
-    - file_mode: 644
-    - dir_mode: 755
-
-
-centos7-base:
-  pkgrepo.managed:
-    - humanname: CentOS-7-Base
-    - comments:
-      - '## CentOS 7 Base support used with Amazon Linux 2'
-    - mirrorlist: http://mirrorlist.centos.org/?release=7&arch=x86_64&repo=os
-    - gpgcheck: 1
-    - gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-    - require:
-      - file: centos7_deps
-      - file: epel7_deps
-
-
-centos7-updates:
-  pkgrepo.managed:
-    - humanname: CentOS-7-Updates
-    - comments:
-      - '## CentOS 7 Updates support used with Amazon Linux 2'
-    - mirrorlist: http://mirrorlist.centos.org/?release=7&arch=x86_64&repo=updates
-    - gpgcheck: 1
-    - gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-
-
-centos7-extras:
-  pkgrepo.managed:
-    - humanname: CentOS-7-Extras
-    - comments:
-      - '## CentOS 7 Extras support used with Amazon Linux 2'
-    - mirrorlist: http://mirrorlist.centos.org/?release=7&arch=x86_64&repo=extras
-    - gpgcheck: 1
-    - gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-
-
-centos7-epel:
-  pkgrepo.managed:
-    - humanname: CentOS-7-Extra-Packages-for-Enterprise-Linux
-    - comments:
-      - '## Extra Packages for Enterprise Linux 7 support used with Amazon Linux 2'
-    - mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=x86_64
-    - gpgcheck: 1
-    - gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
-
-
 build_additional_pkgs_{{build_cfg.build_release}}:
   pkg.installed:
     - pkgs:
       - mock
-      - python2-gnupg
       - python2-rpm-macros
       - python3-rpm-macros
       - gcc
@@ -103,8 +35,6 @@ build_additional_{{build_cfg.build_release}}_{{build_cfg.build_runas}}:
 build_salt_mock_prefs_rm:
   file.absent:
     - name: {{amzn2_salt_mock_cfg}}
-    - require:
-      - file: centos7_deps
 
 
 build_salt_mock_prefs_file:
@@ -193,3 +123,4 @@ ensure_pub_gpg_rights_{{build_cfg.build_release}}:
     - ret: False
     - require:
       - file: ensure_gpg_rights_{{build_cfg.build_release}}
+

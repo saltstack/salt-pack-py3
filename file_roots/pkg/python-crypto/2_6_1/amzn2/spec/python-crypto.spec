@@ -32,10 +32,13 @@ BuildRequires:	gmp-devel >= 4.1
 BuildRequires:	libtomcrypt-devel >= 1.16
 BuildRequires:	python%{python2_pkgversion}-devel >= 2.4
 BuildRequires:	python%{python3_pkgversion}-devel
-BuildRequires:	%{_bindir}/2to3
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python3-rpm-macros
+
+## on amzn2 python3-devel 3.7.1-9 provides 2to3
+%else
+BuildRequires:	%{_bindir}/2to3
 %endif
 
 %description
@@ -98,6 +101,8 @@ rm -rf src/libtom
 
 # setup.py doesn't run 2to3 on pct-speedtest.py
 cp pct-speedtest.py pct-speedtest3.py
+
+## pdn't run if building Python 3 on Amazon Linux 2
 2to3 -wn pct-speedtest3.py
 
 %build
@@ -134,7 +139,7 @@ PYTHONPATH=%{buildroot}%{python3_sitearch} %{__python3} pct-speedtest3.py
 %{python3_sitearch}/pycrypto-%{version}-py3.*.egg-info
 
 %changelog
-* Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com>  - 2.6.1-25
+* Thu Feb 07 2019 SaltStack Packaging Team <packaging@saltstack.com>  - 2.6.1-25
 - Ported for Python 3 support on Amazon Linux 2
 
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.1-24

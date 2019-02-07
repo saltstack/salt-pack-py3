@@ -1,3 +1,9 @@
+
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
+
 Name:          openpgm
 Version:       5.2.122
 Release:       15%{?dist}
@@ -13,8 +19,12 @@ Source0:       http://openpgm.googlecode.com/files/libpgm-%{version}~dfsg.tar.gz
 
 BuildRequires: gcc
 BuildRequires: python2
-BuildRequires: perl-interpreter
 
+%if 0%{?with_amzn2}
+BuildRequires: perl
+%else
+BuildRequires: perl-interpreter
+%endif
 
 %description
 OpenPGM is an open source implementation of the Pragmatic General
@@ -60,7 +70,7 @@ rm %{buildroot}%{_libdir}/libpgm.{a,la}
 
 
 %changelog
-* Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.2.122-15
+* Wed Feb 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.2.122-15
 - Support for Python 3 on Amazon Linux 2
 
 * Wed Sep 19 2018 Randy Barlow <bowlofeggs@fedoraproject.org> - 5.2.122-14

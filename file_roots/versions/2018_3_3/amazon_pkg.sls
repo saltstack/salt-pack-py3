@@ -24,7 +24,7 @@ include:
    - pkg.python-funcsigs.1_0_2.amzn2
    - pkg.python-hypothesis.3_66_11.amzn2
    - pkg.python-idna.2_7.amzn2
-   - pkg.python-jinja2.2.10.amzn2
+   - pkg.python-jinja2.2_10.amzn2
    - pkg.python-libcloud.2_2_1.amzn2    ## latest is 2.3.0
    - pkg.python-m2crypto.0_30_1.amzn2   ## latest 0.30.1
    - pkg.python-markupsafe.1_0.amzn2
