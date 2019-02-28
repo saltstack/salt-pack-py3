@@ -195,6 +195,7 @@ BuildRequires: git
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
@@ -852,7 +853,8 @@ rm -rf %%{buildroot}
 
 
 %changelog
-* Wed Apr 18 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.x-0
+* Tue Oct 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.3-1
+- Update to feature release 2018.3.3-1  for Python 3
 - Revised versions of cherrypy acceptable
 
 * Fri Jun 22 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-1
