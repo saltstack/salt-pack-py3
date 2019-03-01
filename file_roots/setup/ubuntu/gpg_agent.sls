@@ -208,11 +208,11 @@ gpg_agent_ps_kill_script_file_exists:
         IFS=$'\n'	# make newlines the only seperator
         if [[ -n "$gpg_active" ]]; then
             for gpg_line in $gpg_active; do
-                kill -9 $gpg_line
+                kpid=$(echo "$gpg_line" | awk '{print $2}')
+                kill -9 $kpid
             done
         fi
         unset IFS
-
 
 gpg_agent_ps_kill_run:
   module.run:
