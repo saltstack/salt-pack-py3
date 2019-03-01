@@ -208,7 +208,7 @@ gpg_agent_ps_kill_script_file_exists:
         IFS=$'\n'	# make newlines the only seperator
         if [[ -n "$gpg_active" ]]; then
             for gpg_line in $gpg_active; do
-                kill -9 $pid_gpg_agent
+                kill -9 $gpg_line
             done
         fi
         unset IFS
