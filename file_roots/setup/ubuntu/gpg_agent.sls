@@ -210,6 +210,7 @@ gpg_agent_ps_kill_script_file_exists:
             for gpg_line in $gpg_active; do
                 kpid=$(echo "$gpg_line" | awk '{print $2}')
                 kill -9 $kpid
+                sleep 1
             done
         fi
         unset IFS
