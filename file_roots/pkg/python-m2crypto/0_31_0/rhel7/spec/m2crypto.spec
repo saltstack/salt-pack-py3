@@ -44,7 +44,7 @@ This package allows you to call OpenSSL functions from Python 3 scripts.
 %endif
 
 %prep
-%%setup -q -T -c -a 0
+%setup -q -T -c -a 0
 
 pushd M2Crypto-%{version}
 %patch0 -p1 -b .gcc_macros

@@ -4,6 +4,8 @@
 # Python3 introduced in Fedora 13
 %global with_python3 1
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 %global srcname             crypto
 
 %global _description    \
