@@ -51,7 +51,7 @@
 
 
 # Release Candidate
-%define __rc_ver %{nil}
+%define __rc_ver tobereplaced_date
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
