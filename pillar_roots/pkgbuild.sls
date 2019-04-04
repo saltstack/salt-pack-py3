@@ -3,5 +3,5 @@
 
 {% if build_version != '' %}
 include:
-    - .versions.{{build_version}}.pkgbuild
+    - versions.{{build_version}}.pkgbuild
 {% endif %}

@@ -1,4 +1,8 @@
-%if 0%{?fedora} || 0%{?rhel} > 6
+%if !(0%{?fedora} > 12 || 0%{?rhel} >= 7)
+%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%endif
+
+%if 0%{?fedora} || 0%{?rhel} >= 7
 %global with_python3 1
 %endif
 
@@ -16,7 +20,7 @@ needed attributes in the normal way.
 
 Name:           python-mock
 Version:        1.0.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        A Python Mocking and Patching Library for Testing
 
 License:        BSD
@@ -31,7 +35,8 @@ BuildArch:      noarch
 
 %package -n python2-mock
 Summary:    %{summary}
-BuildRequires:  python2-devel
+## BuildRequires:  python2-devel
+BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 # For tests
 %if 0%{?rhel} <= 7
@@ -55,7 +60,7 @@ BuildRequires:  python%{python3_pkgversion}-setuptools
 Provides:       python%{python3_pkgversion}-mock
 
 %description -n python%{python3_pkgversion}-mock %{_description}
-Python 3 version.
+Python %{python3_version} version.
 %endif
 
 
@@ -66,8 +71,9 @@ cp -p %{SOURCE1} .
 
 %build
 %{py2_build}
+%if 0%{?with_python3}
 %{py3_build}
-
+%endif
 
 %check
 %{__python2} setup.py test
@@ -76,8 +82,10 @@ cp -p %{SOURCE1} .
 
 
 %install
-%{py3_install}
 %{py2_install}
+%if 0%{?with_python3}
+%{py3_install}
+%endif
 
  
 %files -n python2-mock
@@ -97,9 +105,11 @@ cp -p %{SOURCE1} .
 
 
 %changelog
+* Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-12
+- Add support for Python 3.6
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-11
 - Add support for Python 3
-
 
 * Thu Jan 11 2018 SaltStack Packaging Team <packaging@saltstack.com> -1.0.1-10 
 - Support for Python 3 on RHEL

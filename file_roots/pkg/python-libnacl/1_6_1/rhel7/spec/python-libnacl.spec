@@ -11,7 +11,7 @@
 
 Name:           python-%{srcname}
 Version:        1.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python bindings for libsodium/tweetnacl based on ctypes
 
 Group:          Development/Libraries
@@ -56,7 +56,7 @@ to maintain extensive documentation on how to use nacl as well as being
 completely portable. The file in libnacl/__init__.py can be pulled out and
 placed directly in any project to give a single file binding to all of nacl.
 
-This is the Python 3 build of the module.
+This is the Python %{python3_version} build of the module.
 %endif
 
 
@@ -69,22 +69,18 @@ cp -a . %{py3dir}
 %endif
 
 %build
-%{__python2} setup.py build
+%py2_build
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py build
-popd
+%py3_build
 %endif
 
 %install
 rm -rf %{buildroot}
-%{__python2} setup.py install --skip-build --root %{buildroot}
+%py2_install
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py install --skip-build --root %{buildroot}
-popd
+%py3_install
 %endif
 
 %clean
@@ -103,6 +99,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Apr 04 2019 Packaging <pqackaging@saltstack.com> - 1.6.1-2
+- Adjust support for Python 3.6
+
 * Fri Apr 20 2018 Packaging <pqackaging@saltstack.com> - 1.6.1-1
 - Updated to 1.6.1 and removed support for Redhat 5, adjust support for Python 3
 

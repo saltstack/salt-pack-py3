@@ -32,7 +32,7 @@ timelib.strtotime
 
 Name:           python%{?__python_ver}-%{srcname}
 Version:        0.2.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Parse English textual date descriptions
 Group:          Development/Languages/Python
 
@@ -82,7 +82,7 @@ BuildRequires:  python%{python3_pkgversion}-setuptools
 Provides:       python%{python3_pkgversion}-%{srcname}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description} 
-Python 3 version.
+Python %{python3_version} version.
 %endif
 
 %prep
@@ -126,6 +126,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-4
+- Add support for Python 3.6
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-3
 - Add support for Python 3
 
