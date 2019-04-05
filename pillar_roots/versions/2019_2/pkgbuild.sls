@@ -136,9 +136,6 @@ pkgbuild_registry:
       results:
         - python2-crypto
         - python36-crypto
-    python-enum34:
-      version: 1.0-4
-      noarch: True
     python-ioflo:
       version: 1.3.8-4
       noarch: True
@@ -163,8 +160,6 @@ pkgbuild_registry:
       results:
         - m2crypto
         - python36-m2crypto
-      build_deps:
-        - python-typing
     python-msgpack:
       version: 0.4.6-3
       results:
@@ -201,8 +196,6 @@ pkgbuild_registry:
       build_deps:
         - python-ioflo
         - python-libnacl
-      additonal_deps:
-        - python-simplejson
     python-simplejson:
       version: 3.3.3-3
       results:
@@ -237,13 +230,10 @@ pkgbuild_registry:
       results:
         - PyYAML
     salt:
-      version: 2019.2.0-0
+      version: 2019.2.0tobereplaced_date-0
       noarch: True
       build_deps:
-        - python-pycryptodome
-        - python-msgpack
         - python-pyzmq
-        - python-tornado
         - python-libcloud
       results:
         - salt
