@@ -24,7 +24,7 @@ operation system, written in Python.
 
 Name:           python-%{srcname}
 Version:        1.3.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Flow-based programming interface
 
 Group:          Development/Libraries
@@ -48,14 +48,14 @@ Provides: python-%{srcname}
 %package    -n  python2-%{srcname}
 Summary:        %{summary}
 Group:          Development/Libraries
-BuildRequires:  python2-devel
+## BuildRequires:  python2-devel
+BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 %{?python_provide:%python_provide python-%{srcname}}
 %{?python_provide:%python_provide python2-%{srcname}}
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
-
 
 
 %if 0%{?with_python3}
@@ -65,10 +65,10 @@ Group:          Development/Libraries
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 ## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
-Provides: python%{python3_pkgversion}-%{srcname}
+Provides: python%{python3_version}-%{srcname}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python 3 version.
+Python %{python3_version} version.
 %endif
 
 
@@ -82,23 +82,23 @@ cp -a . %{py3dir}
 
 %build
 %py2_build
-
 %if 0%{?with_python3}
 %py3_build
 %endif
 
+
 %install
 rm -rf %{buildroot}
-
 %py2_install
-
 %if 0%{?with_python3}
 sed -i '1s|^#!%{__python3}|#!%{__python2}|' %{buildroot}/usr/bin/ioflo
 %py3_install
 %endif
 
+
 %clean
 rm -rf %{buildroot}
+
 
 %files -n python2-%{srcname}
 %defattr(-,root,root,-)
@@ -115,9 +115,11 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.8-4
+- Add support for Python 3.6
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.8-3
 - Add support for Python 3
-
 
 * Fri Jan 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.8-2
 - Support for Python 3 on RHEL 7 & 6

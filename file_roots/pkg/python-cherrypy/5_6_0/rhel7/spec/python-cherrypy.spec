@@ -13,10 +13,9 @@ results in smaller source code developed in less time.
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
-
 Name:           python-cherrypy
 Version:        5.6.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Pythonic, object-oriented web development framework
 Group:          Development/Libraries
 License:        BSD
@@ -32,7 +31,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
 
-BuildRequires:  python2-devel
+## BuildRequires:  python2-devel
+BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-nose
 
@@ -50,7 +50,7 @@ BuildRequires:  python%{python3_pkgversion}-nose
 Provides: python%{python3_pkgversion}-%{srcname}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python 3 version.
+Python %{python3_version} version.
 %endif
 
 
@@ -67,7 +67,6 @@ Python 3 version.
 %build
 ## %%{__python} setup.py build
 %py2_build
-
 %if 0%{?with_python3}
 %py3_build
 %endif
@@ -113,6 +112,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-5
+- Adjusted support for Python 3.6
+
 * Thu Feb 08 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-4
 - Adjusted support for Python 3
 
