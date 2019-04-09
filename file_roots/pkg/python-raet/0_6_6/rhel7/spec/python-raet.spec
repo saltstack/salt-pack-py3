@@ -27,7 +27,7 @@ A high level, stack based communication protocol for network and IPC communicati
 
 Name:       python-%{srcname}
 Version:    0.6.6
-Release:    5%{?dist}
+Release:    6%{?dist}
 Summary:    Reliable Asynchronous Event Transport Protocol
 
 License:    ASL 2.0
@@ -95,23 +95,16 @@ Requires:  python%{python3_pkgversion}-libnacl >= 1.4.3-1
 Provides: python%{python3_pkgversion}-%{srcname}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python 3 version.
+Python %{python3_version} version.
 %endif
 
 
 %prep
-## %setup -q -n %{srcname}-%{version}
 %autosetup -n %{srcname}-%{version}
-## %patch0 -p1 
 
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
-
-## %if 0%{?with_python3}
-## rm -rf %{py3dir}
-## cp -a . %{py3dir}
-## %endif
 
 %build
 %py2_build
@@ -122,14 +115,6 @@ rm -rf %{pypi_name}.egg-info
 
 
 %install
-## rm -rf %{buildroot}
-## %py2_install
-## 
-## %if 0%{?with_python3}
-## ## sed -i '1s|^#!%{__python3}|#!%{__python2}|' %{buildroot}/usr/bin/raetflo
-## %py3_install
-## %endif
-## 
 # Must do the default python version install last because
 # the scripts in /usr/bin are overwritten with every setup.py install.
 %py2_install
@@ -160,6 +145,9 @@ rm -rf %{buildroot}%{_bindir}/*
 
 
 %changelog
+* Tue Apr 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.6-6
+- Add support for Python 3.6 for RHEL 7
+
 * Tue Apr 24 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.6-5
 - Updated build requires for libnacl
 

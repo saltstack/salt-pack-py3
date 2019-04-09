@@ -24,7 +24,7 @@ This package contains the python bindings.
 
 Name:           python-zmq
 Version:        15.3.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Software library for fast, message-based applications
 
 Group:          Development/Libraries
@@ -101,7 +101,7 @@ License:        LGPLv3+
 Provides:       python%{python3_pkgversion}-zmq
 
 %description -n python%{python3_pkgversion}-zmq %{_description}
-Python 3 version.
+Python %{python3_version} version.
 
 
 %package    -n  python%{python3_pkgversion}-zmq-tests
@@ -113,7 +113,7 @@ Requires:       python%{python3_pkgversion}-zmq = %{version}-%{release}
 Provides:       python%{python3_pkgversion}-zmq-tests
 
 %description -n python%{python3_pkgversion}-zmq-tests %{_description}
-Python 3 version.
+Python %{python3_version} version.
 
 %endif
 
@@ -211,6 +211,9 @@ rm  %{buildroot}%{python2_sitearch}/zmq/asyncio.py \
 
 
 %changelog
+* Tue Apr 09 2019 SaltStack Packaging Team <packagin@saltstack.com> - 15.3.0-6
+- Add support for Python 3.6 for RHEL 7
+
 * Fri Aug 03 2018 SaltStack Packaging Team <packagin@saltstack.com> - 15.3.0-5
 - Added dependency on zeromq >= 4, zeromq provided by Salt
 
