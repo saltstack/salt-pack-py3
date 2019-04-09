@@ -231,7 +231,7 @@ Requires: systemd-python
 
 %description master
 The Salt master is the central server to which all minions connect.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    minion
@@ -242,7 +242,7 @@ Requires:   %{name} = %{version}-%{release}
 %description minion
 The Salt minion is the agent component of Salt. It listens for instructions
 from the master, runs jobs, and returns results back to the master.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    syndic
@@ -254,7 +254,7 @@ Requires:   %{name}-master = %{version}-%{release}
 The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
 infrastructure.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    api
@@ -270,7 +270,7 @@ Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    cloud
@@ -282,7 +282,7 @@ Requires:   python%{python3_pkgversion}-libcloud
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
 adds them to the master's collection of controllable minions.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    ssh
@@ -293,7 +293,7 @@ Requires:   %{name} = %{version}-%{release}
 %description ssh
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %else
@@ -853,6 +853,9 @@ rm -rf %%{buildroot}
 
 
 %changelog
+* Mon Apr 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-2
+- Update to allow for Python 3.6
+
 * Sun Feb 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-1
 - Update to feature release 2018.3.4-1  for Python 3
 
