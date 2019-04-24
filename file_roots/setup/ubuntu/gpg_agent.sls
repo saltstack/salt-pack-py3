@@ -215,13 +215,23 @@ gpg_agent_ps_kill_script_file_exists:
         fi
         unset IFS
 
+
+#ensure all gpg activity completed before killing gpg
 gpg_agent_ps_kill_run:
   module.run:
     - name: cmd.shell
     - cmd: {{gpg_ps_kill_script_file}}
     - runas: 'root'
     - require:
+      - file: manage_priv_key
+      - file: manage_pub_key
+      - file: gpg_conf_file_exists
+      - file: gpg_tty_file_exists
+      - file: gpg_agent_conf_file
+      - file: gpg_agent_script_file_exists
+      - module: gpg_agent_stop2
       - file: gpg_agent_ps_kill_script_file_exists
+
 {% endif %}
 
 
