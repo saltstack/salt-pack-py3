@@ -853,7 +853,7 @@ rm -rf %%{buildroot}
 
 
 %changelog
-- Revised permissions for cloud directories and files
+## - Revised permissions for cloud directories and files
 
 * Mon Apr 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-2
 - Update to allow for Python 3.6
