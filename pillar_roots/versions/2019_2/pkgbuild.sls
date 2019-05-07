@@ -99,6 +99,120 @@
 #
 
 pkgbuild_registry:
+  rhel8:
+    libsodium:
+      version: 1.0.17-1
+      results:
+        - libsodium
+        - libsodium-devel
+    libtomcrypt:
+      version: 1.17-23
+      results:
+        - libtomcrypt
+        - libtomcrypt-devel
+    libtommath:
+      version: 0.42.0-4
+      results:
+        - libtommath
+        - libtommath-devel
+    openpgm:
+      version: 5.2.122-2
+      results:
+        - openpgm
+        - openpgm-devel
+    python-cherrypy:
+      version: 5.6.0-6
+      noarch: True
+      build_deps:
+        - python-mock
+      results:
+        - python3-cherrypy
+    python-libcloud:
+      name: python2-libcloud
+      version: 2.4.0-1
+      noarch: True
+      results:
+        - python3-libcloud
+    python-libnacl:
+      version: 1.6.1-2
+      noarch: True
+      results:
+        - python-libnacl
+        - python3-libnacl
+    python-m2crypto:
+      version: 0.31.0-4
+      results:
+        - python3-m2crypto
+    python-msgpack:
+      version: 0.6.1-3
+      results:
+        - python3-msgpack
+    python-mock:
+      version: 2.0.0-14
+      noarch: True
+      results:
+        - python3-mock
+    python-psutil:
+      version: 5.4.3-8
+      results:
+        - python3-psutil
+    python-pycryptodome:
+      version: 3.6.1-3
+      results:
+        - python2-pycryptodomex
+        - python3-pycryptodomex
+    python-pyzmq:
+      name: python-zmq
+      version: 17.0.0-5
+      results:
+        - python2-zmq
+        - python3-zmq
+    python-simplejson:
+      version: 3.16.0-3
+      results:
+        - python3-simplejson
+    python-timelib:
+      version: 0.2.4-4
+      noarch: True
+      results:
+        - python2-timelib
+        - python3-timelib
+    python-tornado:
+      version: 4.5.2-3
+      results:
+        - python3-tornado4
+    python-typing:
+      version: 3.5.2.2-4
+      noarch: True
+      results:
+        - python3-typing
+    python-yaml:
+      name: PyYAML
+      version: 5.1-2
+      results:
+        - python3-pyyaml
+    salt:
+      version: 2019.2.0tobereplaced_date-0
+      noarch: True
+      build_deps:
+        - python-pyzmq
+        - python-libcloud
+      results:
+        - salt
+        - salt-master
+        - salt-minion
+        - salt-syndic
+        - salt-api
+        - salt-cloud
+        - salt-ssh
+    zeromq:
+      version: 4.3.1-3
+      build_deps:
+        - openpgm
+      results:
+        - zeromq
+        - zeromq-devel
+
   rhel7:
     libsodium:
       version: 1.0.17-1

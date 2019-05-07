@@ -8,53 +8,12 @@
 {% set pkg_pub_key_absfile = gpg_key_dir ~ '/' ~ pkg_pub_key_file %}
 {% set pkg_priv_key_absfile = gpg_key_dir ~ '/' ~ pkg_priv_key_file %}
 
-{% if build_cfg.build_epel == 'epel-7' %}
-{% set epel_source_hash = '58fa8ae27c89f37b08429f04fd4a88cc' %}
-{% else %}
-## assume epel-6
-{% set epel_source_hash = 'd865e6b948a74cb03bc3401c0b01b785' %}
-{% endif %}
-
-os_pkgs_repo_key:
-  file.managed:
-    - name: /etc/pki/rpm-gpg/RPM-GPG-KEY-{{build_cfg.build_epel|upper}}
-    - source: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-{{build_cfg.build_epel|upper}}
-    - source_hash: md5={{epel_source_hash}}
-    - dir_mode: 755
-    - mode: 644
-    - makedirs: True
-
-
-os_pkgs_repo:
-  pkgrepo.managed:
-    - humanname: os_packages_repo_epel
-    - mirrorlist: https://mirrors.fedoraproject.org/metalink?repo={{build_cfg.build_epel}}&arch=$basearch
-    - comments:
-      - '## Fedora Project support for epel-release {{build_cfg.build_epel}}'
-    - gpgcheck: 1
-    - gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-{{build_cfg.build_epel|upper}}
-    - require:
-      - file: os_pkgs_repo_key
-
 
 build_pkgs:
   pkg.installed:
     - pkgs:
-      - createrepo
-      - mock
       - rpmdevtools
       - gnupg2
-      - python2-gnupg
-    - require:
-      - pkgrepo: os_pkgs_repo
-
-
-{{build_cfg.build_runas}}:
-  user.present:
-    - groups:
-      - mock
-    - require:
-      - pkg: build_pkgs
 
 
 manage_priv_key:
