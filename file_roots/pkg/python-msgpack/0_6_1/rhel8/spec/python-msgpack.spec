@@ -1,5 +1,6 @@
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
 
 %global srcname msgpack
 %global sum A Python MessagePack (de)serializer
@@ -19,22 +20,26 @@ BuildRequires:  Cython
 %if %{with python2}
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
+%if %{with tests}
 BuildRequires:  python2-pytest
+%endif
 BuildRequires:  python2-funcsigs
 %endif
 %if %{with python3}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
+%if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-pytest
+%endif
 BuildRequires:  python%{python3_pkgversion}-funcsigs
 %endif
 
-%if %{with python2}
 %description
 MessagePack is a binary-based efficient data interchange format that is
 focused on high performance. It is like JSON, but very fast and small.
 This is a Python (de)serializer for MessagePack.
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{sum}
 %{?python_provide:%python_provide python2-%{srcname}}
@@ -61,7 +66,7 @@ Provides:       python%{python3_version}dist(%{srcname}-python) = %{version}
 %description -n python%{python3_pkgversion}-%{srcname}
 MessagePack is a binary-based efficient data interchange format that is
 focused on high performance. It is like JSON, but very fast and small.
-This is a Python %{python3_version} (de)serializer for MessagePack.
+This is a Python 3 (de)serializer for MessagePack.
 %endif
 
 %prep
@@ -83,6 +88,7 @@ This is a Python %{python3_version} (de)serializer for MessagePack.
 %py3_install
 %endif
 
+%if %{with tests}
 %check
 export PYTHONPATH=$(pwd)
 %if %{with python2}
@@ -90,6 +96,7 @@ py.test-2 -v test
 %endif
 %if %{with python3}
 py.test-%{python3_version} -v test
+%endif
 %endif
 
 %if %{with python2}
@@ -109,7 +116,7 @@ py.test-%{python3_version} -v test
 %endif
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.1-3
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.1-3
 - Added support for Redhat 8, and support Python 2 packaging optional
 
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.6.1-2

@@ -1,6 +1,6 @@
 Name:          openpgm
 Version:       5.2.122
-Release:       16%{?dist}
+Release:       17%{?dist}
 Summary:       An implementation of the PGM reliable multicast protocol
 
 # The license is LGPLv2.1
@@ -12,7 +12,7 @@ Patch0001:     https://github.com/steve-o/openpgm/commit/ee25ff3d13f2639b4c3a421
 
 
 BuildRequires: gcc
-BuildRequires: python2
+BuildRequires: python3
 BuildRequires: perl-interpreter
 
 
@@ -32,7 +32,7 @@ This package contains OpenPGM related development libraries and header files.
 %prep
 %autosetup -n libpgm-%{version}~dfsg/openpgm/pgm -p3
 
-sed -i "s:#!/usr/bin/python:#!/usr/bin/python2:" version_generator.py
+sed -i "s:#!/usr/bin/python:#!/usr/bin/python3:" version_generator.py
 
 
 %build
@@ -59,6 +59,9 @@ rm %{buildroot}%{_libdir}/libpgm.{a,la}
 
 
 %changelog
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.2.122-17
+- Added support for Redhat 8, and support for Python 3 packages
+
 * Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-16
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 

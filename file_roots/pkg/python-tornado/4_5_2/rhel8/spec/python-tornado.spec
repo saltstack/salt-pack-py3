@@ -2,8 +2,10 @@
 %bcond_with python3
 %endif
 
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
+
+%bcond_with tests
 
 %global srcname tornado
 %global nameext 4
@@ -16,7 +18,7 @@ Summary:        Scalable, non-blocking web server and tools
 Group:          Development/Libraries
 License:        ASL 2.0
 URL:            http://www.tornadoweb.org
-Source0:        https://files.pythonhosted.org/packages/source/t/tornado/tornado-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/t/tornado/tornado%{nameext}-%{version}.tar.gz
 # Patch to use system CA certs instead of certifi
 Patch0:         python-tornado-cert.patch
 
@@ -30,7 +32,6 @@ BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-devel
 %endif
 
-%if %{with python2}
 %description
 Tornado is an open source version of the scalable, non-blocking web
 server and tools.
@@ -41,6 +42,7 @@ reasonably fast. Because it is non-blocking and uses epoll, it can
 handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        Scalable, non-blocking web server and tools
 %{?python_provide:%python_provide python2-%{srcname}}
@@ -89,7 +91,7 @@ Supports Python %{python3_version}.
 %endif # with_python3
 
 %prep 
-%setup -q -n %{srcname}%{nameext}-%{version}
+%setup -n %{srcname}%{nameext}-%{version}
 %patch0 -p1 -b .cert
 # remove shebang from files
 %{__sed} -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
@@ -112,12 +114,14 @@ Supports Python %{python3_version}.
 %endif
 
 
+%if %{with tests}
 %check
 %if %{with python3}
 %{__python3} -m tornado.test.runtests --verbose
 %endif # with_python3
 %if %{with python2}
 %{__python2} -m tornado.test.runtests --verbose
+%endif
 %endif
 
 
@@ -140,7 +144,7 @@ Supports Python %{python3_version}.
 
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-3
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-3
 - Added support for Redhat 8, and support for Python 2 packages optional
 - Named package tornado4 to allow for coexistance with tornado v5.x
 

@@ -1,5 +1,8 @@
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
+
+%bcond_with tests
+
 
 %global srcname psutil
 %global sum A process and system utilities module for Python
@@ -36,7 +39,6 @@ BuildRequires:  python2-ipaddress
 BuildRequires:  python%{python3_pkgversion}-devel
 %endif
 
-%if %{with python2}
 %description
 psutil is a module providing an interface for retrieving information on all
 running processes and system utilization (CPU, memory, disks, network, users) in
@@ -45,6 +47,7 @@ command line tools such as: ps, top, df, kill, free, lsof, free, netstat,
 ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
 
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{sum}
 %{?python_provide:%python_provide python2-%{srcname}}
@@ -102,10 +105,16 @@ done
 %endif
 
 
-#%check
+%if %{with tests}
+%check
 # the main test target causes failures, investigating
-#make test-memleaks PYTHON=%{__python2}
-#make test-memleaks PYTHON=%{__python3}
+%if %{with python2}
+make test-memleaks PYTHON=%{__python2}
+%endif
+%if %{with python3}
+make test-memleaks PYTHON=%{__python3}
+%endif
+%endif
 
 %if %{with python2}
 %files -n python2-%{srcname}
@@ -126,7 +135,7 @@ done
 
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-8
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-8
 - Added support for Redhat 8, and support for Python 2 packages optional
 
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.4.3-7

@@ -1,5 +1,5 @@
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -12,13 +12,14 @@ URL:            https://pypi.python.org/pypi/typing
 Source0:        https://files.pythonhosted.org/packages/source/t/typing/typing-%{version}.tar.gz
 BuildArch:      noarch
 
-3%description
+%description
 Typing defines a standard notation for Python function and variable type
 annotations. The notation can be used for documenting code in a concise,
 standard format, and it has been designed to also be used by static and runtime
 type checkers, static analyzers, IDEs and other tools.
 
 
+%if %{with python2}
 %package -n python2-typing
 Summary:        %{summary}
 BuildRequires:  python2-devel
@@ -34,18 +35,18 @@ type checkers, static analyzers, IDEs and other tools.
 
 
 %if %{with python3}
-%package -n python%{python3-pkgversion}-typing
+%package -n python%{python3_pkgversion}-typing
 Summary:        %{summary}
-BuildRequires:  python%{python3-pkgversion}-devel
-BuildRequires:  python%{python3-pkgversion}-setuptools
-%{?python_provide:%python_provide python%{python3-pkgversion}-typing}
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%{?python_provide:%python_provide python%{python3_pkgversion}-typing}
 
-%description -n python%{python3-pkgversion}-typing
+%description -n python%{python3_pkgversion}-typing
 Typing defines a standard notation for Python function and variable type
 annotations. The notation can be used for documenting code in a concise,
 standard format, and it has been designed to also be used by static and runtime
 type checkers, static analyzers, IDEs and other tools.
-Supports Python %{python3_version}.
+Supports Python 3.
 %endif
 
 
@@ -92,7 +93,7 @@ cd -
 %endif
 
 %if %{with python3}
-%files -n python%{python3-pkgversion}-typing
+%files -n python%{python3_pkgversion}-typing
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/typing*
@@ -100,7 +101,7 @@ cd -
 %endif
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.5.2.2-4
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.5.2.2-4
 - Added support for Redhat 8, and support for Python 2 packages optional
 
 * Tue Jan 31 2017 Orion Poplawski <orion@cora.nwra.com> - 3.5.2.2-3

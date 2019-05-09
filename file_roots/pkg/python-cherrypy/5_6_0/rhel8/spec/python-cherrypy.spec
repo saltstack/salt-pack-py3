@@ -1,11 +1,14 @@
+%bcond_with python2
+%bcond_without python3
+
+%bcond_with tests
+
+%if %{with python2}
 %if !(0%{?fedora} > 12 || 0%{?rhel} > 5)
 %{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %endif
 ## Adjusted support for Python 3.6
-
-
-%bcond_without python2
-%bcond_with python3
+%endif
 
 
 %global _description \
@@ -40,10 +43,9 @@ BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-nose
-
-%description %{_description}
 %endif
 
+%description %{_description}
 
 %if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
@@ -51,11 +53,13 @@ Summary:        %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-nose
-##%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+
+## %%{?python_provide:%%python_provide python%%{python3_pkgversion}-%%{srcname}}
 Provides: python%{python3_pkgversion}-%{srcname}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python %{python3_version} version.
+
+Supports Python 3 version.
 %endif
 
 
@@ -67,7 +71,6 @@ Python %{python3_version} version.
 
 ## %%{__sed} -i 's/\r//' README.txt cherrypy/tutorial/README.txt cherrypy/tutorial/tutorial.conf
 %{__sed} -i 's/\r//' cherrypy/tutorial/README.txt cherrypy/tutorial/tutorial.conf
-
 
 %build
 %if %{with python2}
@@ -85,16 +88,19 @@ Python %{python3_version} version.
 %py2_install
 %endif
 %if %{with python3}
+%{__sed} -i "s:#! /usr/bin/env python:#! /usr/bin/python3:" cherrypy/cherryd
 %py3_install
 %endif
 
 
+%if %{with tests}
 %check
 cd cherrypy/test
 # These two tests hang in the buildsystem so we have to disable them.
 # The third fails in cherrypy 3.2.2.
 PYTHONPATH='../../' nosetests -s ./ -e 'test_SIGTERM' -e \
   'test_SIGHUP_tty' -e 'test_file_stream'
+%endif
 
 
 %clean
@@ -122,7 +128,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-6
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-6
 - Make Python 2 packaging optional, default not built
 
 * Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-5

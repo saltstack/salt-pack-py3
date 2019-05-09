@@ -12,8 +12,8 @@
 ###     - dir_mode: 755
 ###     - mode: 644
 ###     - makedirs: True
-### 
-### 
+###
+###
 ### os_pkgs_repo:
 ###   pkgrepo.managed:
 ###     - humanname: os_packages_repo_epel
@@ -37,6 +37,10 @@ build_additional_pkgs:
       - nfs-utils
       - createrepo_c
       - mock
+      - openssl-devel
+      - texlive-latex2man
+      - krb5-devel
+      - chrpath
       - python3-gnupg
 
 

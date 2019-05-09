@@ -1,5 +1,8 @@
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
+
+%bcond_with tests
+
 
 # we don't want to provide private python extension libs in either the python2 or python3 dirs
 %global __provides_exclude_from ^(%{python2_sitearch}|%{python3_sitearch})/.*\\.so$
@@ -9,11 +12,9 @@
 %global srcname pyzmq
 %global modname zmq
 
-%global run_tests 0
-
 Name:           python-zmq
 Version:        17.0.0
-Release:        5%{?dist}
+Release:        4%{?dist}
 Summary:        Software library for fast, message-based applications
 
 License:        LGPLv3+ and ASL 2.0 and BSD
@@ -33,9 +34,10 @@ BuildRequires:  %{_bindir}/pathfix.py
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-Cython
-%if 0%{?run_tests}
+%if %{with tests}
 BuildRequires:  python2-pytest
 BuildRequires:  python2-tornado
+%endif
 %endif
 
 BuildRequires:  zeromq-devel
@@ -48,18 +50,16 @@ BuildRequires:  zeromq-devel
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 
-## TBD DGM need to check this need for python2-tools
-# needed for 2to3
-BuildRequires:  python2-tools
+## # needed for 2to3
+## BuildRequires:  python2-tools
 
-%if 0%{?run_tests}
+%if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-pytest
 BuildRequires:  python%{python3_pkgversion}-tornado
 %endif
 %endif
 
 
-%if %{with python2}
 %description
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
@@ -70,6 +70,7 @@ multiple transport protocols and more.
 
 This package contains the python bindings.
 
+%if %{with python2}
 %package -n python2-zmq
 Summary:        Software library for fast, message-based applications
 %{?python_provide:%python_provide python2-%{modname}}
@@ -84,6 +85,7 @@ multiple transport protocols and more.
 This package contains the python bindings.
 
 
+%if %{with tests}
 %package -n python2-zmq-tests
 Summary:        Software library for fast, message-based applications
 License:        LGPLv3+
@@ -99,12 +101,15 @@ multiple transport protocols and more.
 
 This package contains the testsuite for the python bindings.
 %endif
+%endif
+
 
 %if %{with python3}
 %package -n python%{python3_pkgversion}-zmq
 Summary:        Software library for fast, message-based applications
 License:        LGPLv3+
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}}
+
 %description -n python%{python3_pkgversion}-zmq
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
@@ -116,11 +121,13 @@ multiple transport protocols and more.
 This package contains the python bindings.
 
 
+%if %{with tests}
 %package -n python%{python3_pkgversion}-zmq-tests
 Summary:        Software library for fast, message-based applications
 License:        LGPLv3+
 Requires:       python%{python3_pkgversion}-zmq = %{version}-%{release}
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}-tests}
+
 %description -n python%{python3_pkgversion}-zmq-tests
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
@@ -130,6 +137,7 @@ patterns, message filtering (subscriptions), seamless access to
 multiple transport protocols and more.
 
 This package contains the testsuite for the python bindings.
+%endif
 
 %endif
 
@@ -169,7 +177,7 @@ CFLAGS="%{optflags}" %{__python2} setup.py build_ext --inplace
 %if %{with python3}
 CFLAGS="%{optflags}" %{__python3} setup.py build_ext --inplace
 %py3_build
-%endif # with_python3
+%endif
 
 
 
@@ -180,21 +188,17 @@ CFLAGS="%{optflags}" %{__python3} setup.py build_ext --inplace
 # to be the default for now).
 %if %{with python3}
 %py3_install
-
 pathfix.py -pn -i %{__python3} %{buildroot}%{python3_sitearch}
-
-%endif # with_python3
-
+%endif
 
 %if %{with python2}
 %py2_install
-
 pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 %endif
 
 
+%if %{with tests}
 %check
-%if 0%{?run_tests}
 %if %{with python3}
     # Make sure we import from the install directory
     #rm zmq/__*.py
@@ -202,12 +206,13 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
         %{__python3} setup.py test
 %endif
 
-%if %{with python2}
     # Remove Python 3 only tests
     #rm  zmq/asyncio.py zmq/auth/asyncio.py \
     #    zmq/tests/*test_asyncio.py zmq/tests/test_future.py
+%if %{with python2}
     PYTHONPATH=%{buildroot}%{python2_sitearch} \
         %{__python2} setup.py test
+%endif
 %endif
 
 
@@ -219,8 +224,10 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 %{python2_sitearch}/zmq
 %exclude %{python2_sitearch}/zmq/tests
 
+%if %{with tests}
 %files -n python2-%{modname}-tests
 %{python2_sitearch}/zmq/tests
+%endif
 %endif
 
 %if %{with python3}
@@ -232,13 +239,15 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 %{python3_sitearch}/zmq
 %exclude %{python3_sitearch}/zmq/tests
 
+%if %{with tests}
 %files -n python%{python3_pkgversion}-zmq-tests
 %{python3_sitearch}/zmq/tests
+%endif
 %endif
 
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-5
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-5
 - Added support for Redhat 8, and support for Python 2 packages optional
 
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 17.0.0-4

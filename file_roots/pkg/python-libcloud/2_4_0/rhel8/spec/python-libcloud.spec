@@ -1,5 +1,5 @@
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
 
 %global tarball_name apache-libcloud
 %global srcname libcloud
@@ -27,9 +27,9 @@ Source0:        http://www-us.apache.org/dist/libcloud/%{tarball_name}/%{tarball
 
 BuildArch:      noarch
 
-%if %{with python2}
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{summary}
 ## BuildRequires:  python2-devel
@@ -55,8 +55,7 @@ Python %{python3_version} version.
 %endif
 
 %prep
-## %%autosetup -n %%{tarball_name}-%%{version}
-%setup     -n apache-libcloud-2.0.0
+%autosetup -n %{tarball_name}-%{version}
 
 # Delete shebang lines in the demos
 sed -i '1d' demos/gce_demo.py demos/compute_demo.py
@@ -111,7 +110,7 @@ rm -r $RPM_BUILD_ROOT%{python3_sitelib}/%{srcname}/test
 %endif
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.4.0-1
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.4.0-1
 - Added support for libcloud 2.4.0 and made Python 2 support optional
 
 * Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-3

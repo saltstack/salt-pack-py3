@@ -4,8 +4,9 @@
 %bcond_with python3
 %endif
 
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 # Not yet in Fedora buildroot
 %{!?python3_pkgversion:%global python3_pkgversion 3}
@@ -29,7 +30,9 @@ BuildRequires:  python2-setuptools
 BuildRequires:  python2-funcsigs
 BuildRequires:  python2-pbr
 # For tests
+%if %{with tests}
 BuildRequires:  python2-unittest2
+%endif
 %endif
 
 %if %{with python3}
@@ -37,11 +40,12 @@ BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python3-pbr
 # For tests
+%if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-unittest2
+%endif
 %endif
 
 
-%if %{with python2}
 %description
 Mock is a Python module that provides a core mock class. It removes the need
 to create a host of stubs throughout your test suite. After performing an
@@ -49,6 +53,7 @@ action, you can make assertions about which methods / attributes were used and
 arguments they were called with. You can also specify return values and set
 needed attributes in the normal way.
 
+%if %{with python2}
 %package -n python2-mock
 Summary:        A Python Mocking and Patching Library for Testing
 %{?python_provide:%python_provide python2-%{mod_name}}
@@ -93,12 +98,14 @@ Supports Python %{python3_version}.
 %endif
 
 
+%if %{with tests}
 %check
 %if %{with python2}
 %{__python2} setup.py test
 %endif
 %if %{with python3}
 %{__python3} -m unittest2 discover
+%endif
 %endif
 
 %install
@@ -128,7 +135,7 @@ Supports Python %{python3_version}.
 
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-14
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-14
 - Added support for Redhat 8, and support for Python 2 packages optional
 
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.0.0-13
