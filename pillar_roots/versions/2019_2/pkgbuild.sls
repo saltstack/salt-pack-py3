@@ -235,7 +235,7 @@ pkgbuild_registry:
       results:
         - python2-timelib
         - python3-timelib
-    python-tornado:
+    python-tornado4:
       version: 4.5.2-3
       results:
         - python3-tornado4

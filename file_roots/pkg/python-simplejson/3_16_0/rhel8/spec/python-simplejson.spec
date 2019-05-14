@@ -1,5 +1,8 @@
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
+
+%bcond_without tests
+%bcond_with docs
 
 Name:           python-simplejson
 
@@ -14,7 +17,6 @@ URL:            http://undefined.org/python/#simplejson
 Source0:        %pypi_source simplejson
 
 
-%if %{with python2}
 %description
 simplejson is a simple, fast, complete, correct and extensible JSON
 <http://json.org> encoder and decoder for Python 2.5+. It is pure Python code
@@ -34,12 +36,15 @@ with Python 2.5.  It gets updated more regularly than the json module in the
 python stdlib.
 
 
+%if %{with python2}
 %package -n python2-simplejson
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python2
 BuildRequires:  gcc
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
+%if %{with tests}
 BuildRequires:  python2-nose
+%endif
 %{?python_provide:%python_provide python2-simplejson}
 
 %description -n python2-simplejson
@@ -65,11 +70,15 @@ python stdlib.
 %if %{with python3}
 %package -n python%{python3_pkgversion}-simplejson
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python3
-BuildRequires: gcc
 BuildRequires: python%{python3_pkgversion}-devel
 BuildRequires: python%{python3_pkgversion}-setuptools
+%if %{with tests}
 BuildRequires: python%{python3_pkgversion}-nose
+%endif
+%if %{with docs}
 BuildRequires: python%{python3_pkgversion}-sphinx
+%endif
+
 %{?python_provide:%python_provide python%{python3_pkgversion}-simplejson}
 
 %description -n python%{python3_pkgversion}-simplejson
@@ -89,7 +98,6 @@ simplejson is the externally maintained development version of the json library
 included with Python 2.6 and Python 3.0, but maintains backwards compatibility
 with Python 2.5.  It gets updated more regularly than the json module in the
 python stdlib.
-Supports Python %{python3_version}.
 %endif
 
 
@@ -104,10 +112,12 @@ Supports Python %{python3_version}.
 %py3_build
 %endif
 
+%if %{with docs}
 PATH=%{_libexecdir}/python3-sphinx:$PATH %{__python3} scripts/make_docs.py
 
 rm docs/.buildinfo
 rm docs/.nojekyll
+%endif
 
 %install
 %if %{with python2}
@@ -117,6 +127,7 @@ rm docs/.nojekyll
 %py3_install
 %endif
 
+%if %{with tests}
 %check
 %if %{with python2}
 %{__python2} -m nose
@@ -124,26 +135,31 @@ rm docs/.nojekyll
 %if %{with python3}
 %{__python3} -m nose
 %endif
+%endif
 
 
 %if %{with python2}
 %files -n python2-simplejson
 %license LICENSE.txt
+%if %{with docs}
 %doc docs
+%endif
 %{python2_sitearch}/simplejson/
 %{python2_sitearch}/simplejson-%{version}-py?.?.egg-info/
 %endif
 
-%if %{with python2}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-simplejson
 %license LICENSE.txt
+%if %{with docs}
 %doc docs
+%endif
 %{python3_sitearch}/simplejson/
 %{python3_sitearch}/simplejson-%{version}-py?.?.egg-info/
 %endif
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.16.0-3
+* Mon May 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.16.0-3
 - Added support for Redhat 8, and support for Python 2 packages optional
 
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 3.16.0-2

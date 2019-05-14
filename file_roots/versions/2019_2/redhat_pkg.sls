@@ -33,12 +33,12 @@ include:
     - pkg.python-psutil.5_4_3.rhel8         ## B EPEL-7 python36-psutil 2.2.1-4.el7
     - pkg.python-pyroute2.0_4_13.rhel8      ## B
     - pkg.python-pyzmq.17_0_0.rhel8         ## B
-    - pkg.python-simplejson.3_16_0.rhel8    ## EPEL-7 python36-simplejson 3.10.0-2.el7
+    - pkg.python-simplejson.3_16_0.rhel8    ## B EPEL-7 python36-simplejson 3.10.0-2.el7
 ##    - pkg.python-timelib.0_2_4.rhel8      ## needed by test, byut that nox, pytest, pip
-    - pkg.python-tornado4.4_5_2.rhel8       ## EPEL-7 python36-tornado 4.4.2-2.el7
+    - pkg.python-tornado4.4_5_2.rhel8       ## B EPEL-7 python36-tornado 4.4.2-2.el7
     - pkg.python-typing.3_5_2_2.rhel8       ## B EPEL-7 python34-typing 3.5.2.2-4.el7
-###    - pkg.python-urllib3.1_10_4.rhel8    ## @anaconda    python3-urllib3.noarch  1.23-5.el8
-    - pkg.python-yaml.5_1.rhel8            ## EPEL-7 python36-PyYaml-3.11-3.el7
+##    - pkg.python-urllib3.1_10_4.rhel8     ## @anaconda    python3-urllib3.noarch  1.23-5.el8
+##    - pkg.python-yaml.5_1.rhel8           ## @anaconda    python3-pyyaml.x86_64   3.12-12.el8
     - pkg.salt.2019_2.rhel8
     - pkg.zeromq.4_3_1.rhel8                ## B EPEL-7 zeromq-4.1.4-6.el7
 
