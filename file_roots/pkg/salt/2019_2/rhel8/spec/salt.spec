@@ -19,7 +19,7 @@
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -47,7 +47,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-## Patch0:  salt-%%{version}-tests.patch
+Patch0:  salt-%{version}-tornado4.patch
 
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -192,7 +192,11 @@ Supports Python 3.
 
 
 %prep
-%autosetup 
+## %%autosetup 
+%setup -c
+cd %{name}-%{version}
+%patch0 -p1
+
 %if %{with python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
@@ -483,6 +487,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue May 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
+- Patching in support for Tornado 4
+
 * Mon May 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-3
 - Added support for Redhat 8, and removed support for Python 2 packages
 
