@@ -14,7 +14,7 @@
 
 Name:           python-zmq
 Version:        17.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Software library for fast, message-based applications
 
 License:        LGPLv3+ and ASL 2.0 and BSD

@@ -36,4 +36,6 @@
       # file with a non-matching filename. TODO: Fix this.
       #- https://code.google.com/p/{{pkg_name}}/downloads/detail?name=libpgm-{{version}}.tar.gz
       - salt://{{slspath}}/sources/libpgm-5.2.122~dfsg.tar.gz
+      - salt://{{slspath}}/sources/ee25ff3d13f2639b4c3a42125e79f77f921c3320.patch
+      - salt://{{slspath}}/sources/libpgm-{{version}}-py3.patch
 {% endif %}

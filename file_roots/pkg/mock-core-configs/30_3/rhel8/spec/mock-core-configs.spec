@@ -2,7 +2,7 @@
 %global mockgid 135
 
 Name:		mock-core-configs
-Version:	30.2
+Version:	30.3
 Release:	1%{?dist}
 Summary:	Mock core config files basic chroots
 
@@ -121,6 +121,9 @@ fi
 %ghost %config(noreplace,missingok) %{_sysconfdir}/mock/default.cfg
 
 %changelog
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 30.3-1
+- Added support for Redhat 8 as epel-8-x86_64.cfg with rudimentary support as rhel8beta
+
 * Fri Mar 01 2019 Miroslav Suchý <msuchy@redhat.com> 30.2-1
 - disable modular repos
 - Add openSUSE Leap AArch64 configs (ngompa13@gmail.com)

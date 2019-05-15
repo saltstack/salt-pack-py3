@@ -18,9 +18,10 @@ Summary:        Scalable, non-blocking web server and tools
 Group:          Development/Libraries
 License:        ASL 2.0
 URL:            http://www.tornadoweb.org
-Source0:        https://files.pythonhosted.org/packages/source/t/tornado/tornado%{nameext}-%{version}.tar.gz
+## Source0:        https://files.pythonhosted.org/packages/source/t/tornado/tornado-%%{version}.tar.gz
+Source0:        %{srcname}%{nameext}-%{version}.tar.gz
 # Patch to use system CA certs instead of certifi
-Patch0:         python-tornado-cert.patch
+Patch0:         python-%{srcname}%{nameext}-cert.patch
 
 %if %{with python2}
 BuildRequires:  python2-devel

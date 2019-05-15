@@ -98,6 +98,179 @@
 # the right requisites set, etc.
 
 pkgbuild_registry:
+  rhel8:
+    Cython:
+      version: 0.29.6-2
+      results:
+        - python3-Cython
+    distribution-gpg-keys:
+      version: 1.30-1
+      noarch: True
+      results:
+        - distribution-gpg-keys
+        - distribution-gpg-keys-core
+    libsodium:
+      version: 1.0.17-1
+      results:
+        - libsodium
+        - libsodium-devel
+    libtomcrypt:
+      version: 1.17-23
+      results:
+        - libtomcrypt
+        - libtomcrypt-devel
+    libtommath:
+      version: 0.42.0-4
+      results:
+        - libtommath
+        - libtommath-devel
+    libunwind:
+      version: 1.3.1-2
+      results:
+        - libunwind
+        - libunwind-devel
+    mock:
+      version: 1.4.15-2
+      noarch: True
+      build_deps:
+        - mock-core-configs
+        - python-distro
+        - python-pyroute2
+      results:
+        - mock
+        - mock-lvm
+        - mock-scm
+    mock-core-configs:
+      version: 30.2-1
+      noarch: True
+      results:
+        - mock-core-configs
+    openpgm:
+      version: 5.2.122-17
+      results:
+        - openpgm
+        - openpgm-devel
+    python-cherrypy:
+      version: 5.6.0-6
+      noarch: True
+      build_deps:
+        - python-mock
+      results:
+        - python3-cherrypy
+    python-distro:
+      version: 1.2.0-4
+      noarch: True
+      results:
+        - python3-distro
+    python-funcsigs:
+      version: 1.0.2-13
+      noarch: True
+      results:
+        - python3-funcsigs
+    python-libcloud:
+      name: python2-libcloud
+      version: 2.4.0-1
+      noarch: True
+      results:
+        - python3-libcloud
+    python-libnacl:
+      version: 1.6.1-2
+      noarch: True
+      results:
+        - python-libnacl
+        - python3-libnacl
+    python-m2crypto:
+      version: 0.33.0-1
+      build_deps:
+        - python-typing
+      results:
+        - python3-m2crypto
+    python-msgpack:
+      version: 0.6.1-3
+      build_deps:
+        - Cython
+        - python3-funcsigs
+      results:
+        - python3-msgpack
+    python-mock:
+      version: 2.0.0-14
+      noarch: True
+      build_deps:
+        - python-pbr
+      results:
+        - python3-mock
+    python-pbr:
+      version: 5.1.2-3
+      noarch: True
+      results:
+        - python3-pbr
+    python-psutil:
+      version: 5.4.3-8
+      results:
+        - python3-psutil
+    python-pycryptodome:
+      version: 3.6.1-3
+      results:
+        - python2-pycryptodomex
+        - python3-pycryptodomex
+    python-pyroute2:
+      version: 0.4.13-3
+      noarch: True
+      results:
+        - python3-pyroute2
+    python-pyzmq:
+      name: python-zmq
+      version: 17.0.0-5
+      results:
+        - python2-zmq
+        - python3-zmq
+    python-simplejson:
+      version: 3.16.0-3
+      results:
+        - python3-simplejson
+    python-timelib:
+      version: 0.2.4-4
+      noarch: True
+      results:
+        - python2-timelib
+        - python3-timelib
+    python-tornado4:
+      version: 4.5.2-3
+      results:
+        - python3-tornado4
+    python-typing:
+      version: 3.5.2.2-4
+      noarch: True
+      results:
+        - python3-typing
+    python-yaml:
+      name: PyYAML
+      version: 5.1-2
+      results:
+        - python3-pyyaml
+    salt:
+      version: 2019.2.0-4
+      noarch: True
+      build_deps:
+        - python-pyzmq
+        - python-libcloud
+      results:
+        - salt
+        - salt-master
+        - salt-minion
+        - salt-syndic
+        - salt-api
+        - salt-cloud
+        - salt-ssh
+    zeromq:
+      version: 4.3.1-3
+      build_deps:
+        - libunwind
+        - openpgm
+      results:
+        - zeromq
+        - zeromq-devel
+
   rhel7:
     libsodium:
       version: 1.0.17-1

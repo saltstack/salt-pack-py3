@@ -2,7 +2,8 @@
 {% import "setup/macros.jinja" as macros with context %}
 {% set pkg_data = salt["pillar.get"]("pkgbuild_registry:" ~ buildcfg.build_release, {}) %}
 {% set force = salt["pillar.get"]("pkgbuild_force.all", False) or salt["pillar.get"]("pkgbuild_force." ~ slspath, False) %}
-{% set sls_name = "python-distro" %}
+{% set pypi_name = "distro" %}
+{% set sls_name = "python-" ~ pypi_name %}
 
 {% set pkg_info = pkg_data.get(sls_name, {}) %}
 {% if "version" in pkg_info %}
@@ -32,6 +33,6 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/sources/{{sls_name}}-{{version}}.tar.gz
+      - salt://{{slspath}}/sources/{{pypi_name}}-{{version}}.tar.gz
 
 {% endif %}

@@ -1,8 +1,9 @@
 %bcond_without pgm
+%bcond_with tests
 
 Name:           zeromq
 Version:        4.3.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Software library for fast, message-based applications
 
 License:        LGPLv3+
@@ -76,10 +77,10 @@ autoreconf -fi
 # remove *.la
 rm %{buildroot}%{_libdir}/libzmq.la
 
-
+%if %{with tests}
 %check
 make check V=1 || ( cat test-suite.log && exit 1 )
-
+%endif
 
 
 %ldconfig_scriptlets
@@ -98,6 +99,9 @@ make check V=1 || ( cat test-suite.log && exit 1 )
 
 
 %changelog
+* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.3.1-4
+- Added support for Redhat 8, and make tests optional
+
 * Sat Feb 16 2019 Elliott Sales de Andrade <quantum.analyst@gmail.com> - 4.3.1-3
 - Disable libunwind on unsupported arches (#1676262)
 

@@ -33,5 +33,6 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - {{ macros.pypi_source(pypi_name, version) }}
+      - salt://{{slspath}}/sources/msgpack-{{version}}.tar.gz
+##      - {{ macros.pypi_source(pypi_name, version) }}
 {% endif %}

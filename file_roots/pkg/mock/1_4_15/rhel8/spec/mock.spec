@@ -1,16 +1,12 @@
-%bcond_without tests
+%bcond_with python2
+%bcond_without python3
 
-%if 0%{?fedora} || 0%{?mageia} || 0%{?rhel} >= 8
-%global use_python3 1
-%global use_python2 0
-%else
-%global use_python3 0
-%global use_python2 1
-%endif
+%bcond_with tests
 
-%if %{use_python3}
+%if %{with python3}
 %global python_sitelib %{python3_sitelib}
-%else
+%endif
+%if %{with python2}
 %global python_sitelib %{python2_sitelib}
 %endif
 
@@ -19,11 +15,13 @@ Name: mock
 Version: 1.4.15
 Release: 2%{?dist}
 License: GPLv2+
+
 # Source is created by
 # git clone https://github.com/rpm-software-management/mock.git
 # cd mock
 # git reset --hard %%{name}-%%{version}
 # tito build --tgz
+
 Source: %{name}-%{version}.tar.gz
 URL: https://github.com/rpm-software-management/mock/
 BuildArch: noarch
@@ -36,7 +34,8 @@ Requires: usermode
 %endif
 Requires: createrepo_c
 Requires: mock-core-configs >= 27.4
-%if 0%{?use_python2}
+
+%if %{with python2}
 Requires: pyliblzma
 %endif
 Requires: systemd
@@ -51,7 +50,8 @@ Suggests: iproute
 Suggests: iproute2
 %endif
 BuildRequires: bash-completion
-%if %{use_python3}
+
+%if %{with python3}
 Requires: python3
 Requires: python3-distro
 Requires: python3-jinja2
@@ -63,7 +63,9 @@ BuildRequires: python3-devel
 %if %{with tests}
 BuildRequires: python3-pylint
 %endif
-%else
+%endif
+
+%if %{with python2}
 Requires: python-ctypes
 Requires: python2-distro
 Requires: python-jinja2
@@ -74,6 +76,7 @@ Requires: python >= 2.7
 Requires: rpm-python
 BuildRequires: python2-devel
 %endif
+
 %if 0%{?fedora} || 0%{?mageia} || 0%{?rhel} >= 8
 Requires: dnf
 Suggests: yum
@@ -94,6 +97,7 @@ BuildRequires: perl-interpreter
 %else
 BuildRequires: perl
 %endif
+
 # hwinfo plugin
 Requires: util-linux
 Requires: coreutils
@@ -132,7 +136,7 @@ of the buildroot.
 
 %prep
 %setup -q
-%if %{use_python2}
+%if %{with python2}
 for file in py/mock.py py/mockchain.py; do
   sed -i 1"s|#!/usr/bin/python3 |#!/usr/bin/python |" $file
 done
@@ -225,20 +229,24 @@ pylint-3 py/mockbuild/ py/*.py py/mockbuild/plugins/* || :
 %dir %{_localstatedir}/lib/mock
 
 %files scm
+%if %{with python2}
 %{python_sitelib}/mockbuild/scm.py*
-%if %{use_python3}
+%endif
+%if %{with python3}
 %{python3_sitelib}/mockbuild/__pycache__/scm.*.py*
 %endif
 
 %files lvm
+%if %{with python2}
 %{python_sitelib}/mockbuild/plugins/lvm_root.*
-%if %{use_python3}
+%endif
+%if %{with python3}
 %{python3_sitelib}/mockbuild/plugins/__pycache__/lvm_root.*.py*
 %endif
 
 %changelog
-* Tue May 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-2
-- Added support for Redhat 8
+* Wed May 15 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-2
+- Added support for Redhat 8, and support for Python 2 packages optional
 
 * Mon Apr 22 2019 Miroslav Suchý <msuchy@redhat.com> 1.4.15-1
 - ignore weird distro.version() [RHBZ#1690374]

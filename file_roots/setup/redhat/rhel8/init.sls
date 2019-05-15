@@ -41,7 +41,8 @@ build_additional_pkgs:
       - texlive-latex2man
       - krb5-devel
       - chrpath
-      - python3-gnupg
+      - python3-gpg
+##      - python3-gnupg
 
 
 {{build_cfg.build_runas}}:
@@ -56,9 +57,11 @@ build_additional_pkgs:
 build_additional_py3_pkgs:
   pkg.installed:
     - pkgs:
-      - python3
-      - python3-devel
+      - python36
+      - python36-devel
       - python3-setuptools
+##      - python3
+##      - python3-devel
 ##      - epel-release
 {% endif %}
 

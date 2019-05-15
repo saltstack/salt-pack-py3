@@ -28,9 +28,14 @@ BuildRequires: perl-interpreter, pkgconfig, python2-typing, swig, which
 %endif
 
 %if %{with python3}
+Requires: openssl >= 1:1.0.2
+
+BuildRequires: openssl >= 1:1.0.2
+BuildRequires: openssl-devel >= 1:1.0.2
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-typing
+BuildRequires: perl-interpreter, pkgconfig, swig, which
 %endif
 
 %description

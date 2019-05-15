@@ -109,9 +109,9 @@ pkgbuild_registry:
       noarch: True
       results:
         - distribution-gpg-keys
-        - distribution-gpg-keys-core
+        - distribution-gpg-keys-copr
     libsodium:
-      version: 1.0.17-1
+      version: 1.0.17-2
       results:
         - libsodium
         - libsodium-devel
@@ -142,7 +142,7 @@ pkgbuild_registry:
         - mock-lvm
         - mock-scm
     mock-core-configs:
-      version: 30.2-1
+      version: 30.3-1
       noarch: True
       results:
         - mock-core-configs
@@ -168,6 +168,11 @@ pkgbuild_registry:
       noarch: True
       results:
         - python3-funcsigs
+    python-gnupg:
+      version: 0.4.4-2
+      noarch: True
+      results:
+        - python3-gnupg
     python-libcloud:
       name: python2-libcloud
       version: 2.4.0-1
@@ -190,7 +195,7 @@ pkgbuild_registry:
       version: 0.6.1-3
       build_deps:
         - Cython
-        - python3-funcsigs
+        - python-funcsigs
       results:
         - python3-msgpack
     python-mock:
@@ -222,8 +227,9 @@ pkgbuild_registry:
     python-pyzmq:
       name: python-zmq
       version: 17.0.0-5
+      build_deps:
+        - zeromq
       results:
-        - python2-zmq
         - python3-zmq
     python-simplejson:
       version: 3.16.0-3
@@ -264,7 +270,7 @@ pkgbuild_registry:
         - salt-cloud
         - salt-ssh
     zeromq:
-      version: 4.3.1-3
+      version: 4.3.1-4
       build_deps:
         - libunwind
         - openpgm

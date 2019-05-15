@@ -9,7 +9,7 @@ License:       LGPLv2
 URL:           http://openpgm.googlecode.com/
 Source0:       http://openpgm.googlecode.com/files/libpgm-%{version}~dfsg.tar.gz
 Patch0001:     https://github.com/steve-o/openpgm/commit/ee25ff3d13f2639b4c3a42125e79f77f921c3320.patch
-
+Patch0002:     libpgm-5.2.122-py3.patch
 
 BuildRequires: gcc
 BuildRequires: python3
@@ -59,7 +59,7 @@ rm %{buildroot}%{_libdir}/libpgm.{a,la}
 
 
 %changelog
-* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.2.122-17
+* Wed May 15 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.2.122-17
 - Added support for Redhat 8, and support for Python 3 packages
 
 * Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.122-16
