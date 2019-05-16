@@ -23,7 +23,7 @@ include:
 ##    - pkg.python-crypto.2_6_1.rhel8       ## no pycrypto provided, cryptography 2.3-2.el8, since M2Crypto
     - pkg.python-distro.1_2_0.rhel8         ## S B
     - pkg.python-funcsigs.1_0_2.rhel8       ## S B
-    - pkg.python-gnupg.0_4_4.rhel8          ## B
+    - pkg.python-gnupg.0_4_4.rhel8          ## S B
     - pkg.python-libcloud.2_4_0.rhel8       ## S B
 ###    - pkg.python-libnacl.1_6_1.rhel8     - leave this to later if needed at all
     - pkg.python-m2crypto.0_33_0.rhel8      ## S B
@@ -31,7 +31,7 @@ include:
     - pkg.python-mock.2_0_0.rhel8           ## S B EPEL-7 python36-mock-2.0.0-1.el7
     - pkg.python-pbr.5_1_2.rhel8            ## S B
 ##    - pkg.python-pycryptodome.3_6_1.rhel8 ## no pycryptodomex-3.7.3-2,  not needed since M2Crypto
-    - pkg.python-psutil.5_4_3.rhel8         ## B EPEL-7 python36-psutil 2.2.1-4.el7
+    - pkg.python-psutil.5_4_3.rhel8         ## S B EPEL-7 python36-psutil 2.2.1-4.el7
     - pkg.python-pyroute2.0_4_13.rhel8      ## S B
     - pkg.python-pyzmq.17_0_0.rhel8         ## S B
     - pkg.python-simplejson.3_16_0.rhel8    ## S B EPEL-7 python36-simplejson 3.10.0-2.el7
