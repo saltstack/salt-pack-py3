@@ -33,24 +33,13 @@ include:
 build_additional_pkgs:
   pkg.installed:
     - pkgs:
+      - createrepo_c
       - rpm-sign
       - nfs-utils
-      - createrepo_c
-      - mock
       - openssl-devel
       - texlive-latex2man
       - krb5-devel
       - chrpath
-      - python3-gpg
-##      - python3-gnupg
-
-
-{{build_cfg.build_runas}}:
-  user.present:
-    - groups:
-      - mock
-    - require:
-      - pkg: build_additional_pkgs
 
 
 {% if build_cfg.build_py3 %}
@@ -60,8 +49,5 @@ build_additional_py3_pkgs:
       - python36
       - python36-devel
       - python3-setuptools
-##      - python3
-##      - python3-devel
-##      - epel-release
 {% endif %}
 

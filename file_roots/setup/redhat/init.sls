@@ -13,7 +13,17 @@ build_pkgs:
   pkg.installed:
     - pkgs:
       - rpmdevtools
+      - mock
       - gnupg2
+      - python3-gnupg
+
+
+{{build_cfg.build_runas}}:
+  user.present:
+    - groups:
+      - mock
+    - require:
+      - pkg: build_pkgs
 
 
 manage_priv_key:

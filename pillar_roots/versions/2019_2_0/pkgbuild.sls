@@ -167,6 +167,11 @@ pkgbuild_registry:
       noarch: True
       results:
         - python3-funcsigs
+    python-gnupg:
+      version: 0.4.4-2
+      noarch: True
+      results:
+        - python3-gnupg
     python-libcloud:
       name: python2-libcloud
       version: 2.4.0-1
@@ -249,7 +254,7 @@ pkgbuild_registry:
       results:
         - python3-pyyaml
     salt:
-      version: 2019.2.0-4
+      version: 2019.2.0-5
       noarch: True
       build_deps:
         - python-pyzmq

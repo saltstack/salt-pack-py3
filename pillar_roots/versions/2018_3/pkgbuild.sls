@@ -135,6 +135,11 @@ pkgbuild_registry:
       results:
         - python2-crypto
         - python36-crypto
+    python-gnupg:
+      version: 0.4.4-2
+      noarch: True
+      results:
+        - python3-gnupg
     python-ioflo:
       version: 1.3.8-4
       noarch: True

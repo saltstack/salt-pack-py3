@@ -48,6 +48,7 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 Patch0:  salt-%{version}-tornado4.patch
+Patch1:  salt-%{version}-gpg-strbytes.patch
 
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -196,6 +197,7 @@ Supports Python 3.
 %setup -c
 cd %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}

@@ -19,7 +19,7 @@
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -48,7 +48,7 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 Patch0:  salt-%{version}-tornado4.patch
-
+Patch1:  salt-%{version}-gpg-strbytes.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -196,6 +196,7 @@ Supports Python 3.
 %setup -c
 cd %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -487,6 +488,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu May 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-5
+- Patching in fix for gpg str/bytes to to_unicode/to_bytes
+
 * Tue May 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
 - Patching in support for Tornado 4
 

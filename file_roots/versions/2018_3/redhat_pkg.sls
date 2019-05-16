@@ -16,6 +16,7 @@ include:
 #    - pkg.python-crypto.2_6_1.rhel7     ## EPEL python34-crypto 2.6.1-13.el7  not needed since M2Crypto
 ###    - pkg.python-enum34.1_0.rhel7     ## is this even needed ???   removing this with Py3.6
 ##    - pkg.python-futures.3_0_3.rhel7   ## not even needed
+    - pkg.python-gnupg.0_4_4.rhel7
     - pkg.python-ioflo.1_3_8.rhel7
     - pkg.python-libcloud.2_0_0.rhel7
     - pkg.python-libnacl.1_6_1.rhel7

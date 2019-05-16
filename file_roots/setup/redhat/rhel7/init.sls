@@ -35,18 +35,8 @@ build_additional_pkgs:
   pkg.installed:
     - pkgs:
       - createrepo
-      - mock
-      - python2-gnupg
       - rpm-sign
       - nfs-utils
-
-
-{{build_cfg.build_runas}}:
-  user.present:
-    - groups:
-      - mock
-    - require:
-      - pkg: build_additional_pkgs
 
 
 {% if build_cfg.build_py3 %}
