@@ -16,6 +16,7 @@ build_pkgs:
       - mock
       - gnupg2
       - python3-gnupg
+      - python3-mock
 
 
 {{build_cfg.build_runas}}:

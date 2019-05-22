@@ -1,6 +1,6 @@
 diff -Naur a/doc/conf.py b/doc/conf.py
---- a/doc/conf.py	2019-05-16 11:16:50.685100343 -0600
-+++ b/doc/conf.py	2019-05-16 11:16:53.746603205 -0600
+--- a/doc/conf.py	2019-05-14 17:17:17.433903026 -0600
++++ b/doc/conf.py	2019-05-14 17:17:20.292905958 -0600
 @@ -137,7 +137,21 @@
      'tornado.web',
      'tornado.websocket',
@@ -33,17 +33,17 @@ diff -Naur a/doc/conf.py b/doc/conf.py
  sys.modules['msgpack'].version = (1, 0, 0)
  sys.modules['psutil'].version_info = (3, 0, 0)
 diff -Naur a/salt/client/__init__.py b/salt/client/__init__.py
---- a/salt/client/__init__.py	2019-05-16 11:16:51.522517793 -0600
-+++ b/salt/client/__init__.py	2019-05-16 11:55:10.971306254 -0600
+--- a/salt/client/__init__.py	2019-05-14 17:17:18.444904063 -0600
++++ b/salt/client/__init__.py	2019-05-14 17:20:18.699088848 -0600
 @@ -68,7 +68,10 @@
  # pylint: enable=import-error
  
  # Import tornado
 -import tornado.gen  # pylint: disable=F0401
 +try:
-+    import tornado4.gen as tornado_gen # pylint: disable=F0401
++    import tornado4.gen as tornado_gen  # pylint: disable=F0401
 +except ImportError:
-+    import tornado.gen as tornado_gen # pylint: disable=F0401
++    import tornado.gen as tornado_gen   # pylint: disable=F0401
  
  log = logging.getLogger(__name__)
  
@@ -99,8 +99,8 @@ diff -Naur a/salt/client/__init__.py b/salt/client/__init__.py
  
      def __del__(self):
 diff -Naur a/salt/client/mixins.py b/salt/client/mixins.py
---- a/salt/client/mixins.py	2019-05-16 11:16:51.523601127 -0600
-+++ b/salt/client/mixins.py	2019-05-16 11:16:53.606853074 -0600
+--- a/salt/client/mixins.py	2019-05-14 17:17:18.444904063 -0600
++++ b/salt/client/mixins.py	2019-05-14 17:17:20.175905838 -0600
 @@ -33,7 +33,11 @@
  from salt.ext import six
  
@@ -124,8 +124,8 @@ diff -Naur a/salt/client/mixins.py b/salt/client/mixins.py
                  try:
                      data['return'] = func(*args, **kwargs)
 diff -Naur a/salt/crypt.py b/salt/crypt.py
---- a/salt/crypt.py	2019-05-16 11:16:51.329684279 -0600
-+++ b/salt/crypt.py	2019-05-16 11:16:53.196269357 -0600
+--- a/salt/crypt.py	2019-05-14 17:17:18.293903908 -0600
++++ b/salt/crypt.py	2019-05-14 17:17:19.888905544 -0600
 @@ -21,7 +21,15 @@
  import binascii
  import weakref
@@ -264,8 +264,8 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
      def get_keys(self):
          '''
 diff -Naur a/salt/engines/ircbot.py b/salt/engines/ircbot.py
---- a/salt/engines/ircbot.py	2019-05-16 11:16:51.111934076 -0600
-+++ b/salt/engines/ircbot.py	2019-05-16 11:16:53.710853171 -0600
+--- a/salt/engines/ircbot.py	2019-05-14 17:17:18.109903720 -0600
++++ b/salt/engines/ircbot.py	2019-05-14 17:17:20.258905923 -0600
 @@ -64,8 +64,12 @@
  import ssl
  from collections import namedtuple
@@ -314,8 +314,8 @@ diff -Naur a/salt/engines/ircbot.py b/salt/engines/ircbot.py
  
      def join_channel(self, channel):
 diff -Naur a/salt/engines/webhook.py b/salt/engines/webhook.py
---- a/salt/engines/webhook.py	2019-05-16 11:16:51.113017410 -0600
-+++ b/salt/engines/webhook.py	2019-05-16 11:16:53.711936506 -0600
+--- a/salt/engines/webhook.py	2019-05-14 17:17:18.112903723 -0600
++++ b/salt/engines/webhook.py	2019-05-14 17:17:20.260905925 -0600
 @@ -5,9 +5,14 @@
  from __future__ import absolute_import, print_function, unicode_literals
  
@@ -360,8 +360,8 @@ diff -Naur a/salt/engines/webhook.py b/salt/engines/webhook.py
      http_server.listen(port, address=address)
      io_loop.start()
 diff -Naur a/salt/fileclient.py b/salt/fileclient.py
---- a/salt/fileclient.py	2019-05-16 11:16:51.329684279 -0600
-+++ b/salt/fileclient.py	2019-05-16 11:16:53.196269357 -0600
+--- a/salt/fileclient.py	2019-05-14 17:17:18.294903909 -0600
++++ b/salt/fileclient.py	2019-05-14 17:17:19.888905544 -0600
 @@ -12,7 +12,10 @@
  import string
  import shutil
@@ -375,8 +375,8 @@ diff -Naur a/salt/fileclient.py b/salt/fileclient.py
  
  # Import salt libs
 diff -Naur a/salt/master.py b/salt/master.py
---- a/salt/master.py	2019-05-16 11:16:51.324267607 -0600
-+++ b/salt/master.py	2019-05-16 12:11:25.222646754 -0600
+--- a/salt/master.py	2019-05-14 17:17:18.289903904 -0600
++++ b/salt/master.py	2019-05-14 17:38:09.720432496 -0600
 @@ -28,7 +28,10 @@
  from salt.utils.zeromq import zmq, ZMQDefaultLoop, install_zmq, ZMQ_VERSION_INFO
  # pylint: enable=import-error,no-name-in-module,redefined-builtin
@@ -421,8 +421,8 @@ diff -Naur a/salt/master.py b/salt/master.py
      def _post_stats(self, start, cmd):
          '''
 diff -Naur a/salt/minion.py b/salt/minion.py
---- a/salt/minion.py	2019-05-16 11:16:51.329684279 -0600
-+++ b/salt/minion.py	2019-05-16 11:16:53.197352692 -0600
+--- a/salt/minion.py	2019-05-14 17:17:18.294903909 -0600
++++ b/salt/minion.py	2019-05-14 17:17:19.889905545 -0600
 @@ -33,7 +33,10 @@
  from salt.utils.ctx import RequestContext
  
@@ -773,8 +773,8 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                  Minion._thread_multi_return(minion_instance, opts, data)
              else:
 diff -Naur a/salt/netapi/rest_tornado/__init__.py b/salt/netapi/rest_tornado/__init__.py
---- a/salt/netapi/rest_tornado/__init__.py	2019-05-16 11:16:51.059934027 -0600
-+++ b/salt/netapi/rest_tornado/__init__.py	2019-05-16 11:16:53.658853123 -0600
+--- a/salt/netapi/rest_tornado/__init__.py	2019-05-14 17:17:17.952903558 -0600
++++ b/salt/netapi/rest_tornado/__init__.py	2019-05-14 17:17:20.217905881 -0600
 @@ -18,11 +18,20 @@
  min_tornado_version = '4.0'
  has_tornado = False
@@ -827,8 +827,8 @@ diff -Naur a/salt/netapi/rest_tornado/__init__.py b/salt/netapi/rest_tornado/__i
      except KeyboardInterrupt:
          raise SystemExit(0)
 diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/saltnado.py
---- a/salt/netapi/rest_tornado/saltnado.py	2019-05-16 11:16:51.059934027 -0600
-+++ b/salt/netapi/rest_tornado/saltnado.py	2019-05-16 11:16:53.658853123 -0600
+--- a/salt/netapi/rest_tornado/saltnado.py	2019-05-14 17:17:17.953903559 -0600
++++ b/salt/netapi/rest_tornado/saltnado.py	2019-05-14 17:17:20.218905882 -0600
 @@ -195,12 +195,21 @@
  
  # pylint: disable=import-error
@@ -1120,8 +1120,8 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
          r'''
          An HTTP stream of the Salt master event bus
 diff -Naur a/salt/netapi/rest_tornado/saltnado_websockets.py b/salt/netapi/rest_tornado/saltnado_websockets.py
---- a/salt/netapi/rest_tornado/saltnado_websockets.py	2019-05-16 11:16:51.061017361 -0600
-+++ b/salt/netapi/rest_tornado/saltnado_websockets.py	2019-05-16 11:16:53.659936457 -0600
+--- a/salt/netapi/rest_tornado/saltnado_websockets.py	2019-05-14 17:17:17.954903560 -0600
++++ b/salt/netapi/rest_tornado/saltnado_websockets.py	2019-05-14 17:17:20.218905882 -0600
 @@ -291,11 +291,16 @@
  '''
  from __future__ import absolute_import, print_function, unicode_literals
@@ -1169,8 +1169,8 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado_websockets.py b/salt/netapi/rest_
          """Listens for a "websocket client ready" message.
          Once that message is received an asynchronous job
 diff -Naur a/salt/pillar/__init__.py b/salt/pillar/__init__.py
---- a/salt/pillar/__init__.py	2019-05-16 11:16:51.350267632 -0600
-+++ b/salt/pillar/__init__.py	2019-05-16 11:16:53.286186108 -0600
+--- a/salt/pillar/__init__.py	2019-05-14 17:17:18.307903923 -0600
++++ b/salt/pillar/__init__.py	2019-05-14 17:17:19.907905563 -0600
 @@ -10,7 +10,10 @@
  import os
  import collections
@@ -1212,8 +1212,8 @@ diff -Naur a/salt/pillar/__init__.py b/salt/pillar/__init__.py
 -        raise tornado.gen.Return(ret)
 +        raise tornado_gen.Return(ret)
 diff -Naur a/salt/transport/client.py b/salt/transport/client.py
---- a/salt/transport/client.py	2019-05-16 11:16:51.525767796 -0600
-+++ b/salt/transport/client.py	2019-05-16 11:16:53.613353080 -0600
+--- a/salt/transport/client.py	2019-05-14 17:17:18.446904065 -0600
++++ b/salt/transport/client.py	2019-05-14 17:17:20.181905844 -0600
 @@ -79,9 +79,14 @@
  
      @classmethod
@@ -1232,8 +1232,8 @@ diff -Naur a/salt/transport/client.py b/salt/transport/client.py
          cls._resolver_configured = True
  
 diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
---- a/salt/transport/ipc.py	2019-05-16 11:16:51.526851130 -0600
-+++ b/salt/transport/ipc.py	2019-05-16 11:16:53.617686418 -0600
+--- a/salt/transport/ipc.py	2019-05-14 17:17:18.447904066 -0600
++++ b/salt/transport/ipc.py	2019-05-14 17:17:20.182905845 -0600
 @@ -16,13 +16,23 @@
  import msgpack
  
@@ -1520,8 +1520,8 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
      def close(self):
 diff -Naur a/salt/transport/mixins/auth.py b/salt/transport/mixins/auth.py
---- a/salt/transport/mixins/auth.py	2019-05-16 11:16:51.527934465 -0600
-+++ b/salt/transport/mixins/auth.py	2019-05-16 11:16:53.619853086 -0600
+--- a/salt/transport/mixins/auth.py	2019-05-14 17:17:18.448904067 -0600
++++ b/salt/transport/mixins/auth.py	2019-05-14 17:17:20.184905847 -0600
 @@ -24,7 +24,10 @@
  
  # Import Third Party Libs
@@ -1553,8 +1553,8 @@ diff -Naur a/salt/transport/mixins/auth.py b/salt/transport/mixins/auth.py
  
  # TODO: rename?
 diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
---- a/salt/transport/tcp.py	2019-05-16 11:16:51.526851130 -0600
-+++ b/salt/transport/tcp.py	2019-05-16 11:16:53.619853086 -0600
+--- a/salt/transport/tcp.py	2019-05-14 17:17:18.447904066 -0600
++++ b/salt/transport/tcp.py	2019-05-14 17:17:20.183905846 -0600
 @@ -38,12 +38,24 @@
  from salt.transport import iter_transport_opts
  
@@ -2083,8 +2083,8 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          # Spin up the publisher
          pub_server = PubServer(self.opts, io_loop=self.io_loop)
 diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
---- a/salt/transport/zeromq.py	2019-05-16 11:16:51.524684462 -0600
-+++ b/salt/transport/zeromq.py	2019-05-16 11:16:53.613353080 -0600
+--- a/salt/transport/zeromq.py	2019-05-14 17:17:18.446904065 -0600
++++ b/salt/transport/zeromq.py	2019-05-14 17:17:20.181905844 -0600
 @@ -48,9 +48,14 @@
      HAS_ZMQ_MONITOR = False
  
@@ -2311,8 +2311,8 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
              future.attempts = 0
              future.timeout = timeout
 diff -Naur a/salt/utils/asynchronous.py b/salt/utils/asynchronous.py
---- a/salt/utils/asynchronous.py	2019-05-16 11:16:51.064267364 -0600
-+++ b/salt/utils/asynchronous.py	2019-05-16 11:16:53.675103138 -0600
+--- a/salt/utils/asynchronous.py	2019-05-14 17:17:17.963903570 -0600
++++ b/salt/utils/asynchronous.py	2019-05-14 17:17:20.228905892 -0600
 @@ -5,8 +5,13 @@
  
  from __future__ import absolute_import, print_function, unicode_literals
@@ -2348,8 +2348,8 @@ diff -Naur a/salt/utils/asynchronous.py b/salt/utils/asynchronous.py
                      return ret
              return wrap
 diff -Naur a/salt/utils/event.py b/salt/utils/event.py
---- a/salt/utils/event.py	2019-05-16 11:16:51.081600714 -0600
-+++ b/salt/utils/event.py	2019-05-16 11:16:53.694603156 -0600
+--- a/salt/utils/event.py	2019-05-14 17:17:18.016903624 -0600
++++ b/salt/utils/event.py	2019-05-14 17:17:20.240905905 -0600
 @@ -71,8 +71,12 @@
  
  # Import third party libs
@@ -2420,8 +2420,8 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
              if self.opts['ipc_mode'] == 'tcp':
                  epub_uri = int(self.opts['tcp_master_pub_port'])
 diff -Naur a/salt/utils/gitfs.py b/salt/utils/gitfs.py
---- a/salt/utils/gitfs.py	2019-05-16 11:16:51.072934039 -0600
-+++ b/salt/utils/gitfs.py	2019-05-16 11:16:53.685936481 -0600
+--- a/salt/utils/gitfs.py	2019-05-14 17:17:17.988903595 -0600
++++ b/salt/utils/gitfs.py	2019-05-14 17:17:20.235905899 -0600
 @@ -18,7 +18,11 @@
  import stat
  import subprocess
@@ -2445,8 +2445,8 @@ diff -Naur a/salt/utils/gitfs.py b/salt/utils/gitfs.py
              # We only evaluate the second condition in this if statement if
              # we're initializing remotes, so we won't get here unless io_loop
 diff -Naur a/salt/utils/http.py b/salt/utils/http.py
---- a/salt/utils/http.py	2019-05-16 11:16:51.084850717 -0600
-+++ b/salt/utils/http.py	2019-05-16 11:16:53.696769825 -0600
+--- a/salt/utils/http.py	2019-05-14 17:17:18.026903634 -0600
++++ b/salt/utils/http.py	2019-05-14 17:17:20.242905907 -0600
 @@ -66,15 +66,24 @@
  # pylint: enable=import-error,no-name-in-module
  
@@ -2514,8 +2514,8 @@ diff -Naur a/salt/utils/http.py b/salt/utils/http.py
              ret['error'] = six.text_type(exc)
              return ret
 diff -Naur a/salt/utils/process.py b/salt/utils/process.py
---- a/salt/utils/process.py	2019-05-16 11:16:51.101100732 -0600
-+++ b/salt/utils/process.py	2019-05-16 11:16:53.709769837 -0600
+--- a/salt/utils/process.py	2019-05-14 17:17:18.081903691 -0600
++++ b/salt/utils/process.py	2019-05-14 17:17:20.255905920 -0600
 @@ -33,7 +33,10 @@
  # Import 3rd-party libs
  from salt.ext import six
@@ -2529,8 +2529,8 @@ diff -Naur a/salt/utils/process.py b/salt/utils/process.py
  log = logging.getLogger(__name__)
  
 diff -Naur a/salt/utils/thin.py b/salt/utils/thin.py
---- a/salt/utils/thin.py	2019-05-16 11:16:51.074017374 -0600
-+++ b/salt/utils/thin.py	2019-05-16 11:16:53.685936481 -0600
+--- a/salt/utils/thin.py	2019-05-14 17:17:17.992903599 -0600
++++ b/salt/utils/thin.py	2019-05-14 17:17:20.236905900 -0600
 @@ -21,7 +21,10 @@
  import yaml
  import msgpack
@@ -2544,8 +2544,8 @@ diff -Naur a/salt/utils/thin.py b/salt/utils/thin.py
  try:
      import zlib
 diff -Naur a/salt/utils/zeromq.py b/salt/utils/zeromq.py
---- a/salt/utils/zeromq.py	2019-05-16 11:16:51.101100732 -0600
-+++ b/salt/utils/zeromq.py	2019-05-16 11:16:53.709769837 -0600
+--- a/salt/utils/zeromq.py	2019-05-14 17:17:18.079903689 -0600
++++ b/salt/utils/zeromq.py	2019-05-14 17:17:20.255905920 -0600
 @@ -6,7 +6,13 @@
  from __future__ import absolute_import, print_function, unicode_literals
  
@@ -2595,8 +2595,8 @@ diff -Naur a/salt/utils/zeromq.py b/salt/utils/zeromq.py
  
  
 diff -Naur a/salt/version.py b/salt/version.py
---- a/salt/version.py	2019-05-16 11:16:51.336184285 -0600
-+++ b/salt/version.py	2019-05-16 11:16:53.215769375 -0600
+--- a/salt/version.py	2019-05-14 17:17:18.298903913 -0600
++++ b/salt/version.py	2019-05-14 17:17:19.896905552 -0600
 @@ -584,7 +584,7 @@
          ('RAET', 'raet', '__version__'),
          ('ZMQ', 'zmq', 'zmq_version'),
@@ -2622,8 +2622,8 @@ diff -Naur a/salt/version.py b/salt/version.py
              if callable(version):
                  version = version()
 diff -Naur a/tests/integration/files/engines/runtests_engine.py b/tests/integration/files/engines/runtests_engine.py
---- a/tests/integration/files/engines/runtests_engine.py	2019-05-16 11:16:50.301599985 -0600
-+++ b/tests/integration/files/engines/runtests_engine.py	2019-05-16 11:16:54.736770798 -0600
+--- a/tests/integration/files/engines/runtests_engine.py	2019-05-14 17:17:17.075902659 -0600
++++ b/tests/integration/files/engines/runtests_engine.py	2019-05-14 17:17:21.240906929 -0600
 @@ -24,10 +24,10 @@
  import salt.utils.asynchronous
  
@@ -2640,8 +2640,8 @@ diff -Naur a/tests/integration/files/engines/runtests_engine.py b/tests/integrat
  log = logging.getLogger(__name__)
  
 diff -Naur a/tests/integration/__init__.py b/tests/integration/__init__.py
---- a/tests/integration/__init__.py	2019-05-16 11:16:50.470600143 -0600
-+++ b/tests/integration/__init__.py	2019-05-16 11:16:54.579687318 -0600
+--- a/tests/integration/__init__.py	2019-05-14 17:17:17.212902799 -0600
++++ b/tests/integration/__init__.py	2019-05-14 17:17:21.100906786 -0600
 @@ -77,8 +77,12 @@
  except ImportError:
      import socketserver
@@ -2658,8 +2658,8 @@ diff -Naur a/tests/integration/__init__.py b/tests/integration/__init__.py
  # Import salt tests support libs
  from tests.support.processes import SaltMaster, SaltMinion, SaltSyndic
 diff -Naur a/tests/integration/modules/test_gem.py b/tests/integration/modules/test_gem.py
---- a/tests/integration/modules/test_gem.py	2019-05-16 11:16:50.476016814 -0600
-+++ b/tests/integration/modules/test_gem.py	2019-05-16 11:16:54.588353993 -0600
+--- a/tests/integration/modules/test_gem.py	2019-05-14 17:17:17.217902804 -0600
++++ b/tests/integration/modules/test_gem.py	2019-05-14 17:17:21.105906791 -0600
 @@ -15,7 +15,10 @@
  import salt.utils.path
  
@@ -2673,8 +2673,8 @@ diff -Naur a/tests/integration/modules/test_gem.py b/tests/integration/modules/t
  GEM = 'tidy'
  GEM_VER = '1.1.2'
 diff -Naur a/tests/integration/modules/test_ssh.py b/tests/integration/modules/test_ssh.py
---- a/tests/integration/modules/test_ssh.py	2019-05-16 11:16:50.485766824 -0600
-+++ b/tests/integration/modules/test_ssh.py	2019-05-16 11:16:54.599187336 -0600
+--- a/tests/integration/modules/test_ssh.py	2019-05-14 17:17:17.227902815 -0600
++++ b/tests/integration/modules/test_ssh.py	2019-05-14 17:17:21.114906800 -0600
 @@ -18,7 +18,10 @@
  import salt.utils.platform
  
@@ -2688,8 +2688,8 @@ diff -Naur a/tests/integration/modules/test_ssh.py b/tests/integration/modules/t
  SUBSALT_DIR = os.path.join(TMP, 'subsalt')
  AUTHORIZED_KEYS = os.path.join(SUBSALT_DIR, 'authorized_keys')
 diff -Naur a/tests/support/helpers.py b/tests/support/helpers.py
---- a/tests/support/helpers.py	2019-05-16 11:16:49.992849696 -0600
-+++ b/tests/support/helpers.py	2019-05-16 11:16:54.293687050 -0600
+--- a/tests/support/helpers.py	2019-05-14 17:17:16.876902455 -0600
++++ b/tests/support/helpers.py	2019-05-14 17:17:20.860906540 -0600
 @@ -30,8 +30,14 @@
  import textwrap
  import threading
@@ -2737,8 +2737,8 @@ diff -Naur a/tests/support/helpers.py b/tests/support/helpers.py
          self.application.listen(self.port)
          self.ioloop.start()
 diff -Naur a/tests/unit/fileserver/test_gitfs.py b/tests/unit/fileserver/test_gitfs.py
---- a/tests/unit/fileserver/test_gitfs.py	2019-05-16 11:16:50.009099712 -0600
-+++ b/tests/unit/fileserver/test_gitfs.py	2019-05-16 11:16:54.519020594 -0600
+--- a/tests/unit/fileserver/test_gitfs.py	2019-05-14 17:17:16.891902470 -0600
++++ b/tests/unit/fileserver/test_gitfs.py	2019-05-14 17:17:21.052906737 -0600
 @@ -11,7 +11,6 @@
  import shutil
  import tempfile
@@ -2769,8 +2769,8 @@ diff -Naur a/tests/unit/fileserver/test_gitfs.py b/tests/unit/fileserver/test_gi
          pass
  
 diff -Naur a/tests/unit/modules/test_random_org.py b/tests/unit/modules/test_random_org.py
---- a/tests/unit/modules/test_random_org.py	2019-05-16 11:16:50.090349787 -0600
-+++ b/tests/unit/modules/test_random_org.py	2019-05-16 11:16:54.331603752 -0600
+--- a/tests/unit/modules/test_random_org.py	2019-05-14 17:17:16.975902557 -0600
++++ b/tests/unit/modules/test_random_org.py	2019-05-14 17:17:20.895906576 -0600
 @@ -15,7 +15,10 @@
  import salt.modules.random_org as random_org
  
@@ -2784,8 +2784,8 @@ diff -Naur a/tests/unit/modules/test_random_org.py b/tests/unit/modules/test_ran
  
  def check_status():
 diff -Naur a/tests/unit/netapi/test_rest_tornado.py b/tests/unit/netapi/test_rest_tornado.py
---- a/tests/unit/netapi/test_rest_tornado.py	2019-05-16 11:16:50.250683270 -0600
-+++ b/tests/unit/netapi/test_rest_tornado.py	2019-05-16 11:16:54.467020546 -0600
+--- a/tests/unit/netapi/test_rest_tornado.py	2019-05-14 17:17:17.036902619 -0600
++++ b/tests/unit/netapi/test_rest_tornado.py	2019-05-14 17:17:21.013906697 -0600
 @@ -25,12 +25,20 @@
  # Import 3rd-party libs
  # pylint: disable=import-error
@@ -2841,8 +2841,8 @@ diff -Naur a/tests/unit/netapi/test_rest_tornado.py b/tests/unit/netapi/test_res
              futures.append(future)
  
 diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
---- a/tests/unit/test_minion.py	2019-05-16 11:16:50.129349824 -0600
-+++ b/tests/unit/test_minion.py	2019-05-16 11:16:54.415020497 -0600
+--- a/tests/unit/test_minion.py	2019-05-14 17:17:17.002902584 -0600
++++ b/tests/unit/test_minion.py	2019-05-14 17:17:20.968906650 -0600
 @@ -18,8 +18,19 @@
  import salt.utils.event as event
  from salt.exceptions import SaltSystemExit, SaltMasterUnresolvableError
@@ -2936,8 +2936,8 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
      @skip_if_not_root
      def test_sock_path_len(self):
 diff -Naur a/tests/unit/transport/test_ipc.py b/tests/unit/transport/test_ipc.py
---- a/tests/unit/transport/test_ipc.py	2019-05-16 11:16:50.004766374 -0600
-+++ b/tests/unit/transport/test_ipc.py	2019-05-16 11:16:54.514687257 -0600
+--- a/tests/unit/transport/test_ipc.py	2019-05-14 17:17:16.889902468 -0600
++++ b/tests/unit/transport/test_ipc.py	2019-05-14 17:17:21.050906735 -0600
 @@ -10,9 +10,14 @@
  import socket
  import logging
@@ -2975,8 +2975,8 @@ diff -Naur a/tests/unit/transport/test_ipc.py b/tests/unit/transport/test_ipc.py
          self.payloads.append(payload)
          yield reply_func(payload)
 diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
---- a/tests/unit/transport/test_tcp.py	2019-05-16 11:16:50.005849709 -0600
-+++ b/tests/unit/transport/test_tcp.py	2019-05-16 11:16:54.515770591 -0600
+--- a/tests/unit/transport/test_tcp.py	2019-05-14 17:17:16.890902469 -0600
++++ b/tests/unit/transport/test_tcp.py	2019-05-14 17:17:21.051906736 -0600
 @@ -7,10 +7,16 @@
  from __future__ import absolute_import, print_function, unicode_literals
  import threading
@@ -3084,8 +3084,8 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
 +        with self.assertRaises(TornadoTimeoutError):
              test_connect(self)
 diff -Naur a/tests/unit/transport/test_zeromq.py b/tests/unit/transport/test_zeromq.py
---- a/tests/unit/transport/test_zeromq.py	2019-05-16 11:16:50.005849709 -0600
-+++ b/tests/unit/transport/test_zeromq.py	2019-05-16 11:16:54.514687257 -0600
+--- a/tests/unit/transport/test_zeromq.py	2019-05-14 17:17:16.889902468 -0600
++++ b/tests/unit/transport/test_zeromq.py	2019-05-14 17:17:21.051906736 -0600
 @@ -23,8 +23,13 @@
  # support pyzmq 13.0.x, TODO: remove once we force people to 14.0.x
  if not hasattr(zmq.eventloop.ioloop, 'ZMQIOLoop'):
@@ -3133,8 +3133,8 @@ diff -Naur a/tests/unit/transport/test_zeromq.py b/tests/unit/transport/test_zer
      # TODO: make failed returns have a specific framing so we can raise the same exception
      # on encrypted channels
 diff -Naur a/tests/unit/utils/test_asynchronous.py b/tests/unit/utils/test_asynchronous.py
---- a/tests/unit/utils/test_asynchronous.py	2019-05-16 11:16:50.271266623 -0600
-+++ b/tests/unit/utils/test_asynchronous.py	2019-05-16 11:16:54.486520564 -0600
+--- a/tests/unit/utils/test_asynchronous.py	2019-05-14 17:17:17.051902634 -0600
++++ b/tests/unit/utils/test_asynchronous.py	2019-05-14 17:17:21.030906714 -0600
 @@ -4,9 +4,12 @@
  from __future__ import absolute_import, print_function, unicode_literals
  
@@ -3186,8 +3186,8 @@ diff -Naur a/tests/unit/utils/test_asynchronous.py b/tests/unit/utils/test_async
          '''
          Test that the helper classes do what we expect within a regular asynchronous env
 diff -Naur a/tests/unit/utils/test_context.py b/tests/unit/utils/test_context.py
---- a/tests/unit/utils/test_context.py	2019-05-16 11:16:50.264766617 -0600
-+++ b/tests/unit/utils/test_context.py	2019-05-16 11:16:54.481103892 -0600
+--- a/tests/unit/utils/test_context.py	2019-05-14 17:17:17.046902629 -0600
++++ b/tests/unit/utils/test_context.py	2019-05-14 17:17:21.026906710 -0600
 @@ -5,9 +5,15 @@
  '''
  # Import python libs
@@ -3258,8 +3258,8 @@ diff -Naur a/tests/unit/utils/test_context.py b/tests/unit/utils/test_context.py
              r = yield wait_iterator.next()  # pylint: disable=incompatible-py3-code
              self.assertEqual(r[0], r[1])  # verify that the global value remails
 diff -Naur a/tests/unit/utils/test_event.py b/tests/unit/utils/test_event.py
---- a/tests/unit/utils/test_event.py	2019-05-16 11:16:50.286433304 -0600
-+++ b/tests/unit/utils/test_event.py	2019-05-16 11:16:54.501687245 -0600
+--- a/tests/unit/utils/test_event.py	2019-05-14 17:17:17.063902647 -0600
++++ b/tests/unit/utils/test_event.py	2019-05-14 17:17:21.040906724 -0600
 @@ -12,7 +12,12 @@
  import os
  import hashlib

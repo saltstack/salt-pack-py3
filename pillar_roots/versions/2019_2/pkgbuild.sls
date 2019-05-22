@@ -259,6 +259,7 @@ pkgbuild_registry:
       version: 2019.2.0tobereplaced_date-0
       noarch: True
       build_deps:
+        - python-mock
         - python-pyzmq
         - python-libcloud
       results:

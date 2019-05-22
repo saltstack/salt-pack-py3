@@ -19,7 +19,7 @@
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
-Release: 4%{?dist}
+Release: 6%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -49,7 +49,7 @@ Source21: salt-syndic.fish
 
 Patch0:  salt-%{version}-tornado4.patch
 Patch1:  salt-%{version}-gpg-strbytes.patch
-
+Patch2:  salt-%{version}-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -198,6 +198,7 @@ Supports Python 3.
 cd %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -489,6 +490,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed May 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-6
+- Patching in support for rpmsign key-id
+
+* Wed May 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-5
+- Patching in support for Python 3 encode/decode handling
+
 * Tue May 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
 - Patching in support for Tornado 4
 
