@@ -144,6 +144,8 @@ pkgbuild_registry:
     mock-core-configs:
       version: 30.3-1
       noarch: True
+      build_deps:
+        - distribution-gpg-keys
       results:
         - mock-core-configs
     openpgm:
