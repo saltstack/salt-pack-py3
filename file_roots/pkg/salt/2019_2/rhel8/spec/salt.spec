@@ -19,7 +19,7 @@
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -490,11 +490,14 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Wed May 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-6
-- Patching in support for rpmsign key-id
+* Thu May 23 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-7
+- Patching in support for gpg-agent and passphrase preset
 
-* Wed May 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-5
-- Patching in support for Python 3 encode/decode handling
+* Wed May 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-6
+- Patching in fix for rpmsign
+
+* Thu May 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-5
+- Patching in fix for gpg str/bytes to to_unicode/to_bytes
 
 * Tue May 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
 - Patching in support for Tornado 4

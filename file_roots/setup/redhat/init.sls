@@ -27,6 +27,7 @@ build_pkgs:
       - pkg: build_pkgs
 
 
+{% if build_cfg.build_release != 'rhel8' %}
 manage_priv_key:
   file.managed:
     - name: {{build_cfg.build_gpg_keydir}}/{{ pillar['gpg_pkg_priv_keyname'] }}
@@ -102,6 +103,8 @@ ensure_pub_gpg_rights:
     - ret: False
     - require:
       - file: ensure_gpg_rights
+
+{% endif %}
 
 
 ensure_build_dest_dir:
