@@ -25,7 +25,13 @@
 
 
 # Set the mock target
-{% if build_release == 'rhel7' %}
+{% if build_release == 'rhel8' %}
+
+  {% set build_epel = 'epel-8' %}
+  {% set build_tgt = build_epel ~ '-' ~ build_arch %}
+  {% set build_dist = 'el8' %}
+
+{% elif build_release == 'rhel7' %}
 
   {% set build_epel = 'epel-7' %}
   {% set build_tgt = build_epel ~ '-' ~ build_arch %}

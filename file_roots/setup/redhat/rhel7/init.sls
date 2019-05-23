@@ -1,6 +1,31 @@
 # Import base config
 {% import "setup/redhat/map.jinja" as build_cfg %}
 
+## assume epel-7
+{% set epel_source_hash = '58fa8ae27c89f37b08429f04fd4a88cc' %}
+
+os_pkgs_repo_key:
+  file.managed:
+    - name: /etc/pki/rpm-gpg/RPM-GPG-KEY-{{build_cfg.build_epel|upper}}
+    - source: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-{{build_cfg.build_epel|upper}}
+    - source_hash: md5={{epel_source_hash}}
+    - dir_mode: 755
+    - mode: 644
+    - makedirs: True
+
+
+os_pkgs_repo:
+  pkgrepo.managed:
+    - humanname: os_packages_repo_epel
+    - mirrorlist: https://mirrors.fedoraproject.org/metalink?repo={{build_cfg.build_epel}}&arch=$basearch
+    - comments:
+      - '## Fedora Project support for epel-release {{build_cfg.build_epel}}'
+    - gpgcheck: 1
+    - gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-{{build_cfg.build_epel|upper}}
+    - require:
+      - file: os_pkgs_repo_key
+
+
 include:
   - setup.redhat
   - setup.redhat.rhel7.base7_deps
@@ -9,6 +34,7 @@ include:
 build_additional_pkgs:
   pkg.installed:
     - pkgs:
+      - createrepo
       - rpm-sign
       - nfs-utils
 
