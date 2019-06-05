@@ -28,18 +28,10 @@ os_pkgs_repo:
 
 include:
   - setup.redhat
+  - setup.redhat.rhel7.base_pkgs
   - setup.redhat.rhel7.base7_deps
 
 
-build_additional_pkgs:
-  pkg.installed:
-    - pkgs:
-      - createrepo
-      - rpm-sign
-      - nfs-utils
-
-
-{% if build_cfg.build_py3 %}
 build_additional_py3_pkgs:
   pkg.installed:
     - pkgs:
@@ -47,5 +39,7 @@ build_additional_py3_pkgs:
       - python36
       - python36-devel
       - python36-setuptools
-{% endif %}
+      - createrepo
+      - rpm-sign
+      - nfs-utils
 

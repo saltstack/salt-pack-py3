@@ -1,97 +1,78 @@
-%global with_python3 1
+%bcond_with python2 
+%bcond_without python3
 
-%{!?__python2: %global __python2 /usr/bin/python%{?pybasever}}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-
-%if 0%{?rhel} == 6
-%global with_explicit_python27 1
-%global pybasever 2.7
-%global __python_ver 27
-%global __python %{_bindir}/python%{?pybasever}
-%global __python2 %{_bindir}/python%{?pybasever}
-%global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-%global __os_install_post %{__python27_os_install_post}
-%endif
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %global _description \
 Ioflo is a flow-based programming automated reasoning engine and automation \
 operation system, written in Python.
 
-%{!?python3_pkgversion:%global python3_pkgversion 3}
-
 %global srcname ioflo
 
 Name:           python-%{srcname}
 Version:        1.3.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Flow-based programming interface
 
 Group:          Development/Libraries
 License:        MIT
 URL:            http://ioflo.com
-Source0:        http://pypi.python.org/packages/source/i/%{srcname}/%{srcname}-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/i/%{srcname}/%{srcname}-%{version}.tar.gz
 
 BuildRoot:      %{_tmppath}/%{srcname}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
-BuildRequires:  python%{?__python_ver}-devel
-BuildRequires:  python%{?__python_ver}-setuptools
-
-%if 0%{?with_explicit_python27}
-Requires: python%{?__python_ver}  >= 2.7.9-1
-Provides: python-%{srcname}
-%endif
-
 %description    %{_description}
 
-%package    -n  python2-%{srcname}
+%if %{with python2}
+%package -n     python2-%{srcname}
 Summary:        %{summary}
 Group:          Development/Libraries
-## BuildRequires:  python2-devel
-BuildRequires:  python-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
 %{?python_provide:%python_provide python-%{srcname}}
 %{?python_provide:%python_provide python2-%{srcname}}
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
+%endif
 
 
-%if 0%{?with_python3}
-%package    -n  python%{python3_pkgversion}-%{srcname}
+%if %{with python3}
+%package -n     python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 Group:          Development/Libraries
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
-## %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
-Provides: python%{python3_version}-%{srcname}
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python %{python3_version} version.
+Python 3 version.
 %endif
 
 
 %prep
-%setup -q -n %{srcname}-%{version}
+%autosetup -n %{srcname}-%{version}
 
-%if 0%{?with_python3}
+%if %{with python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
 %endif
 
 %build
+%if %{with python2}
 %py2_build
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_build
 %endif
 
 
 %install
-rm -rf %{buildroot}
+%if %{with python2}
 %py2_install
-%if 0%{?with_python3}
-sed -i '1s|^#!%{__python3}|#!%{__python2}|' %{buildroot}/usr/bin/ioflo
+%endif
+%if %{with python3}
 %py3_install
 %endif
 
@@ -99,22 +80,27 @@ sed -i '1s|^#!%{__python3}|#!%{__python2}|' %{buildroot}/usr/bin/ioflo
 %clean
 rm -rf %{buildroot}
 
-
+%if %{with python2}
 %files -n python2-%{srcname}
 %defattr(-,root,root,-)
 %{python2_sitelib}/*
 %{_bindir}/%{srcname}
-%{_bindir}/%{srcname}2
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
+%{_bindir}/%{srcname}
 %{_bindir}/%{srcname}3
 %endif
 
 
 %changelog
+* Wed Jun 05 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.8-5
+- Added support for Redhat 7 Python 3.6, and support for Python 2 packages optional
+- Removed Redhat 6 support, replaced pypi.python.org with files.pythonhosted.org 
+
 * Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.8-4
 - Add support for Python 3.6
 

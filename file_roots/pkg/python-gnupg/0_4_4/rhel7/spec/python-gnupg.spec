@@ -1,5 +1,7 @@
-%bcond_with python2
+%bcond_with python2 
 %bcond_without python3
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 Name:           python-gnupg
 Version:        0.4.4
@@ -29,14 +31,14 @@ GnuPG bindings for python. This uses the gpg command.
 %endif
 
 %if %{with python3}
-%package -n     python3-gnupg
+%package -n     python%{python3_pkgversion}-gnupg
 Summary:        A wrapper for the Gnu Privacy Guard (GPG or GnuPG)
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
 Requires:       gnupg
-%{?python_provide:%python_provide python3-gnupg}
+%{?python_provide:%python_provide python%{python3_pkgversion}-gnupg}
 
-%description -n python3-gnupg
+%description -n python%{python3_pkgversion}-gnupg
 GnuPG bindings for python. This uses the gpg command.
 %endif # with python3
 
@@ -69,7 +71,7 @@ GnuPG bindings for python. This uses the gpg command.
 %endif
 
 %if %{with python3}
-%files -n python3-gnupg
+%files -n python%{python3_pkgversion}-gnupg
 %doc README.rst
 %license LICENSE.txt
 %{python3_sitelib}/__pycache__/*
@@ -78,11 +80,8 @@ GnuPG bindings for python. This uses the gpg command.
 %endif # with python3
 
 %changelog
-* Wed May 15 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.4.4-2
-- Added support for Redhat 8, and support for Python 2 packages optional
-
-* Fri Apr 26 2019 Paul Wouters <pwouters@redhat.com> - 0.4.4-1
-- Resolves rhbz#1670364 Fixes CVE-2019-6690
+* Tue Jun 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.4.4-2
+- Added support for Redhat 7 Python 3.6, and support for Python 2 packages optional
 
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.4.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild

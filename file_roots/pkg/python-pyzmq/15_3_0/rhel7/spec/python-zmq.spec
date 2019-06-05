@@ -1,4 +1,8 @@
-%global with_python3 1
+%bcond_with python2 
+%bcond_without python3
+%bcond_with tests
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 # we don't want to provide private python extension libs in either the python2 or python3 dirs
 %global __provides_exclude_from ^(%{python2_sitearch}|%{python3_sitearch})/.*\\.so$
@@ -20,8 +24,6 @@ This package contains the python bindings.
 %global srcname pyzmq
 %global modname zmq
 
-%global run_tests 0
-
 Name:           python-zmq
 Version:        15.3.0
 Release:        6%{?dist}
@@ -38,41 +40,32 @@ URL:            http://www.zeromq.org/bindings:python
 #Source0:        https://pypi.python.org/packages/source/p/pyzmq/pyzmq-%{version}.tar.gz
 Source0:        https://github.com/zeromq/pyzmq/archive/v%{version}.tar.gz#/pyzmq-%{version}.tar.gz
 
-BuildRequires:  chrpath
-
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  zeromq-devel
-BuildRequires:  Cython
-%if 0%{?run_tests}
-BuildRequires:  pytest
-BuildRequires:  python-tornado
-%endif
-
 # For some tests
 # czmq currently FTBFS, so enable it some time later
 #BuildRequires:  czmq-devel
 
-%if 0%{?with_python3}
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-# needed for 2to3
-BuildRequires:  python-tools
-%if 0%{?run_tests}
-BuildRequires:  python%{python3_pkgversion}-pytest
-BuildRequires:  python%{python3_pkgversion}-tornado
-%endif
-%endif
 
+BuildRequires:  gcc
+BuildRequires:  chrpath
+BuildRequires:  %{_bindir}/pathfix.py
+BuildRequires:  zeromq-devel
 Requires:   zeromq >= 4
+
 
 %description    %{_description}
 
-
+%if %{with python2}
 %package -n     python2-zmq
 Summary:        %{summary}
 Group:          %{group}
 License:        LGPLv3+
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+BuildRequires:  python2-Cython
+%if %{with tests}
+BuildRequires:  python2-pytest
+BuildRequires:  python2-tornado
+%endif
 %{?python_provide:%python_provide python-zmq}
 %{?python_provide:%python_provide python2-zmq}
 
@@ -90,18 +83,27 @@ Requires:       python2-zmq = %{version}-%{release}
 
 %description -n python2-zmq-tests %{_description}
 Python 2 version.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package    -n  python%{python3_pkgversion}-zmq
 Summary:        %{summary}
 Group:          %{group}
 License:        LGPLv3+
-##%{?python_provide:%python_provide python%{python3_pkgversion}-zmq}
-Provides:       python%{python3_pkgversion}-zmq
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-Cython
+# needed for 2to3
+## BuildRequires:  python%%{python3_pkgversion}-tools
+%if %{with tests}
+BuildRequires:  python%{python3_pkgversion}-pytest
+BuildRequires:  python%{python3_pkgversion}-tornado
+%endif
+%{?python_provide:%python_provide python%{python3_pkgversion}-zmq}
 
 %description -n python%{python3_pkgversion}-zmq %{_description}
-Python %{python3_version} version.
+Python 3 version.
 
 
 %package    -n  python%{python3_pkgversion}-zmq-tests
@@ -114,7 +116,6 @@ Provides:       python%{python3_pkgversion}-zmq-tests
 
 %description -n python%{python3_pkgversion}-zmq-tests %{_description}
 Python %{python3_version} version.
-
 %endif
 
 
@@ -146,46 +147,56 @@ chmod -x examples/pubsub/topics_sub.py
 
 %build
 %global py_setup setupegg.py
+%if %{with python2}
 %py2_build
-
-%if 0%{?with_python3}
+%endif
 %py3_build
+%if %{with python3}
 %endif # with_python3
 
 
 
 %install
 %global RPATH /zmq/{backend/cython,devices}
+%if %{with python2}
 %py2_install
-%if 0%{?with_python3}
+## chrpath --delete %%{buildroot}%%{python_sitearch}%%{RPATH}/*.so
+%endif
+%if %{with python3}
 %py3_install
 chrpath --delete %{buildroot}%{python3_sitearch}%{RPATH}/*.so
 %endif # with_python3
 
-chrpath --delete %{buildroot}%{python_sitearch}%{RPATH}/*.so
 
+%if %{with python2}
 # Remove Python 3 only code from python2 package
 rm  %{buildroot}%{python2_sitearch}/zmq/asyncio.py \
     %{buildroot}%{python2_sitearch}/zmq/auth/asyncio.py \
     %{buildroot}%{python2_sitearch}/zmq/tests/*test_asyncio.py \
     %{buildroot}%{python2_sitearch}/zmq/tests/test_future.py
+%endif
 
 
 %check
-%if 0%{?run_tests}
+%if %{with tests}
     # Make sure we import from the install directory
     rm zmq/__*.py
+%if %{with python3}
     PYTHONPATH=%{buildroot}%{python3_sitearch} \
         %{__python3} setup.py test
+%endif
 
     # Remove Python 3 only tests
+%if %{with python2}
     rm  zmq/asyncio.py zmq/auth/asyncio.py \
         zmq/tests/*test_asyncio.py zmq/tests/test_future.py
     PYTHONPATH=%{buildroot}%{python2_sitearch} \
         %{__python2} setup.py test
 %endif
+%endif
 
 
+%if %{with python2}
 %files -n python2-zmq
 %license COPYING.*
 %doc README.md examples/
@@ -195,8 +206,9 @@ rm  %{buildroot}%{python2_sitearch}/zmq/asyncio.py \
 
 %files -n python2-zmq-tests
 %{python2_sitearch}/zmq/tests
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-zmq
 %license COPYING.*
 %doc README.md
@@ -211,6 +223,9 @@ rm  %{buildroot}%{python2_sitearch}/zmq/asyncio.py \
 
 
 %changelog
+* Wed Jun 05 2019 SaltStack Packaging Team <packaging@saltstack.com> - 15.3.0-7
+- Make support for Python 2 packages optional
+
 * Tue Apr 09 2019 SaltStack Packaging Team <packagin@saltstack.com> - 15.3.0-6
 - Add support for Python 3.6 for RHEL 7
 
