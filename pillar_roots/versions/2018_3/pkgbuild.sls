@@ -137,7 +137,7 @@ pkgbuild_registry:
       version: 0.4.4-2
       noarch: True
       results:
-        - python3-gnupg
+        - python36-gnupg
     python-ioflo:
       version: 1.3.8-5
       noarch: True

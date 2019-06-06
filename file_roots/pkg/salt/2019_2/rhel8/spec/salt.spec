@@ -48,10 +48,10 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 %if 0%{?rhel} > 7
-Patch0:  salt-py3-tornado4.patch
+Patch0:  salt-py3-%{version}-tornado4.patch
 %endif
-Patch1:  salt-py3-gpg-strbytes.patch
-Patch2:  salt-py3-rpmsign.patch
+Patch1:  salt-py3-%{version}-gpg-strbytes.patch
+Patch2:  salt-py3-%{version}-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
