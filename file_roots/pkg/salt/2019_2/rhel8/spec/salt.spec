@@ -13,13 +13,13 @@
 %endif
 
 # Release Candidate
-%define __rc_ver %{nil}
+%define __rc_ver tobereplaced_date
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
-Release: 7%{?dist}
+Release: 0%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -47,9 +47,11 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-Patch0:  salt-%{version}-tornado4.patch
-Patch1:  salt-%{version}-gpg-strbytes.patch
-Patch2:  salt-%{version}-rpmsign.patch
+%if 0%{?rhel} > 7
+Patch0:  salt-py3-tornado4.patch
+%endif
+Patch1:  salt-py3-gpg-strbytes.patch
+Patch2:  salt-py3-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -83,7 +85,11 @@ BuildRequires: python%{python3_pkgversion}-requests
 BuildRequires: python%{python3_pkgversion}-mock
 BuildRequires: python%{python3_pkgversion}-libcloud
 BuildRequires: python%{python3_pkgversion}-six
+%if 0%{?rhel} == 7
+BuildRequires: python%{python3_pkgversion}-PyYAML
+%else
 BuildRequires: python%{python3_pkgversion}-pyyaml
+%endif
 BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
@@ -96,12 +102,19 @@ Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 
-## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
+%if 0%{?rhel} == 7
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
+%else
 Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
+%endif
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
+%if 0%{?rhel} == 7
+Requires: python%{python3_pkgversion}-PyYAML
+%else
 Requires: python%{python3_pkgversion}-pyyaml
+%endif
 %endif
 
 
@@ -196,7 +209,9 @@ Supports Python 3.
 ## %%autosetup 
 %setup -c
 cd %{name}-%{version}
+%if 0%{?rhel} > 7
 %patch0 -p1
+%endif
 %patch1 -p1
 %patch2 -p1
 
@@ -306,8 +321,8 @@ rm -rf %{buildroot}
 
 ## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/LICENSE
 ## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
-%doc $RPM_BUILD_DIR/python%{python3_pkgversion}-%{name}-%{version}-%{release}/LICENSE
-%doc $RPM_BUILD_DIR/python%{python3_pkgversion}-%{name}-%{version}-%{release}/README.fedora
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
 
 /%{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
@@ -490,6 +505,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Jun 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-8
+- Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
+
 * Thu May 23 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-7
 - Patching in support for gpg-agent and passphrase preset
 
