@@ -176,7 +176,6 @@ pkgbuild_registry:
       results:
         - python3-gnupg
     python-libcloud:
-      name: python2-libcloud
       version: 2.4.0-1
       noarch: True
       results:
@@ -219,7 +218,6 @@ pkgbuild_registry:
     python-pycryptodome:
       version: 3.6.1-3
       results:
-        - python2-pycryptodomex
         - python3-pycryptodomex
     python-pyroute2:
       version: 0.4.13-3
@@ -241,7 +239,6 @@ pkgbuild_registry:
       version: 0.2.4-4
       noarch: True
       results:
-        - python2-timelib
         - python3-timelib
     python-tornado4:
       version: 4.5.2-3
