@@ -28,11 +28,16 @@
 
 include:
   - setup.redhat
+  - setup.redhat.rhel8.base_pkgs
+  - setup.redhat.rhel8.gpg_agent
 
 
-build_additional_pkgs:
+build_additional_py3_pkgs:
   pkg.installed:
     - pkgs:
+      - python36
+      - python36-devel
+      - python3-setuptools
       - createrepo_c
       - rpm-sign
       - nfs-utils
@@ -40,14 +45,4 @@ build_additional_pkgs:
       - texlive-latex2man
       - krb5-devel
       - chrpath
-
-
-{% if build_cfg.build_py3 %}
-build_additional_py3_pkgs:
-  pkg.installed:
-    - pkgs:
-      - python36
-      - python36-devel
-      - python3-setuptools
-{% endif %}
 

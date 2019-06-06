@@ -1,33 +1,17 @@
-%if ( "0%{?dist}" == "0.amzn1" )
-%global with_python3 0
-%else
-%global with_python3 1
-%endif
+%bcond_with python2 
+%bcond_without python3
 
-%{!?__python2: %global __python2 /usr/bin/python%{?pybasever}}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
-%if 0%{?rhel} == 6
-%global with_explicit_python27 1
-%global pybasever 2.7
-%global __python_ver 27
-%global __python %{_bindir}/python%{?pybasever}
-%global __python2 %{_bindir}/python%{?pybasever}
-%global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-%global __os_install_post %{__python27_os_install_post}
-%endif
 
 %global _description \
 A high level, stack based communication protocol for network and IPC communication
-
-%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %global srcname raet
 
 Name:       python-%{srcname}
 Version:    0.6.6
-Release:    6%{?dist}
+Release:    7%{?dist}
 Summary:    Reliable Asynchronous Event Transport Protocol
 
 License:    ASL 2.0
@@ -37,50 +21,38 @@ Source0:    http://pypi.python.org/packages/source/r/%{srcname}/%{srcname}-%{ver
 
 BuildArch:  noarch
 
-BuildRequires:  python%{?__python_ver}-devel
-BuildRequires:  python%{?__python_ver}-setuptools
-BuildRequires:  python%{?__python_ver}-six
-Requires:  python%{?__python_ver}-six
+%description    %{_description}
 
-%if 0%{?with_explicit_python27}
-BuildRequires:  python%{?__python_ver}-libnacl >= 1.4.3-1
-BuildRequires:  python%{?__python_ver}-ioflo >= 1.3.8-1
-Requires:  python%{?__python_ver}-ioflo >= 1.3.8-1
-Requires:  python%{?__python_ver}-ioflo >= 1.3.8-1
-%else
-BuildRequires:  python-libnacl >= 1.4.3-1
-BuildRequires:  python2-ioflo >= 1.3.8-1
-Requires:  python2-ioflo >= 1.3.8-1
-Requires:  python2-ioflo >= 1.3.8-1
-%endif
 
-%if (0%{?rhel} == 6) && (! 0%{?with_explicit_python27})
-Requires:  python%{?__python_ver}-simplejson
-%endif 
-
-%if 0%{?with_explicit_python27}
-Requires: python%{?__python_ver}  >= 2.7.9-1
-Provides: python-%{srcname}
-%endif
-
+%if %{with python2}
 # We don't want to provide private python extension libs
 %{?filter_setup:
 %filter_provides_in %{python2_sitearch}/.*\.so$
 %filter_setup
 }
+%endif
 
-%description    %{_description}
 
+%if %{with python2}
 %package    -n  python2-%{srcname}
 Summary:        %{summary}
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+BuildRequires:  python2-six
+BuildRequires:  python2-libnacl >= 1.4.3-1
+BuildRequires:  python2-ioflo >= 1.3.8-1
+Requires:  python2-six
+Requires:  python2-ioflo >= 1.3.8-1
+Requires:  python2-ioflo >= 1.3.8-1
 %{?python_provide:%python_provide python-%{srcname}}
 %{?python_provide:%python_provide python2-%{srcname}}
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
@@ -95,7 +67,7 @@ Requires:  python%{python3_pkgversion}-libnacl >= 1.4.3-1
 Provides: python%{python3_pkgversion}-%{srcname}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python %{python3_version} version.
+Python 3 version.
 %endif
 
 
@@ -107,19 +79,21 @@ rm -rf %{pypi_name}.egg-info
 
 
 %build
+%if %{with python2}
 %py2_build
-
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_build
 %endif
 
 
 %install
-# Must do the default python version install last because
-# the scripts in /usr/bin are overwritten with every setup.py install.
+%if %{with python2}
 %py2_install
-rm -rf %{buildroot}%{_bindir}/*
+%endif
+%if %{with python3}
 %py3_install
+%endif
 
 
 ## %check
@@ -127,16 +101,19 @@ rm -rf %{buildroot}%{_bindir}/*
 ## %{__python3} setup.py test
 
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %{_bindir}/raetflo
 ## %%{_bindir}/raetflo2
 %{python2_sitelib}/%{srcname}
 %{python2_sitelib}/%{srcname}-%{version}-py*.egg-info
 %exclude %{python2_sitelib}/systest*
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
+%{_bindir}/raetflo
 ## %%{_bindir}/raetflo3
 %{python3_sitelib}/%{srcname}
 %{python3_sitelib}/%{srcname}-%{version}-py*.egg-info
@@ -145,6 +122,9 @@ rm -rf %{buildroot}%{_bindir}/*
 
 
 %changelog
+* Wed Jun 05 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.6-7
+- Removed support for Amazon and Redhat 6, made support for Python 2 packages optional
+
 * Tue Apr 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.6.6-6
 - Add support for Python 3.6 for RHEL 7
 

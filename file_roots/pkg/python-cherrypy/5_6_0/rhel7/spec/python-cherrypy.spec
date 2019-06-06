@@ -1,8 +1,9 @@
-%if !(0%{?fedora} > 12 || 0%{?rhel} > 5)
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%endif
+%bcond_with python2 
+%bcond_without python3
+%bcond_with tests
 
-%global with_python3 1
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 
 %global _description \
 CherryPy allows developers to build web applications in much the same way \
@@ -11,11 +12,10 @@ results in smaller source code developed in less time.
 
 %global srcname cherrypy
 
-%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 Name:           python-cherrypy
 Version:        5.6.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Pythonic, object-oriented web development framework
 Group:          Development/Libraries
 License:        BSD
@@ -31,26 +31,33 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
 
-## BuildRequires:  python2-devel
-BuildRequires:  python-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-nose
-
 
 %description %{_description}
 
+%if %{with python2}
+%package -n python2-%{srcname}
+Summary:        %{summary}
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+BuildRequires:  python2-nose
+%{?python_provide:%python_provide python2-%{srcname}}
+%{?python_provide:%python_provide python-%{srcname}}
 
-%if 0%{?with_python3}
+%description -n python2-{srcname} %{_description}
+Python 2 version.
+%endif
+
+
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-nose
-##%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
-Provides: python%{python3_pkgversion}-%{srcname}
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python %{python3_version} version.
+Python 3 version.
 %endif
 
 
@@ -65,43 +72,48 @@ Python %{python3_version} version.
 
 
 %build
-## %%{__python} setup.py build
+%if %{with python2}
 %py2_build
+%endif
 %if 0%{?with_python3}
 %py3_build
 %endif
 
 
 %install
-## rm -rf $RPM_BUILD_ROOT
-## %%{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
+%if %{with python2}
 %py2_install
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_install
 %endif
 
 
+%if %{with tests}
 %check
 cd cherrypy/test
 # These two tests hang in the buildsystem so we have to disable them.
 # The third fails in cherrypy 3.2.2.
 PYTHONPATH='../../' nosetests -s ./ -e 'test_SIGTERM' -e \
   'test_SIGHUP_tty' -e 'test_file_stream'
+%endif
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 
+%if %{with python2}
 %files
 %defattr(-,root,root,-)
 ## %doc README.txt
 %doc cherrypy/tutorial
 %{_bindir}/cherryd
 %{python2_sitelib}/*
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %defattr(-,root,root,-)
 ## %doc README.txt
@@ -112,6 +124,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jun 05 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-6
+- Made support for Python 2 packages optional
+
 * Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-5
 - Adjusted support for Python 3.6
 

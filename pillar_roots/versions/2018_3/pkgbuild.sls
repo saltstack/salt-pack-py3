@@ -123,116 +123,100 @@ pkgbuild_registry:
       version: 2.2.1-1
       noarch: True
     python-cherrypy:
-      version: 5.6.0-5
+      version: 5.6.0-6
       noarch: True
       build_deps:
         - python-mock
       results:
-        - python-cherrypy
         - python36-cherrypy
     python-crypto:
       version: 2.6.1-2
       results:
-        - python2-crypto
         - python36-crypto
     python-gnupg:
       version: 0.4.4-2
       noarch: True
       results:
-        - python3-gnupg
+        - python36-gnupg
     python-ioflo:
-      version: 1.3.8-4
+      version: 1.3.8-5
       noarch: True
       results:
-        - python2-ioflo
         - python36-ioflo
     python-libcloud:
-      name: python2-libcloud
-      version: 2.0.0-3
+      version: 2.0.0-4
       noarch: True
       results:
-        - python2-libcloud
         - python36-libcloud
     python-libnacl:
-      version: 1.6.1-2
+      version: 1.6.1-3
       noarch: True
       results:
-        - python-libnacl
         - python36-libnacl
     python-m2crypto:
-      version: 0.31.0-3
+      version: 0.33.0-1
       results:
-        - m2crypto
         - python36-m2crypto
     python-msgpack:
       version: 0.4.6-3
       results:
-        - python2-msgpack
         - python36-msgpack
     python-mock:
       version: 1.0.1-12
       noarch: True
       results:
-        - python2-mock
         - python36-mock
     python-psutil:
       version: 2.2.1-2
       results:
-        - python2-psutil
         - python36-psutil
     python-pycryptodome:
       version: 3.6.1-3
       results:
-        - python2-pycryptodomex
         - python36-pycryptodomex
     python-pyzmq:
       name: python-zmq
       version: 15.3.0-6
+      build_deps:
+        - zeromq
       results:
-        - python2-zmq
         - python36-zmq
     python-raet:
-      version: 0.6.6-6
+      version: 0.6.6-7
       noarch: True
       results:
-        - python2-raet
         - python36-raet
       build_deps:
         - python-ioflo
         - python-libnacl
     python-simplejson:
-      version: 3.3.3-2
+      version: 3.3.3-3
       results:
-        - python2-simplejson
         - python36-simplejson
     python-timelib:
-      version: 0.2.4-4
+      version: 0.2.4-5
       noarch: True
       results:
-        - python2-timelib
         - python36-timelib
     python-tornado:
       version: 4.2.1-3
       results:
-        - python2-tornado
         - python36-tornado
     python-typing:
       version: 3.5.2.2-4
       noarch: True
       results:
-        - python2-typing
         - python36-typing
     python-urllib3:
       version: 1.10.4-3
       noarch: True
       results:
-        - python2-urllib3
         - python36-urllib3
     python-yaml:
       name: PyYAML
       version: 3.11-2
       results:
-        - PyYAML
+        - python36-yaml
     salt:
       version: 2018.3.0tobereplaced_date-0
       noarch: True
