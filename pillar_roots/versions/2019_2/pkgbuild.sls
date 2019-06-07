@@ -145,7 +145,7 @@ pkgbuild_registry:
       version: 30.3-1
       noarch: True
       build_deps:
-        - distribution-gpg-keys 
+        - distribution-gpg-keys
       results:
         - mock-core-configs
     openpgm:
@@ -342,7 +342,7 @@ pkgbuild_registry:
       results:
         - python36-msgpack
     python-mock:
-      version: 1.0.1-12
+      version: 1.0.1-13
       noarch: True
       results:
         - python36-mock
