@@ -1,3 +1,6 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -6,7 +9,7 @@
 
 Name:           python-typing
 Version:        3.5.2.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Typing defines a standard notation for type annotations
 License:        Python
 URL:            https://pypi.python.org/pypi/typing
@@ -20,6 +23,7 @@ standard format, and it has been designed to also be used by static and runtime
 type checkers, static analyzers, IDEs and other tools.
 
 
+%if %{with python2}
 %package -n python2-typing
 Summary:        %{summary}
 BuildRequires:  python2-devel
@@ -34,8 +38,10 @@ Typing defines a standard notation for Python function and variable type
 annotations. The notation can be used for documenting code in a concise,
 standard format, and it has been designed to also be used by static and runtime
 type checkers, static analyzers, IDEs and other tools.
+%endif
 
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-typing
 Summary:        %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
@@ -50,42 +56,63 @@ Typing defines a standard notation for Python function and variable type
 annotations. The notation can be used for documenting code in a concise,
 standard format, and it has been designed to also be used by static and runtime
 type checkers, static analyzers, IDEs and other tools.
+%endif
 
 
 %prep
 %setup -qc
+%if %{with python2}
 mv typing-%{version} python2
-cp -al python2 python3
 cp -al python2/{README.rst,LICENSE} .
+%endif
+%if %{with python3}
+mv typing-%{version} python3
+cp -al python3/{README.rst,LICENSE} .
+%endif
 
 %build
+%if %{with python2}
 cd python2
 %{py2_build}
 cd -
+%endif
+%if %{with python3}
 cd python3
 %{py3_build}
 cd -
+%endif
 
 %install
+%if %{with python2}
 cd python2
 %{py2_install}
 cd -
+%endif
+%if %{with python3}
 cd python3
 %{py3_install}
 cd -
+%endif
 
+%if %{with python2}
 %files -n python2-typing
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/typing*
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-typing
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/typing*
 %{python3_sitelib}/__pycache__/typing*
+%endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.5.2.2-5
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.5.2.2-4
 - Updated to allow for Amazon Linux 2 Python 3 support
 

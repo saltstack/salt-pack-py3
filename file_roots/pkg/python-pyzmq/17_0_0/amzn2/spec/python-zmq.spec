@@ -1,7 +1,9 @@
-%global with_python3 1
-
 # we don't want to provide private python extension libs in either the python2 or python3 dirs
 %global __provides_exclude_from ^(%{python2_sitearch}|%{python3_sitearch})/.*\\.so$
+
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -14,11 +16,9 @@
 %global srcname pyzmq
 %global modname zmq
 
-%global run_tests 0
-
 Name:           python-zmq
 Version:        17.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Software library for fast, message-based applications
 
 Group:          Development/Libraries
@@ -35,40 +35,11 @@ BuildRequires:  gcc
 BuildRequires:  chrpath
 BuildRequires:  %{_bindir}/pathfix.py
 
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python-devel
-%else
-BuildRequires:  python2-devel
-%endif
-
-BuildRequires:  python2-setuptools
-BuildRequires:  zeromq-devel
-BuildRequires:  python2-Cython
-%if 0%{?run_tests}
-BuildRequires:  python2-pytest
-BuildRequires:  python2-tornado
-%endif
 
 # For some tests
 # czmq currently FTBFS, so enable it some time later
 #BuildRequires:  czmq-devel
 
-%if 0%{?with_python3}
-%if 0%{?with_amzn2}
-BuildRequires:  python3-rpm-macros
-## Amazon Python 3.7.1-9 python3-devel provides 2to3
-%else
-# needed for 2to3
-BuildRequires:  python2-tools
-%endif
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-%if 0%{?run_tests}
-BuildRequires:  python%{python3_pkgversion}-pytest
-BuildRequires:  python%{python3_pkgversion}-tornado
-%endif
-%endif
 
 
 %description
@@ -81,9 +52,25 @@ multiple transport protocols and more.
 
 This package contains the python bindings.
 
+%if %{with python2}
 %package -n python2-zmq
 Summary:        Software library for fast, message-based applications
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+%else
+BuildRequires:  python2-devel
+%endif
+
+BuildRequires:  python2-setuptools
+BuildRequires:  zeromq-devel
+BuildRequires:  python2-Cython
+%if %{with tests}
+BuildRequires:  python2-pytest
+BuildRequires:  python2-tornado
+%endif
 %{?python_provide:%python_provide python2-%{modname}}
+
 %description -n python2-zmq
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
@@ -111,13 +98,29 @@ multiple transport protocols and more.
 
 This package contains the testsuite for the python bindings.
 
+%endif
 
-%if 0%{?with_python3}
+
+%if %{with python3}
 %package -n python%{python3_pkgversion}-zmq
 Summary:        Software library for fast, message-based applications
 Group:          Development/Libraries
 License:        LGPLv3+
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+## Amazon Python 3.7.1-9 python3-devel provides 2to3
+%else
+# needed for 2to3
+BuildRequires:  python2-tools
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%if %{with tests}
+BuildRequires:  python%{python3_pkgversion}-pytest
+BuildRequires:  python%{python3_pkgversion}-tornado
+%endif
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}}
+
 %description -n python%{python3_pkgversion}-zmq
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
@@ -175,10 +178,12 @@ chmod -x examples/pubsub/topics_sub.py
 
 
 %build
+%if %{with python2}
 CFLAGS="%{optflags}" %{__python2} setup.py build_ext --inplace
 %py2_build
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 CFLAGS="%{optflags}" %{__python3} setup.py build_ext --inplace
 %py3_build
 %endif # with_python3
@@ -190,21 +195,20 @@ CFLAGS="%{optflags}" %{__python3} setup.py build_ext --inplace
 # Must do the python3 install first because the scripts in /usr/bin are
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
-%if 0%{?with_python3}
+%if %{with python3}
 %py3_install
-
 pathfix.py -pn -i %{__python3} %{buildroot}%{python3_sitearch}
-
 %endif # with_python3
 
 
+%if %{with python2}
 %py2_install
-
 pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
+%endif
 
 
 %check
-%if 0%{?run_tests}
+%if %{with tests}
     # Make sure we import from the install directory
     #rm zmq/__*.py
     PYTHONPATH=%{buildroot}%{python3_sitearch} \
@@ -228,7 +232,7 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 %files -n python2-%{modname}-tests
 %{python2_sitearch}/zmq/tests
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-zmq
 %license COPYING.*
 %doc README.md
@@ -243,7 +247,10 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 
 
 %changelog
-* Wed Feb 06 2019 SaltStack Packaging Team <packaging@saltstack.com> -17.0.0-4
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-5
+- Made support for Python 2 optional, added conditional for tests
+
+* Wed Feb 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-4
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 17.0.0-3

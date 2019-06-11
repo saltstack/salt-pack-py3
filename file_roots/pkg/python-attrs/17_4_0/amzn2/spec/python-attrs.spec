@@ -2,6 +2,9 @@
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
+%bcond_with python2
+%bcond_without python3
+
 %bcond_with tests
 %else
 %if 0%{?rhel} && 0%{?rhel} <= 7
@@ -11,13 +14,16 @@
 # Turn the tests off when bootstrapping Python, because pytest requires attrs
 %bcond_without tests
 %endif
+
+%bcond_with python2
+%bcond_without python3
 %endif
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 Name:           python-attrs
 Version:        17.4.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Python attributes without boilerplate
 
 License:        MIT
@@ -26,6 +32,7 @@ BuildArch:      noarch
 Source0:        https://github.com/hynek/%{modname}/archive/%{version}/%{modname}-%{version}.tar.gz
 
 
+%if %{with python2}
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python-devel
@@ -41,7 +48,9 @@ BuildRequires:  python2-hypothesis
 BuildRequires:  python2-six
 BuildRequires:  python2-zope-interface
 %endif
+%endif
 
+%if %{with python3}
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
 %endif
@@ -54,12 +63,14 @@ BuildRequires:  python%{python3_pkgversion}-hypothesis
 BuildRequires:  python%{python3_pkgversion}-six
 BuildRequires:  python%{python3_pkgversion}-zope-interface
 %endif
+%endif
 
 %description
 attrs is an MIT-licensed Python package with class decorators that
 ease the chores of implementing the most common attribute-related
 object protocols.
 
+%if %{with python2}
 %package -n python2-%{modname}
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{modname}}
@@ -68,7 +79,10 @@ Summary:        %{summary}
 attrs is an MIT-licensed Python package with class decorators that
 ease the chores of implementing the most common attribute-related
 object protocols.
+Support Python 2 version.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{modname}
 Summary:        %{summary}
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}}
@@ -77,37 +91,58 @@ Summary:        %{summary}
 attrs is an MIT-licensed Python package with class decorators that
 ease the chores of implementing the most common attribute-related
 object protocols.
+Support Python 3 version.
+%endif
 
 %prep
 %setup -q -n %{modname}-%{version}
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 %install
 # Doesn't install anything to /usr/bin, so I don't think the order of
 # installing python2 and python3 actually matters.
+%if %{with python3}
 %py3_install
+%endif
+%if %{with python2}
 %py2_install
+%endif
 
 %if %{with tests}
 %check
+%if %{with python2}
 PYTHONPATH=%{buildroot}/%{python2_sitelib} py.test-2.7 -v
+%endif
+%if %{with python3}
 PYTHONPATH=%{buildroot}/%{python3_sitelib} py.test-3 -v
 %endif
+%endif
 
+%if %{with python2}
 %files -n python2-%{modname}
 %license LICENSE
 %doc AUTHORS.rst README.rst
 %{python2_sitelib}/*
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{modname}
 %license LICENSE
 %doc AUTHORS.rst README.rst
 %{python3_sitelib}/*
+%endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.4.0-9
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 17.4.0-8
 - Support for Python 3 on Amazon Linux 2
 

@@ -2,6 +2,10 @@
 %global flatname pysocks
 %global sum     A Python SOCKS client module
 
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -10,7 +14,7 @@
 
 Name:               python-pysocks
 Version:            1.6.8
-Release:            5%{?dist}
+Release:            6%{?dist}
 Summary:            %{sum}
 
 License:            BSD
@@ -31,6 +35,7 @@ Acts as a drop-in replacement to the socket module. Featuring:
 - urllib2 handler included.
 
 
+%if %{with python2}
 %package -n python2-%{flatname}
 Summary:            %{sum}
 %if 0%{?with_amzn2}
@@ -60,8 +65,10 @@ Acts as a drop-in replacement to the socket module. Featuring:
 - HTTP proxy client included but not supported or recommended (you should use
   urllib2's or requests' own HTTP proxy interface)
 - urllib2 handler included.
+%endif
 
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{flatname}
 Summary:            %{sum}
 %if 0%{?with_amzn2}
@@ -86,37 +93,52 @@ Acts as a drop-in replacement to the socket module. Featuring:
 - HTTP proxy client included but not supported or recommended (you should use
   urllib2's or requests' own HTTP proxy interface)
 - urllib2 handler included.
+%endif
 
 
 %prep
 %autosetup -n %{distname}-%{version}
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 
 %install
+%if %{with python2}
 %py2_install
+%endif
+%if %{with python3}
 %py3_install
+%endif
 
-
-#%%check
+%if %{with tests}
+%check
 ## No tests included in the tarball...
 ## https://github.com/Anorov/PySocks/issues/37
-#%%{__python2} setup.py test
-#%%if 0%%{?with_python3}
-#%%{__python3} setup.py test
-#%%endif
+%if %{with python2}
+%{__python2} setup.py test
+%endif
+%if 0%%{?with_python3}
+%{__python3} setup.py test
+%endif
+%endif
 
 
+%if %{with python2}
 %files -n python2-%{flatname}
 %doc README.md
 %license LICENSE
 %{python2_sitelib}/socks.py*
 %{python2_sitelib}/sockshandler.py*
 %{python2_sitelib}/%{distname}-%{version}*
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{flatname}
 %doc README.md
 %license LICENSE
@@ -124,9 +146,13 @@ Acts as a drop-in replacement to the socket module. Featuring:
 %{python3_sitelib}/sockshandler.py*
 %{python3_sitelib}/__pycache__/*socks*
 %{python3_sitelib}/%{distname}-%{version}-*
+%endif
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.6.8-6
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.6.8-5
 - Support for Python 3 on Amazon Linux 2
 

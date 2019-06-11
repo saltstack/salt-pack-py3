@@ -1,14 +1,12 @@
 %global pypi_name funcsigs
 
-%{!?python3_pkgversion:%global python3_pkgversion 3}
+%bcond_with python2
+%bcond_without python3
 
-%if 0%{?fedora} || 0%{?rhel} > 7
-%global with_python3 1
-%endif
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
-%global with_python3 1
 %bcond_with tests
 %bcond_with docs
 %else
@@ -19,7 +17,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.0.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Python function signatures from PEP362 for Python 2.6, 2.7 and 3.2+
 
 License:        ASL 2.0
@@ -27,9 +25,18 @@ URL:            https://github.com/testing-cabal/funcsigs?
 Source0:        https://pypi.io/packages/source/f/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
 
+%description
+funcsigs is a backport of the PEP 362 function signature features from
+Python 3.3's inspect module. The backport is compatible with Python 2.6, 2.7
+as well as 3.2 and up.
+
+
+
+%if %{with python2}
+%package -n     python2-%{pypi_name}
+Summary:        Python function signatures from PEP362 for Python 2.6, 2.7 and 3.2+
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
-BuildRequires:  python3-rpm-macros
 BuildRequires:  python-devel
 %else
 BuildRequires:  python2-devel
@@ -41,31 +48,25 @@ BuildRequires:  python2-sphinx
 %if %{with tests}
 BuildRequires:  python2-unittest2
 %endif
-
-%description
-funcsigs is a backport of the PEP 362 function signature features from
-Python 3.3's inspect module. The backport is compatible with Python 2.6, 2.7
-as well as 3.2 and up.
-
-
-%package -n     python2-%{pypi_name}
-Summary:        Python function signatures from PEP362 for Python 2.6, 2.7 and 3.2+
 %{?python_provide:%python_provide python2-%{pypi_name}}
 
 %description -n python2-%{pypi_name}
 funcsigs is a backport of the PEP 362 function signature features from
 Python 3.3's inspect module. The backport is compatible with Python 2.6, 2.7
 as well as 3.2 and up.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n     python%{python3_pkgversion}-%{pypi_name}
 Summary:        Python function signatures from PEP362 for Python 2.6, 2.7 and 3.2+
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{pypi_name}}
-
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-unittest2
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{pypi_name}}
 
 %description -n python%{python3_pkgversion}-%{pypi_name}
 funcsigs is a backport of the PEP 362 function signature features from
@@ -90,8 +91,10 @@ sed -i '/extras_require/,+3d' setup.py
 %endif
 
 %build
+%if %{with python3}
 %py2_build
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_build
 %endif
 
@@ -105,28 +108,34 @@ rm -rf html/.{doctrees,buildinfo}
 %install
 # Must do the subpackages' install first because the scripts in /usr/bin are
 # overwritten with every setup.py install.
-%if 0%{?with_python3}
+%if %{with python3}
 %py3_install
 %endif
 
+%if %{with python3}
 %py2_install
+%endif
 
 
 %if %{with tests}
 %check
+%if %{with python2}
 %{__python2} setup.py test
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %{__python3} setup.py test
 %endif
 %endif
 
+%if %{with python2}
 %files -n python2-%{pypi_name}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/%{pypi_name}
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{pypi_name}
 %doc README.rst
 %license LICENSE
@@ -141,6 +150,9 @@ rm -rf html/.{doctrees,buildinfo}
 %endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.2-13
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.0.2-12
 - Support for Python 3 on Amazon Linux 2
 

@@ -1,11 +1,16 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
+
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
 %endif
 
 Name:           PyYAML
 Version:        4.2
-Release:        0.1.b4%{?dist}
+Release:        0.1.b5%{?dist}
 %global uversion %{version}b4
 Summary:        YAML parser and emitter for Python
 
@@ -15,20 +20,6 @@ Source0:        https://github.com/yaml/pyyaml/archive/%{name}-%{uversion}.tar.g
 
 BuildRequires:  gcc
 BuildRequires:  libyaml-devel
-
-BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
-BuildRequires:  python2-Cython
-
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python3-rpm-macros
-%endif
-
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-BuildRequires:  python%{python3_pkgversion}-Cython
-
 
 %global _description\
 YAML is a data serialization format designed for human readability and\
@@ -46,8 +37,16 @@ configuration files to object serialization and persistance.
 %description %_description
 
 
+%if %{with python2}
 %package -n python2-pyyaml
 Summary:        %summary
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+BuildRequires:  python2-Cython
+
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
 Provides:       python-yaml = %{version}-%{release}
 Provides:       python-yaml%{?_isa} = %{version}-%{release}
 Provides:       python2-yaml = %{version}-%{release}
@@ -59,19 +58,29 @@ Provides: PyYAML%{?_isa} = %{version}-%{release}
 Obsoletes: PyYAML < %{version}-%{release}
 
 %description -n python2-pyyaml %_description
+%endif
 
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-pyyaml
 Summary:        %summary
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-Cython
 Provides:       python%{python3_pkgversion}-yaml = %{version}-%{release}
 Provides:       python%{python3_pkgversion}-yaml%{?_isa} = %{version}-%{release}
 %{?python_provide:%python_provide python3-pyyaml}
+
 # Remove before F31
 Provides:       python%{python3_pkgversion}-PyYAML = %{version}-%{release}
 Provides:       python%{python3_pkgversion}-PyYAML%{?_isa} = %{version}-%{release}
 Obsoletes:      python%{python3_pkgversion}-PyYAML < 4.1-5
 
 %description -n python%{python3_pkgversion}-pyyaml %_description
+%endif
 
 
 %prep
@@ -84,32 +93,53 @@ rm -rf ext/_yaml.c
 
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 
 %install
+%if %{with python2}
 %py2_install
+%endif
+%if %{with python3}
 %py3_install
+%endif
 
 
+%if %{with tests}
 %check
+%if %{with python2}
 %{__python2} setup.py test
+%endif
+%if %{with python3}
 %{__python3} setup.py test
+%endif
+%endif
 
 
+%if %{with python2}
 %files -n python2-pyyaml
 %license LICENSE
 %doc CHANGES README examples
 %{python2_sitearch}/*
+%endif
 
+%if %{with python3}
 %files -n python3-pyyaml
 %license LICENSE
 %doc CHANGES README examples
 %{python3_sitearch}/*
+%endif
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.2-0.1.b5
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2-0.1.b4
 - Ported to Amazon Linux 2 for Python 3 support
 

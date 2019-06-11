@@ -1,24 +1,20 @@
 %global pypiname pluggy
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
 %bcond_with tests
-%bcond_without python3
 %else
-%if 0%{?fedora} || 0%{?rhel} > 7
-%bcond_without python3
-%else
-%bcond_with python3
-%endif
-
 # Turn the tests off when bootstrapping Python, because pytest requires pluggy
 %bcond_without tests
 %endif
 
 Name:           python-pluggy
 Version:        0.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The plugin manager stripped of pytest specific details
 
 License:        MIT
@@ -27,6 +23,15 @@ Source0:        https://files.pythonhosted.org/packages/source/p/%{pypiname}/%{p
 
 
 BuildArch:      noarch
+
+%global _description\
+The plugin manager stripped of pytest specific details.
+
+%description %_description
+
+%if %{with python2}
+%package -n python2-%{pypiname}
+Summary: %summary
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python-devel
@@ -38,8 +43,15 @@ BuildRequires:  python2-setuptools_scm
 %if %{with tests}
 BuildRequires:  python2-pytest
 %endif
+%{?python_provide:%python_provide python2-%{pypiname}}
+
+%description -n python2-%{pypiname} %_description
+Supports Python 2 version.
+%endif
 
 %if %{with python3}
+%package -n python%{python3_pkgversion}-%{pypiname}
+Summary:  %summary
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
 %endif
@@ -49,26 +61,11 @@ BuildRequires:  python%{python3_pkgversion}-setuptools_scm
 %if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-pytest
 %endif
-%endif # with python3
-
-%global _description\
-The plugin manager stripped of pytest specific details.
-
-%description %_description
-
-%package -n python2-%{pypiname}
-Summary: %summary
-%{?python_provide:%python_provide python2-%{pypiname}}
-
-%description -n python2-%{pypiname} %_description
-
-%if %{with python3}
-%package -n python%{python3_pkgversion}-%{pypiname}
-Summary:  %summary
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{pypiname}}
 
 %description -n python%{python3_pkgversion}-%{pypiname}
 The plugin manager stripped of pytest specific details.
-
+Supports Python 3 version.
 %endif # with python3
 
 
@@ -77,8 +74,9 @@ The plugin manager stripped of pytest specific details.
 
 
 %build
+%if %{with python2}
 %py2_build
-
+%endif
 %if %{with python3}
 %py3_build
 %endif # with python3
@@ -88,25 +86,29 @@ The plugin manager stripped of pytest specific details.
 %if %{with python3}
 %py3_install
 %endif # with python3
-
+%if %{with python2}
 %py2_install
+%endif
 
 %if %{with tests}
 %check
 export PYTHONPATH=.:$PYTHONPATH
+%if %{with python2}
 py.test testing
-
+%endif
 %if %{with python3}
 py.test-%{python3_version} testing
 %endif
 %endif # with tests
 
 
+%if %{with python2}
 %files -n python2-%{pypiname}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/%{pypiname}
 %{python2_sitelib}/%{pypiname}-%{version}-py%{python2_version}.egg-info
+%endif
 
 
 %if %{with python3}
@@ -119,6 +121,9 @@ py.test-%{python3_version} testing
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.7.1-3
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.7.1-2
 - Support for Python 3 on Amazon Linux 2
 

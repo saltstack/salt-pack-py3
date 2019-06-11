@@ -2,9 +2,10 @@
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
+%bcond_with python2
+%bcond_without python3
 %bcond_with tests
 %bcond_with docs
-%bcond_without python3
 %else
 %bcond_without tests
 %bcond_without docs
@@ -16,9 +17,18 @@
 %endif
 %endif
 
+%global short_name atomicwrites
+
+%global _description\
+This Python module provides atomic file writes on POSIX operating systems.\
+It sports:\
+* Race-free assertion that the target file doesn't yet exist\
+* Windows support\
+* Simple high-level API that wraps a very flexible class-based API
+
 Name:       python-atomicwrites
 Version:    1.1.5
-Release:    13%{?git_tag}%{?dist}
+Release:    14%{?git_tag}%{?dist}
 Summary:    Python Atomic file writes on POSIX 
 
 License:    MIT
@@ -27,13 +37,13 @@ Source0:    https://github.com/untitaker/%{name}/archive/%{version}.tar.gz#/%{na
 
 BuildArch:  noarch
 
+%if %{with python2}
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python-devel
 %else
 BuildRequires:  python2-devel
 %endif
-%global short_name atomicwrites
 
 BuildRequires:  python2-setuptools
 %if %{with docs} && %{without python3}
@@ -41,6 +51,7 @@ BuildRequires:  python2-sphinx
 %endif
 %if %{with tests}
 BuildRequires:  python2-pytest
+%endif
 %endif
 
 %if %{with python3}
@@ -58,20 +69,15 @@ BuildRequires:  python%{python3_pkgversion}-pytest
 %endif
 
 
-%global _description\
-This Python module provides atomic file writes on POSIX operating systems.\
-It sports:\
-* Race-free assertion that the target file doesn't yet exist\
-* Windows support\
-* Simple high-level API that wraps a very flexible class-based API
-
 %description %_description
 
+%if %{with python2}
 %package -n python2-%{short_name}
 Summary: %summary
 %{?python_provide:%python_provide python2-%{short_name}}
 
 %description -n python2-%{short_name} %_description
+%endif
 
 %if %{with python3}
 %package -n python%{python3_pkgversion}-%{short_name}
@@ -89,6 +95,7 @@ It sports:
 %setup -q
 
 %build
+%if %{with python2}
 %{__python2} setup.py --quiet build
 
 %if %{with docs} && %{without python3}
@@ -97,6 +104,7 @@ cd docs
 make %{?_smp_mflags} man
 cd ..
 unset PYTHONPATH
+%endif
 %endif
 
 %if %{with python3}
@@ -113,7 +121,9 @@ unset PYTHONPATH
 
 
 %install
+%if %{with python2}
 %{__python2} setup.py --quiet install -O1 --skip-build --root $RPM_BUILD_ROOT
+%endif
 
 %if %{with python3}
 %py3_install
@@ -126,18 +136,22 @@ cp -r docs/_build/man/*.1 "$RPM_BUILD_ROOT%{_mandir}/man1"
 
 %check
 %if %{with tests}
+%if %{with python2}
 %{__python2} -m pytest -v
+%endif
 
 %if %{with python3}
 %{__python3} -m pytest -v
 %endif
 %endif
 
+%if %{with python2}
 %files -n python2-%{short_name}
 %doc LICENSE README.rst
 %{python2_sitelib}/*
 %if %{with docs} && %{without python3}
 %{_mandir}/man1/atomicwrites.1.*
+%endif
 %endif
 
 %if %{with python3}
@@ -150,6 +164,9 @@ cp -r docs/_build/man/*.1 "$RPM_BUILD_ROOT%{_mandir}/man1"
 %endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.1.5-14
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.1.5-13
 - Support for Python 3 on Amazon Linux 2
 

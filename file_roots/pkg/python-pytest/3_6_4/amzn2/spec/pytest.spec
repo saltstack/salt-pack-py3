@@ -1,5 +1,9 @@
 %global pylib_version 1.5.0
 
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -27,7 +31,7 @@
 
 Name:           pytest
 Version:        3.6.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Simple powerful testing with Python
 License:        MIT
 URL:            http://pytest.org
@@ -45,6 +49,7 @@ BuildArch:      noarch
 %description
 py.test provides simple, yet powerful testing for Python.
 
+%if %{with python2}
 %package -n python2-%{name}
 Summary:        Simple powerful testing with Python
 %if 0%{?with_amzn2}
@@ -82,7 +87,6 @@ Requires:       python2-pluggy
 Requires:       python2-py >= %{pylib_version}
 Requires:       python2-setuptools
 Requires:       python2-six
-
 %{?python_provide:%python_provide python2-%{name}}
 # the python2 package was named pytest up to 2.8.7-2
 Provides:       %{name} = %{version}-%{release}
@@ -90,7 +94,9 @@ Obsoletes:      %{name} < 2.8.7-3
 
 %description -n python2-%{name}
 py.test provides simple, yet powerful testing for Python.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{name}
 Summary:        Simple powerful testing with Python
 %if 0%{?with_amzn2}
@@ -110,7 +116,6 @@ BuildRequires:  python%{python3_pkgversion}-six
 %if %{with timeout}
 BuildRequires:  python%{python3_pkgversion}-pytest-timeout
 %endif
-
 %if %{with optional_tests}
 BuildRequires:  python%{python3_pkgversion}-argcomplete
 BuildRequires:  python%{python3_pkgversion}-decorator
@@ -119,7 +124,6 @@ BuildRequires:  python%{python3_pkgversion}-mock
 BuildRequires:  python%{python3_pkgversion}-nose
 BuildRequires:  python%{python3_pkgversion}-twisted
 %endif
-
 Requires:       python%{python3_pkgversion}-atomicwrites
 Requires:       python%{python3_pkgversion}-attrs
 Requires:       python%{python3_pkgversion}-more-itertools
@@ -127,19 +131,23 @@ Requires:       python%{python3_pkgversion}-pluggy
 Requires:       python%{python3_pkgversion}-py >= %{pylib_version}
 Requires:       python%{python3_pkgversion}-setuptools
 Requires:       python%{python3_pkgversion}-six
-
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{name}}
 Obsoletes:      platform-python-%{name} < %{version}-%{release}
 
 %description -n python3-%{name}
 py.test provides simple, yet powerful testing for Python.
+%endif
 
 %prep
 %autosetup
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 %if %{with docs}
 for l in doc/* ; do
@@ -151,20 +159,30 @@ done
 %endif
 
 %install
+%if %{with python2}
 %py2_install
 mv %{buildroot}%{_bindir}/pytest %{buildroot}%{_bindir}/pytest-%{python2_version}
 ln -snf pytest-%{python2_version} %{buildroot}%{_bindir}/pytest-2
 mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test-%{python2_version}
 ln -snf py.test-%{python2_version} %{buildroot}%{_bindir}/py.test-2
+
+# use 2.X
+ln -snf pytest-%{python2_version} %{buildroot}%{_bindir}/pytest
+ln -snf py.test-%{python2_version} %{buildroot}%{_bindir}/py.test
+%endif
+
+%if %{with python3}
 %py3_install
 mv %{buildroot}%{_bindir}/pytest %{buildroot}%{_bindir}/pytest-%{python3_version}
 ln -snf pytest-%{python3_version} %{buildroot}%{_bindir}/pytest-3
 mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test-%{python3_version}
 ln -snf py.test-%{python3_version} %{buildroot}%{_bindir}/py.test-3
 
-# use 2.X per default
-ln -snf pytest-%{python2_version} %{buildroot}%{_bindir}/pytest
-ln -snf py.test-%{python2_version} %{buildroot}%{_bindir}/py.test
+# use 3.X
+ln -snf pytest-%{python3_version} %{buildroot}%{_bindir}/pytest
+ln -snf py.test-%{python3_version} %{buildroot}%{_bindir}/py.test
+%endif
+
 
 %if %{with docs}
 mkdir -p _htmldocs/html
@@ -175,20 +193,33 @@ for l in doc/* ; do
 done
 %endif
 
+
+%if %{with python2}
 # remove shebangs from all scripts
-find %{buildroot}{%{python2_sitelib},%{python3_sitelib}} \
+find %{buildroot}%{python2_sitelib} \
      -name '*.py' \
      -exec sed -i -e '1{/^#!/d}' {} \;
+%endif
+%if %{with python3}
+# remove shebangs from all scripts
+find %{buildroot}%{python3_sitelib} \
+     -name '*.py' \
+     -exec sed -i -e '1{/^#!/d}' {} \;
+%endif
+
 
 %if %{with tests}
 %check
+%if %{with python2}
 PATH=%{buildroot}%{_bindir}:${PATH} \
 PYTHONPATH=%{buildroot}%{python2_sitelib} \
   %{buildroot}%{_bindir}/pytest-%{python2_version} -r s testing \
   %if %{with timeout}
   --timeout=30
   %endif
+%endif
 
+%if %{with python3}
 PATH=%{buildroot}%{_bindir}:${PATH} \
 PYTHONPATH=%{buildroot}%{python3_sitelib} \
   %{buildroot}%{_bindir}/pytest-%{python3_version} -r s testing \
@@ -196,7 +227,10 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
   --timeout=30
   %endif
 %endif
+%endif
 
+
+%if %{with python2}
 %files -n python2-%{name}
 %if %{with docs}
 %doc CHANGELOG.html
@@ -214,7 +248,10 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python2_sitelib}/pytest-*.egg-info/
 %{python2_sitelib}/_pytest/
 %{python2_sitelib}/pytest.py*
+%endif
 
+
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{name}
 %if %{with docs}
 %doc CHANGELOG.html
@@ -231,8 +268,12 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/_pytest/
 %{python3_sitelib}/pytest.py
 %{python3_sitelib}/__pycache__/pytest.*
+%endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.4-3
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 3.6.4-2
 - Support for Python 3 on Amazon Linux 2
 

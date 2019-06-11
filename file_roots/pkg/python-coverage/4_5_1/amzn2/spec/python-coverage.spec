@@ -1,4 +1,7 @@
 # %%global prever b1
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -6,10 +9,16 @@
 %global with_amzn2 1
 %endif
 
+%global _description Coverage.py is a Python module that measures code coverage during Python \
+execution. It uses the code analysis tools and tracing hooks provided in the \
+Python standard library to determine which lines are executable, and which \
+have been executed.
+
+
 Name:           python-coverage
 Summary:        Code coverage testing module for Python
 Version:        4.5.1
-Release:        4%{?prever}%{?dist}
+Release:        5%{?prever}%{?dist}
 # jquery(MIT):
 #  coverage/htmlfiles/jquery.min.js
 # MIT or GPL:
@@ -22,12 +31,9 @@ Source0:        http://pypi.python.org/packages/source/c/coverage/coverage-%{ver
 
 BuildRequires:  gcc
 
-%description
-Coverage.py is a Python module that measures code coverage during Python 
-execution. It uses the code analysis tools and tracing hooks provided in the 
-Python standard library to determine which lines are executable, and which 
-have been executed.
+%description %{_description}
 
+%if %{with python2}
 %package -n python2-coverage
 Summary:        Code coverage testing module for Python 2
 %if 0%{?with_amzn2}
@@ -47,12 +53,11 @@ Provides:       bundled(js-jquery-hotkeys) = 0.8
 Provides:       bundled(js-jquery-isonscreen) = 1.2.0
 Provides:       bundled(js-jquery-tablesorter)
 
-%description -n python2-coverage
-Coverage.py is a Python 2 module that measures code coverage during Python
-execution. It uses the code analysis tools and tracing hooks provided in the 
-Python standard library to determine which lines are executable, and which 
-have been executed.
+%description -n python2-coverage %{_description}
+Support Python 2 version.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-coverage
 Summary:        Code coverage testing module for Python 3
 %if 0%{?with_amzn2}
@@ -71,11 +76,9 @@ Provides:       bundled(js-jquery-isonscreen) = 1.2.0
 Provides:       bundled(js-jquery-tablesorter)
 Obsoletes:      platform-python-coverage < %{version}-%{release}
 
-%description -n python%{python3_pkgversion}-coverage
-Coverage.py is a Python 3 module that measures code coverage during Python
-execution. It uses the code analysis tools and tracing hooks provided in the 
-Python standard library to determine which lines are executable, and which 
-have been executed.
+%description -n python%{python3_pkgversion}-coverage %{_description}
+Supports Python 3 version.
+%endif
 
 %prep
 %setup -q -n coverage-%{version}%{?prever}
@@ -85,32 +88,43 @@ sed -i 's/\r//g' README.rst
 
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 %install
+%if %{with python2}
 %py3_install
 mv %{buildroot}/%{_bindir}/coverage %{buildroot}/%{_bindir}/python%{python3_pkgversion}-coverage
+%endif
 
+%if %{with python3}
 %py2_install
+%endif
 
 # rename binaries, make compat symlinks
 pushd %{buildroot}%{_bindir}
 mv coverage python-coverage
 
+%if %{with python2}
 rm -rf coverage-2* coverage2
-
 for i in python2-coverage coverage coverage2 coverage-%{python2_version}; do
   ln -s python-coverage $i
 done
+%endif
 
+%if %{with python3}
 rm -rf coverage-3* coverage3
-
 for i in coverage3 coverage-%{python3_version}; do
   ln -s	python%{python3_pkgversion}-coverage $i
 done
+%endif
 popd
 
+%if %{with python2}
 %files -n python2-coverage
 %license LICENSE.txt NOTICE.txt
 %doc README.rst
@@ -121,7 +135,9 @@ popd
 %{_bindir}/python2-coverage
 %{python2_sitearch}/coverage/
 %{python2_sitearch}/coverage*.egg-info/
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-coverage
 %license LICENSE.txt NOTICE.txt
 %doc README.rst
@@ -130,8 +146,12 @@ popd
 %{_bindir}/python%{python3_pkgversion}-coverage
 %{python3_sitearch}/coverage/
 %{python3_sitearch}/coverage*.egg-info/
+%endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.1-5
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com>- 4.5.1-4
 - Support for Python 3 on Amazon Linux 2
 

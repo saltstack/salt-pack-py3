@@ -1,6 +1,10 @@
 %global srcname urllib3
 
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
+
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
 %bcond_with tests
@@ -11,7 +15,7 @@
 
 Name:           python-%{srcname}
 Version:        1.23
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python HTTP library with thread-safe connection pooling and file post
 
 License:        MIT
@@ -24,16 +28,16 @@ BuildArch:      noarch
 %description
 Python HTTP module with connection pooling and file POST abilities.
 
+Requires:       ca-certificates
+
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        Python2 HTTP library with thread-safe connection pooling and file post
 %{?python_provide:%python_provide python2-%{srcname}}
 
-Requires:       ca-certificates
-
 # Previously bundled things:
 Requires:       python2-six
-%if ( "0%{?dist}" == "0.amzn2" )
-%global with_amzn2 1
+%if 0%{?with_amzn2}
 Requires:       python-backports-ssl_match_hostname
 %else
 Requires:       python2-backports-ssl_match_hostname
@@ -67,8 +71,9 @@ BuildRequires:  python2-tornado
 
 %description -n python2-%{srcname}
 Python2 HTTP module with connection pooling and file POST abilities.
+%endif
 
-
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        Python3 HTTP library with thread-safe connection pooling and file post
 
@@ -88,6 +93,7 @@ Requires:       python%{python3_pkgversion}-pysocks
 
 %description -n python%{python3_pkgversion}-%{srcname}
 Python3 HTTP module with connection pooling and file POST abilities.
+%endif
 
 
 %prep
@@ -102,14 +108,23 @@ rm -rf test/appengine/
 rm -rf test/contrib/
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 
 %install
+%if %{with python2}
 %py2_install
+%endif
+%if %{with python3}
 %py3_install
+%endif
 
+%if %{with python2}
 # Unbundle the Python 2 build
 rm -rf %{buildroot}/%{python2_sitelib}/urllib3/packages/six.py*
 rm -rf %{buildroot}/%{python2_sitelib}/urllib3/packages/ssl_match_hostname/
@@ -120,7 +135,9 @@ ln -s ../../six.pyc %{buildroot}/%{python2_sitelib}/urllib3/packages/six.pyc
 ln -s ../../six.pyo %{buildroot}/%{python2_sitelib}/urllib3/packages/six.pyo
 
 ln -s ../../backports/ssl_match_hostname %{buildroot}/%{python2_sitelib}/urllib3/packages/ssl_match_hostname
+%endif
 
+%if %{with python3}
 # Unbundle the Python 3 build
 rm -rf %{buildroot}/%{python3_sitelib}/urllib3/packages/six.py*
 rm -rf %{buildroot}/%{python3_sitelib}/urllib3/packages/__pycache__/six*
@@ -134,30 +151,42 @@ ln -s ../../../__pycache__/six.cpython-%{python3_version_nodots}.pyc %{buildroot
 # which we ship in Fedora 26, so we can safely replace the bundled version with
 # this stub which imports the necessary objects.
 cp %{SOURCE1} %{buildroot}/%{python3_sitelib}/urllib3/packages/ssl_match_hostname.py
+%endif
 
 
 %if %{with tests}
 %check
+%if %{with python2}
 py.test
+%endif
+%if %{with python3}
 py.test-3
+%endif
 %endif
 
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %license LICENSE.txt
 %doc CHANGES.rst README.rst CONTRIBUTORS.txt
 %{python2_sitelib}/urllib3/
 %{python2_sitelib}/urllib3-*.egg-info
+%endif
 
 
+%if %{with python3}
 %files -n python3-%{srcname}
 %license LICENSE.txt
 %doc CHANGES.rst README.rst CONTRIBUTORS.txt
 %{python3_sitelib}/urllib3/
 %{python3_sitelib}/urllib3-*.egg-info
+%endif
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-6
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-5
 - Ported to Amazon Linux 2 for Python 3 support
 

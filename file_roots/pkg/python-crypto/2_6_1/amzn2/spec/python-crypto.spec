@@ -1,3 +1,7 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 # Share docs between python2 and python3 packages
 %global _docdir_fmt %{name}
 
@@ -5,7 +9,9 @@
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 # For consistency and completeness
+%if %{with python2}
 %global python2_pkgversion 2
+%endif
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
@@ -14,7 +20,7 @@
 Summary:	Cryptography library for Python
 Name:		python-crypto
 Version:	2.6.1
-Release:	25%{?dist}
+Release:	26%{?dist}
 # Mostly Public Domain apart from parts of HMAC.py and setup.py, which are Python
 License:	Public Domain and Python
 URL:		http://www.pycrypto.org/
@@ -30,21 +36,28 @@ BuildRequires:	findutils
 BuildRequires:	gcc
 BuildRequires:	gmp-devel >= 4.1
 BuildRequires:	libtomcrypt-devel >= 1.16
+
+%if %{with python2}
 BuildRequires:	python%{python2_pkgversion}-devel >= 2.4
-BuildRequires:	python%{python3_pkgversion}-devel
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
-BuildRequires:  python3-rpm-macros
+%endif
+%endif
 
+%if %{with python3}
+BuildRequires:	python%{python3_pkgversion}-devel
+BuildRequires:  python3-rpm-macros
 ## on amzn2 python3-devel 3.7.1-9 provides 2to3
-%else
+%if ! 0%{?with_amzn2}
 BuildRequires:	%{_bindir}/2to3
+%endif
 %endif
 
 %description
 PyCrypto is a collection of both secure hash functions (such as MD5 and
 SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
+%if %{with python2}
 %package -n python%{python2_pkgversion}-crypto
 Summary:	Cryptography library for Python 2
 Provides:	pycrypto = %{version}-%{release}
@@ -55,7 +68,9 @@ PyCrypto is a collection of both secure hash functions (such as MD5 and
 SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
 This is the Python 2 build of the package.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-crypto
 Summary:	Cryptography library for Python 3
 %{?python_provide:%python_provide python%{python3_pkgversion}-crypto}
@@ -65,6 +80,7 @@ PyCrypto is a collection of both secure hash functions (such as MD5 and
 SHA), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
 This is the Python 3 build of the package.
+%endif
 
 %prep
 %setup -n pycrypto-%{version} -q
@@ -107,38 +123,64 @@ cp pct-speedtest.py pct-speedtest3.py
 
 %build
 %global optflags %{optflags} -fno-strict-aliasing
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 %install
+%if %{with python2}
 %py2_install
+%endif
+%if %{with python3}
 %py3_install
+%endif
 
 # Remove group write permissions on shared objects
+%if %{with python2}
 find %{buildroot}%{python2_sitearch} -name '*.so' -exec chmod -c g-w {} \;
+%endif
+%if %{with python3}
 find %{buildroot}%{python3_sitearch} -name '*.so' -exec chmod -c g-w {} \;
+%endif
 
+%if %{with tests}
 %check
+%if %{with python2}
 %{__python2} setup.py test
-%{__python3} setup.py test
-
 # Benchmark
 PYTHONPATH=%{buildroot}%{python2_sitearch} %{__python2} pct-speedtest.py
+%endif
+%if %{with python3}
+%{__python3} setup.py test
+# Benchmark
 PYTHONPATH=%{buildroot}%{python3_sitearch} %{__python3} pct-speedtest3.py
+%endif
+%endif
 
+
+%if %{with python2}
 %files -n python%{python2_pkgversion}-crypto
 %license COPYRIGHT LEGAL/
 %doc README TODO ACKS ChangeLog Doc/
 %{python2_sitearch}/Crypto/
 %{python2_sitearch}/pycrypto-%{version}-py2.*.egg-info
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-crypto
 %license COPYRIGHT LEGAL/
 %doc README TODO ACKS ChangeLog Doc/
 %{python3_sitearch}/Crypto/
 %{python3_sitearch}/pycrypto-%{version}-py3.*.egg-info
+%endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.1-26
+- Made support for Python 2 optional
+
 * Thu Feb 07 2019 SaltStack Packaging Team <packaging@saltstack.com>  - 2.6.1-25
 - Ported for Python 3 support on Amazon Linux 2
 

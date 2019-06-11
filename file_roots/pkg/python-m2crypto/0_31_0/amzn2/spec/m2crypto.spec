@@ -1,4 +1,6 @@
-%global with_python3 1
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 ## %%{!?python3_pkgversion:%%global python3_pkgversion 3}
 %global python3_pkgversion 3
@@ -10,20 +12,33 @@
 Summary: Support for using OpenSSL in Python 3 scripts
 Name: m2crypto
 Version: 0.31.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Source0: https://files.pythonhosted.org/packages/0a/d3/ecef6a0eaef77448deb6c9768af936fec71c0c4b42af983699cfa1499962/M2Crypto-0.31.0.tar.gz
 Source1: https://files.pythonhosted.org/packages/0a/d3/ecef6a0eaef77448deb6c9768af936fec71c0c4b42af983699cfa1499962/M2Crypto-0.31.0.tar.gz.asc
 # This is only precautionary, it does fix anything - not sent upstream
 
 Patch0: m2crypto-0.31.0-gcc_macros.patch
-Requires: python2-typing
-Requires: openssl >= 1:1.0.2
+
 
 License: MIT
 Group: System Environment/Libraries
 URL: https://gitlab.com/m2crypto/m2crypto/
 BuildRequires: openssl, openssl-devel
+Requires: openssl >= 1:1.0.2
 
+# We don't want to provide private python extension libs
+%{?filter_setup:
+%if %{with python2}
+%filter_provides_in %{python2_sitearch}/M2Crypto/__m2crypto.so
+%endif
+%if %{with python3}
+%filter_provides_in %{python3_sitearch}/M2Crypto/__m2crypto.so
+%endif
+%filter_setup
+}
+
+
+%if %{with python2}
 %if 0%{?with_amzn2}
 BuildRequires: python2-rpm-macros
 BuildRequires: python-devel
@@ -35,23 +50,38 @@ BuildRequires: perl-interpreter
 
 BuildRequires: python2-setuptools
 BuildRequires: pkgconfig, python2-typing, swig, which
+Requires: python2-typing
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
+BuildRequires: perl
+%else
+BuildRequires: perl-interpreter
 %endif
 BuildRequires: python%{python3_pkgversion}-devel
 BuildRequires: python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-typing
-%endif
 
-%filter_provides_in %{python2_sitearch}/M2Crypto/__m2crypto.so
+%filter_provides_in %{python3_sitearch}/python%{python3_pkgversion}-m2crypto/__m2crypto.so
 %filter_setup
+
+%endif
 
 %description
 This package allows you to call OpenSSL functions from Python 2 scripts.
 
-%if 0%{?with_python3}
+%if %{with python2}
+%package -n python2-m2crypto
+Summary:    Support for using OpenSSL in Python 3 scripts
+Requires:   python2-typing
+
+%description -n python2-m2crypto
+This package allows you to call OpenSSL functions from Python 2 scripts.
+%endif
+
+%if %{with python3}
 %package -n python%{python3_pkgversion}-m2crypto
 Summary:    Support for using OpenSSL in Python 3 scripts
 Requires:   python%{python3_pkgversion}-typing
@@ -87,10 +117,12 @@ if pkg-config openssl ; then
 	LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
 fi
 
+%if %{with python2}
 pushd M2Crypto-%{version}
 %{__python2} setup.py build
 popd
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 pushd M2Crypto-python%{python3_pkgversion}
 %{__python3} setup.py build
 popd
@@ -103,31 +135,39 @@ if pkg-config openssl ; then
 	LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
 fi
 
+%if %{with python2}
 pushd M2Crypto-%{version}
 %{__python2} setup.py install --root=$RPM_BUILD_ROOT
 popd
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 pushd M2Crypto-python%{python3_pkgversion}
 %{__python3} setup.py install --root=$RPM_BUILD_ROOT
 popd
 %endif
 
+%if %{with tests}
 %check
+%if %{with python2}
 pushd M2Crypto-%{version}
 %{__python2} setup.py test
 popd
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 pushd M2Crypto-python%{python3_pkgversion}
 ## %%{__python3} setup.py test
 popd
 %endif
+%endif
 
-%files
+%if %{with python2}
+%files -n python2-m2crypto
 %doc M2Crypto-%{version}/CHANGES M2Crypto-%{version}/LICENCE M2Crypto-%{version}/README.rst
 %{python2_sitearch}/M2Crypto
 %{python2_sitearch}/M2Crypto-*.egg-info
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-m2crypto
 %doc M2Crypto-python%{python3_pkgversion}/CHANGES M2Crypto-python%{python3_pkgversion}/LICENCE M2Crypto-python%{python3_pkgversion}/README.rst
 %{python3_sitearch}/M2Crypto
@@ -136,6 +176,9 @@ popd
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.31.0-4
+- Made support for Python 2 optional
+
 * Tue Feb 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.31.0-3
 - Ported to Amazon Linux 2 for Python 3 support
 

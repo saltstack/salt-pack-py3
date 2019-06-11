@@ -18,8 +18,6 @@ include:
 build_additional_pkgs_{{build_cfg.build_release}}:
   pkg.installed:
     - pkgs:
-      - mock
-      - python2-rpm-macros
       - python3-rpm-macros
       - gcc
 

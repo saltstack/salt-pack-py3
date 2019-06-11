@@ -4,6 +4,10 @@
 # Filter Python modules from Provides
 %global __provides_exclude_from ^(%{python2_sitearch}|%{python3_sitearch})/.*\\.so$
 
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -12,7 +16,7 @@
 
 Name:           python-%{srcname}
 Version:        5.4.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        %{sum}
 
 License:        BSD
@@ -25,20 +29,7 @@ Source0:        https://github.com/giampaolo/psutil/archive/release-%{version}.t
 #Patch0:         psutil-5.4.3-disable-broken-tests.patch
 
 BuildRequires:  gcc
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python3-rpm-macros
-BuildRequires:  python-devel
-BuildRequires:  python-ipaddress
-%else
-BuildRequires:  python2-devel
-BuildRequires:  python2-ipaddress
-%endif
-BuildRequires:  python%{python3_pkgversion}-devel
-# Test dependencies
-BuildRequires:  procps-ng
-BuildRequires:  python2-mock
-BuildRequires:  python%{python3_pkgversion}-mock
+
 
 %description
 psutil is a module providing an interface for retrieving information on all
@@ -48,8 +39,20 @@ command line tools such as: ps, top, df, kill, free, lsof, free, netstat,
 ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
 
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{sum}
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+BuildRequires:  python-ipaddress
+%else
+BuildRequires:  python2-devel
+BuildRequires:  python2-ipaddress
+%endif
+# Test dependencies
+BuildRequires:  procps-ng
+BuildRequires:  python2-mock
 %{?python_provide:%python_provide python2-%{srcname}}
 Obsoletes:      python-%{srcname} < 3.1.1-3
 
@@ -59,9 +62,18 @@ running processes and system utilization (CPU, memory, disks, network, users) in
 a portable way by using Python 3, implementing many functionalities offered by
 command line tools such as: ps, top, df, kill, free, lsof, free, netstat,
 ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-psutil
 Summary:        %{sum}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+# Test dependencies
+BuildRequires:  procps-ng
+BuildRequires:  python%{python3_pkgversion}-mock
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 %description -n python%{python3_pkgversion}-psutil
@@ -70,7 +82,7 @@ running processes and system utilization (CPU, memory, disks, network, users) in
 a portable way by using Python 3, implementing many functionalities offered by
 command line tools such as: ps, top, df, kill, free, lsof, free, netstat,
 ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
-
+%endif
 
 %prep
 %autosetup -p0 -n %{srcname}-release-%{version}
@@ -84,36 +96,56 @@ done
 
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 
 %install
+%if %{with python2}
 %py2_install
+%if %{with python3}
+%endif
 %py3_install
 
+%endif
 
-## %%check
-##  the main test target causes failures, investigating
-## make test-memleaks PYTHON=%%{__python2}
-## make test-memleaks PYTHON=%%{__python3}
+%if %{with tests}
+%check
+#  the main test target causes failures, investigating
+%if %{with python2}
+make test-memleaks PYTHON=%%{__python2}
+%endif
+%if %{with python3}
+make test-memleaks PYTHON=%%{__python3}
+%endif
 
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %license LICENSE
 %doc CREDITS HISTORY.rst README.rst
 %{python2_sitearch}/%{srcname}/
 %{python2_sitearch}/*.egg-info
 
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %license LICENSE
 %doc CREDITS HISTORY.rst README.rst
 %{python3_sitearch}/%{srcname}/
 %{python3_sitearch}/*.egg-info
+%endif
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-8
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-7
 - Ported to Amazon Linux 2 for Python 3 support
 

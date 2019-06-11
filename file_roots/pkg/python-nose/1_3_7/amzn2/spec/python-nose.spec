@@ -1,5 +1,9 @@
 %global modname nose
 
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -29,7 +33,7 @@ output capture and more.\
 
 Name:           python-%{modname}
 Version:        1.3.7
-Release:        22%{?dist}
+Release:        23%{?dist}
 BuildArch:      noarch
 
 License:        LGPLv2+ and Public Domain
@@ -66,6 +70,7 @@ BuildRequires:  %{_bindir}/sphinx-build
 %description docs
 Documentation for Nose.
 
+%if %{with python2}
 %package -n python2-%{modname}
 Summary:        %{summary}
 BuildRequires:  python2-devel
@@ -79,7 +84,9 @@ Requires:       python2-setuptools
 
 %description -n python2-%{modname}
 %{desc}
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{modname}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -97,6 +104,7 @@ Obsoletes:      platform-python-%{modname} < %{version}-%{release}
 
 This package installs the nose module and nosetests3 program that can discover
 python3 unit tests.
+%endif
 
 %prep
 %setup -qc
@@ -105,26 +113,37 @@ pushd %{modname}-%{version}
 dos2unix examples/attrib_plugin.py
 cp -pr lgpl.txt AUTHORS CHANGELOG examples NEWS README.txt ..
 popd
+%if %{with python2}
 mv %{modname}-%{version} python2
-cp -pr python2 python3
+%endif
+%if %{with python3}
+mv %{modname}-%{version} python3
+%endif
 
 %build
+%if %{with python2}
 pushd python2
 %py2_build
 popd
+%endif
+%if %{with python3}
 pushd python3
 %py3_build
 popd
+%endif
 
 %install
 mkdir -p %{buildroot}%{_mandir}/man1
 pushd python2
+%if %{with python2}
 %py2_install
 mv %{buildroot}%{_bindir}/nosetests{,-%{python2_version}}
 ln -sf nosetests-%{python2_version} %{buildroot}%{_bindir}/nosetests-2
 mv %{buildroot}%{_prefix}/man/man1/nosetests.1 %{buildroot}%{_mandir}/man1/nosetests-%{python2_version}.1
 ln -sf nosetests-%{python2_version}.1 %{buildroot}%{_mandir}/man1/nosetests-2.1
 popd
+%endif
+%if %{with python3}
 pushd python3
 %py3_install
 mv %{buildroot}%{_bindir}/nosetests{,-%{python3_version}}
@@ -132,30 +151,39 @@ ln -sf nosetests-%{python3_version} %{buildroot}%{_bindir}/nosetests-3
 mv %{buildroot}%{_prefix}/man/man1/nosetests.1 %{buildroot}%{_mandir}/man1/nosetests-%{python3_version}.1
 ln -sf nosetests-%{python3_version}.1 %{buildroot}%{_mandir}/man1/nosetests-3.1
 popd
+%endif
 
 ln -sf nosetests-2 %{buildroot}%{_bindir}/nosetests
 ln -sf nosetests-2.1 %{buildroot}%{_mandir}/man1/nosetests.1
 
 %if %{with docs}
+%if %{with python2}
 pushd python2/doc
   sphinx-build -b html -d .build/doctrees . .build/html
   rm -vrf .build/html/.buildinfo .build/html/_sources
   mv .build/html ../..
   rm -vrf .build
 popd
-%endif
 cp -a python2/doc reST
 rm -vrf reST/{.static,.templates}
+%endif
+%endif
 
+%if %{with tests}
 %check
+%if %{with python2}
 pushd python2
 %{__python2} selftest.py
 popd
+%endif
+%if %{with python3}
 pushd python3
 %{__python3} setup.py build_tests
 %{__python3} selftest.py
 popd
+%endif
 
+%if %{with python2}
 %files -n python2-%{modname}
 %license lgpl.txt
 %{_bindir}/nosetests
@@ -166,7 +194,9 @@ popd
 %{_mandir}/man1/nosetests-%{python2_version}.1*
 %{python2_sitelib}/nose-*.egg-info/
 %{python2_sitelib}/nose/
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{modname}
 %license lgpl.txt
 %{_bindir}/nosetests-3
@@ -175,6 +205,7 @@ popd
 %{_mandir}/man1/nosetests-%{python3_version}.1*
 %{python3_sitelib}/nose-*.egg-info/
 %{python3_sitelib}/nose/
+%endif
 
 %files docs
 %license lgpl.txt
@@ -184,6 +215,9 @@ popd
 %endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.7-23
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltSTack Packaging Team >packaging@saltstack.com> - 1.3.7-22
 - Ported support for Python 3 on Amazon Linux 2
 

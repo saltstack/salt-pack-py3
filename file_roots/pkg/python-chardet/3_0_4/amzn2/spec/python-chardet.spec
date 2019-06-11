@@ -1,4 +1,6 @@
-%global with_python3 1
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -6,10 +8,15 @@
 %global with_amzn2 1
 %endif
 
+%global _description\
+Character encoding auto-detection in Python. As\
+smart as your browser. Open source.
+
 %global pypi_name chardet
+
 Name:           python-%{pypi_name}
 Version:        3.0.4
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Character encoding auto-detection in Python
 
 Group:          Development/Languages
@@ -18,12 +25,17 @@ URL:            https://github.com/%{pypi_name}/%{pypi_name}
 Source0:        https://files.pythonhosted.org/packages/source/c/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 
 BuildArch:      noarch
+
+%description %_description
+
+%if %{with python2}
 BuildRequires:  python2-devel, python2-setuptools
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 %endif
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 %if 0%{?with_amzn2}
@@ -31,26 +43,20 @@ BuildRequires:  python3-rpm-macros
 %endif
 %endif # with_python3
 
-%global _description\
-Character encoding auto-detection in Python. As\
-smart as your browser. Open source.
-
-%description %_description
-
+%if %{with python2}
 %package -n python2-%{pypi_name}
 Summary: %summary
 %{?python_provide:%python_provide python2-%{pypi_name}}
 
-%description -n python2-%{pypi_name} %_description
+%description -n python2-%{pypi_name} %{_description}
+Supports Python 2 version.
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{pypi_name}
 Summary:        Character encoding auto-detection in Python 3
 
-%description -n python%{python3_pkgversion}-%{pypi_name}
-Character encoding auto-detection in Python. As 
-smart as your browser. Open source.
-
+%description -n python%{python3_pkgversion}-%{pypi_name} %{_description}
 Python 3 version.
 %endif # with_python3
 
@@ -58,15 +64,17 @@ Python 3 version.
 %setup -q -n %{pypi_name}-%{version}
 sed -ie '1d' %{pypi_name}/cli/chardetect.py
 
-%if 0%{?with_python3}
+%if %{with python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
 %endif # with_python3
 
 %build
+%if %{with python2}
 %{__python2} setup.py build
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 pushd %{py3dir}
 %{__python3} setup.py build
 popd
@@ -75,23 +83,27 @@ popd
 
 %install
 # Do Python 3 first not to overwrite the entrypoint
-%if 0%{?with_python3}
+%if %{with python3}
 pushd %{py3dir}
 %{__python3} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 mv $RPM_BUILD_ROOT%{_bindir}/{,python3-}chardetect
 popd
 %endif # with_python3
 
+%if %{with python2}
 %{__python2} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%endif
 
+%if %{with python2}
 %files -n python2-%{pypi_name}
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README.rst
 %{python2_sitelib}/*
 %{_bindir}/chardetect
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{pypi_name}
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
@@ -102,6 +114,9 @@ popd
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-9
+- Made support for Python 2 optional
+
 * Tue Oct 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-8
 - Ported to support Python 3 on Amazon Linux 2
 

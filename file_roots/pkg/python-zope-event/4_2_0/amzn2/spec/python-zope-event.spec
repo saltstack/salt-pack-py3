@@ -1,19 +1,19 @@
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
-%global with_python3 1
 %bcond_with docs
 %else
-%if 0%{?fedora} || 0%{?rhel} > 7
-%global with_python3 1
-%endif
 %bcond_without docs
 %endif
+
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 Name:           python-zope-event
 Version:        4.2.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Zope Event Publication
 Group:          Development/Languages
 License:        ZPLv2.1
@@ -28,6 +28,7 @@ on which more sophisticated event dispatching systems can be built.
 (For example, a type-based event dispatching system that builds on
 zope.event can be found in zope.component.)
 
+%if %{with python2}
 %package -n python2-zope-event
 Summary:        Zope Event Publication (Python 2)
 %{?python_provide:%python_provide python2-zope-event}
@@ -50,8 +51,9 @@ on which more sophisticated event dispatching systems can be built.
 zope.event can be found in zope.component.)
 
 This package contains the version for Python 2.
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-zope-event
 Summary:        Zope Event Publication (Python 3)
 %if 0%{?with_amzn2}
@@ -83,8 +85,10 @@ This package contains the version for Python 3.
 rm -rf %{modname}.egg-info
 
 %build
+%if %{with python2}
 %py2_build
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_build
 %endif
 
@@ -97,17 +101,24 @@ popd
 %endif
 
 %install
-%if 0%{?with_python3}
+%if %{with python3}
 %py3_install
 %endif
+%if %{with python2}
 %py2_install
-
-%check
-%{__python2} setup.py test
-%if 0%{?with_python3}
-%{__python3} setup.py test
 %endif
 
+%if %{with tests}
+%check
+%if %{with python2}
+%{__python2} setup.py test
+%endif
+%if %{with python3}
+%{__python3} setup.py test
+%endif
+%endif
+
+%if %{with python2}
 %files -n python2-zope-event
 %doc CHANGES.rst COPYRIGHT.txt README.rst
 %if %{with docs}
@@ -120,8 +131,9 @@ popd
 #%{python2_sitelib}/zope/__init__*
 %{python2_sitelib}/zope.event-*.egg-info
 %{python2_sitelib}/zope.event-*-nspkg.pth
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-zope-event
 %doc CHANGES.rst COPYRIGHT.txt LICENSE.txt README.rst
 %if %{with docs}
@@ -138,7 +150,10 @@ popd
 %endif
 
 %changelog
-* Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.0-12 
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.0-13
+- Made support for Python 2 optional
+
+* Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.0-12
 - Support for Python 3 on Amazon Linux 2
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.2.0-11

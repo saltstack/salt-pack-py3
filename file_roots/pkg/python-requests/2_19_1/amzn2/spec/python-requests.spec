@@ -1,3 +1,6 @@
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -17,7 +20,7 @@
 
 Name:           python-requests
 Version:        2.19.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        HTTP library, written in Python, for human beings
 
 License:        ASL 2.0
@@ -56,6 +59,7 @@ cumbersome. Python’s built-in urllib2 module provides most of the HTTP
 capabilities you should need, but the API is thoroughly broken. This library is
 designed to make HTTP requests easy for developers.
 
+%if %{with python2}
 %package -n python2-requests
 Summary: HTTP library, written in Python, for human beings
 %{?python_provide:%python_provide python2-requests}
@@ -77,7 +81,6 @@ BuildRequires:  python2-pytest-httpbin
 BuildRequires:  python2-pytest-mock
 %endif
 
-
 Requires:       ca-certificates
 Requires:       python2-chardet
 Requires:       python2-urllib3
@@ -93,11 +96,11 @@ Most existing Python modules for sending HTTP requests are extremely verbose and
 cumbersome. Python’s built-in urllib2 module provides most of the HTTP
 capabilities you should need, but the API is thoroughly broken. This library is
 designed to make HTTP requests easy for developers.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-requests
 Summary: HTTP library, written in Python, for human beings
-
-%{?python_provide:%python_provide python%{python3_pkgversion}-requests}
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
 BuildRequires:  python%{python3_pkgversion}-setuptools
@@ -118,11 +121,14 @@ Requires:       python%{python3_pkgversion}-chardet
 Requires:       python%{python3_pkgversion}-urllib3
 Requires:       python%{python3_pkgversion}-idna
 
+%{?python_provide:%python_provide python%{python3_pkgversion}-requests}
+
 %description -n python%{python3_pkgversion}-requests
 Most existing Python modules for sending HTTP requests are extremely verbose and
 cumbersome. Python’s built-in urllib2 module provides most of the HTTP
 capabilities you should need, but the API is thoroughly broken. This library is
 designed to make HTTP requests easy for developers.
+%endif
 
 %prep
 %autosetup -p1 -n requests-%{version}
@@ -134,37 +140,56 @@ rm -rf requests/cacert.pem
 sed -i '/#!\/usr\/.*python/d' requests/certs.py
 
 %build
+%if %{with python3}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 
 
 %install
+%if %{with python2}
 %py2_install
+%endif
+%if %{with python3}
 %py3_install
+%endif
 
 
 %if %{with tests}
 %check
+%if %{with python2}
 PYTHONPATH=%{buildroot}%{python2_sitelib} %{__python2} -m pytest -v
+%endif
+%if %{with python3}
 PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
+%endif
 %endif # tests
 
 
+%if %{with python2}
 %files -n python2-requests
 %license LICENSE
 %doc README.rst HISTORY.rst
 %{python2_sitelib}/*.egg-info
 %{python2_sitelib}/requests/
+%endif
 
+%if %{with python2}
 %files -n python%{python3_pkgversion}-requests
 %license LICENSE
 %doc README.rst HISTORY.rst
 %{python3_sitelib}/*.egg-info
 %{python3_sitelib}/requests/
+%endif
 
 
 %changelog
-* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> -2.19.1-4
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-5
+- Made support for Python 2 optional
+
+* Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-4
 - Ported to Amazon Linux 2 for Python 3 support
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.19.1-3

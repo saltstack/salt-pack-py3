@@ -421,6 +421,12 @@ pkgbuild_registry:
 
 
   amzn2:
+    distribution-gpg-keys:
+      version: 1.30-1
+      noarch: True
+      results:
+        - distribution-gpg-keys
+        - distribution-gpg-keys-copr
     libsodium:
       version: 1.0.16-1
       results:
@@ -438,85 +444,98 @@ pkgbuild_registry:
       results:
         - libtommath
         - libtommath-devel
+    mock:
+      version: 1.4.15-2
+      noarch: True
+      build_deps:
+        - mock-core-configs
+        - python-distro
+        - python-pyroute2
+      results:
+        - mock
+        - mock-lvm
+        - mock-scm
+    mock-core-configs:
+      version: 30.3-2
+      noarch: True
+      build_deps:
+        - distribution-gpg-keys
+      results:
+        - mock-core-configs
     openpgm:
       version: 5.2.122-15
       results:
         - openpgm
         - openpgm-devel
     python-atomicwrites:
-      version: 1.1.5-13
+      version: 1.1.5-14
       noarch: True
       results:
-        - python2-atomicwrites
         - python3-atomicwrites
     python-attrs:
-      version: 17.4.0-8
+      version: 17.4.0-9
       noarch: True
       results:
-        - python2-attrs
         - python3-attrs
     python-babel:
-      version: 2.6.0-6
+      version: 2.6.0-7
       noarch: True
       build_deps:
         - python-pytz
         - python-freezegun
         - python-pytest
       results:
-        - babel
         - python3-babel
     python-backports_abc:
-      version: 0.5-9
+      version: 0.5-10
       noarch: True
       results:
-        - python2-backports_abc
         - python3-backports_abc
     python-bottle:
-      version: 0.12.13-7
+      version: 0.12.13-8
       noarch: True
       results:
-        - python2-bottle
         - python3-bottle
     python-chardet:
-      version: 3.0.4-8
+      version: 3.0.4-9
       noarch: True
       results:
-        - python2-chardet
         - python3-chardet
     python-cherrypy:
-      version: 5.6.0-5
+      version: 5.6.0-6
       noarch: True
       results:
-        - python2-cherrypy
         - python3-cherrypy
       build_deps:
         - python-nose
     python-coverage:
-      version: 4.5.1-4
+      version: 4.5.1-5
       results:
-        - python2-coverage
         - python3-coverage
     python-crypto:
-      version: 2.6.1-25
+      version: 2.6.1-26
       build_deps:
         - libtommath
         - libtomcrypt
         - libtomcrypt-devel
       results:
-        - python2-crypto
         - python3-crypto
     python-dateutil:
-      version: 2.7.3-2
+      version: 2.7.3-3
       noarch: True
       build_deps:
         - python-six
         - python-setuptools_scm
         - python-hypothesis
       results:
-        - python2-dateutil
         - python3-dateutil
+    python-distro:
+      version: 1.2.0-5
+      noarch: True
+      results:
+        - python3-distro
     python-freezegun:
-      version: 0.3.8-12
+      version: 0.3.8-13
       noarch: True
       build_deps:
         - python-dateutil
@@ -526,124 +545,113 @@ pkgbuild_registry:
         - python-six
         - python-mock
       results:
-        - python2-freezegun
         - python3-freezegun
     python-funcsigs:
-      version: 1.0.2-12
+      version: 1.0.2-13
       noarch: True
       build_deps:
         - python-unittest2
       results:
-        - python2-funcsigs
         - python3-funcsigs
+    python-gnupg:
+      version: 0.4.4-2
+      noarch: True
+      results:
+        - python3-gnupg
     python-hypothesis:
-      version: 3.66.11-2
+      version: 3.66.11-3
       noarch: True
       build_deps:
         - python-attrs
         - python-coverage
       results:
-        - python2-hypothesis
         - python3-hypothesis
     python-idna:
-      version: 2.7-4
+      version: 2.7-5
       noarch: True
       results:
-        - python2-idna
         - python3-idna
     python-jinja2:
-      version: 2.10-7
+      version: 2.10-8
       noarch: True
       build_deps:
         - python-markupsafe
         - python-babel
         - python-pytest
       results:
-        - python2-jinja2
         - python3-jinja2
     python-libcloud:
-      version: 2.2.1-9
+      version: 2.2.1-10
       noarch: True
       build_deps:
         - python-pytest-runner
       results:
-        - python2-libcloud
         - python3-libcloud
     python-m2crypto:
-      version: 0.31.0-3
+      version: 0.31.0-4
       results:
-        - m2crypto
         - python3-m2crypto
       build_deps:
         - python-typing
     python-markupsafe:
-      version: 1.0-2
+      version: 1.0-3
       results:
-        - python2-markupsafe
         - python3-markupsafe
     python-mock:
-      version: 1.0.1-12
+      version: 1.0.1-13
       noarch: True
       results:
-        - python2-mock
         - python3-mock
     python-more-itertools:
-      version: 4.1.0-5
+      version: 4.1.0-6
       noarch: True
       build_deps:
         - python-nose
         - python-six
       results:
-        - python2-more-itertools
         - python3-more-itertools
     python-msgpack:
-      version: 0.5.6-6
+      version: 0.5.6-7
       build_deps:
         - python-funcsigs
       results:
-        - python2-msgpack
         - python3-msgpack
     python-nose:
-      version: 1.3.7-22
+      version: 1.3.7-23
       noarch: True
       build_deps:
         - python-setuptools
         - python-mock
         - python-coverage
       results:
-        - python2-nose
         - python3-nose
+    python-pluggy:
+      version: 0.7.1-3
+      noarch: True
+      build_deps:
+        - python-setuptools_scm
+      results:
+        - python3-pluggy
     python-psutil:
-      version: 5.4.3-7
+      version: 5.4.3-8
       build_deps:
         - python-mock
       results:
-        - python2-psutil
         - python3-psutil
     python-py:
-      version: 1.5.4-4
+      version: 1.5.4-5
       noarch: True
       build_deps:
         - python-setuptools_scm
       results:
-        - python2-py
         - python3-py
-    python-pluggy:
-      version: 0.7.1-2
-      noarch: True
-      build_deps:
-        - python-setuptools_scm
-      results:
-        - python2-pluggy
-        - python3-pluggy
     python-pycryptodome:
-      version: 3.6.1-3
+      version: 3.6.1-4
       build_deps:
         - libtommath
         - libtomcrypt
         - libtomcrypt-devel
       results:
-        - python2-pycryptodomex
         - python3-pycryptodomex
     python-pycurl:
       version: 7.43.0.2-4
@@ -660,14 +668,18 @@ pkgbuild_registry:
       results:
         - python2-pyflakes
         - python3-pyflakes
-    python-pysocks:
-      version: 1.6.8-5
+    python-pyroute2:
+      version: 0.4.13-3
       noarch: True
       results:
-        - python2-pysocks
+        - python3-pyroute2
+    python-pysocks:
+      version: 1.6.8-6
+      noarch: True
+      results:
         - python3-pysocks
     python-pytest:
-      version: 3.6.4-2
+      version: 3.6.4-3
       noarch: True
       build_deps:
         - python-atomicwrites
@@ -681,137 +693,119 @@ pkgbuild_registry:
         - python-pluggy
         - python-py
       results:
-        - python2-pytest
         - python3-pytest
     python-pytest-runner:
-      version: 4.0-4
+      version: 4.0-5
       noarch: True
       build_deps:
         - python-pytest
         - python-setuptools_scm
       results:
-        - python2-pytest-runner
         - python3-pytest-runner
     python-pytz:
-      version: 2018.5-2
+      version: 2018.5-3
       noarch: True
       build_deps:
         - python-pytest
       results:
-        - python2-pytz
         - python3-pytz
     python-pyzmq:
       name: python-zmq
-      version: 17.0.0-4
+      version: 17.0.0-5
       build_deps:
         - zeromq
       results:
-        - python2-zmq
         - python3-zmq
     python-requests:
-      version: 2.19.1-4
+      version: 2.19.1-5
       noarch: True
       build_deps:
         - python-chardet
         - python-idna
         - python-urllib3
       results:
-        - python2-requests
         - python3-requests
     python-setuptools_scm:
-      version: 3.1.0-2
+      version: 3.1.0-3
       noarch: True
       results:
-        - python2-setuptools_scm
         - python3-setuptools_scm
     python-simplejson:
-      version: 3.16.0-2
+      version: 3.16.0-3
       build_deps:
         - python-nose
       results:
-        - python2-simplejson
         - python3-simplejson
     python-singledispatch:
-      version: 3.4.0.3-14
+      version: 3.4.0.3-15
       noarch: True
       build_deps:
         - python-six
       results:
-        - python2-singledispatch
         - python3-singledispatch
     python-six:
-      version: 1.11.0-7
+      version: 1.11.0-8
       noarch: True
       results:
-        - python2-six
         - python3-six
     python-sure:
-      version: 1.4.11-4
+      version: 1.4.11-5
       noarch: True
       build_deps:
         - python-mock
         - python-six
         - python-nose
       results:
-        - python2-sure
         - python3-sure
     python-timelib:
-      version: 0.2.4-4
+      version: 0.2.4-5
       noarch: True
       results:
-        - python2-timelib
         - python3-timelib
     python-tornado:
-      version: 5.0.2-5
+      version: 5.0.2-6
       build_deps:
         - python-backports_abc
         - python-pycurl
         - python-singledispatch
       results:
-        - python2-tornado
         - python3-tornado
     python-typing:
-      version: 3.5.2.2-4
+      version: 3.5.2.2-5
       noarch: True
       results:
-        - python2-typing
         - python3-typing
     python-unittest2:
-      version: 1.1.0-16
+      version: 1.1.0-17
       noarch: True
       build_deps:
         - python-six
       results:
-        - python2-unittest2
         - python3-unittest2
     python-urllib3:
-      version: 1.23-5
+      version: 1.23-6
       noarch: True
       build_deps:
         - python-six
         - python-pysocks
       results:
-        - python2-urllib3
         - python3-urllib3
     python-yaml:
       name: PyYAML
-      version: 4.2-0.1.b4
+      version: 4.2-0.1.b5
       results:
-        - python2-pyyaml
         - python3-pyyaml
     python-zope-event:
-      version: 4.2.0-12
+      version: 4.2.0-13
       noarch: True
       results:
-        - python2-zope-event
         - python3-zope-event
     python-zope-interface:
-      version: 4.5.0-3
+      version: 4.5.0-4
       build_deps:
         - python-nose
         - python-zope-event
       results:
-        - python2-zope-interface
         - python3-zope-interface
     salt:
       version: 2019.2.0tobereplaced_date-0

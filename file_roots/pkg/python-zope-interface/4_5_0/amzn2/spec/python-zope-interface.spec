@@ -1,27 +1,27 @@
-%if ( "0%{?dist}" == "0.amzn2" )
-%global with_amzn2 1
-%global with_python3 1
-%endif
-
-%if 0%{?rhel} && 0%{?rhel} <= 6
-%{!?__python2:        %global __python2 /usr/bin/python2}
-%{!?python2_sitelib:  %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%endif
-
-# Filter private shared library provides
-%filter_provides_in %{python2_sitearch}/zope/interface/.*\.so$
-%filter_setup
-
-%if 0%{?fedora} || 0%{?rhel} > 7
-%global with_python3 1
-%endif
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
+
+# Filter private shared library provides
+%{?filter_setup:
+%if %{with python2}
+%filter_provides_in %{python2_sitearch}/zope/interface/.*\.so$
+%endif
+%if %{with python3}
+%filter_provides_in %{python3_sitearch}/zope/interface/.*\.so$
+%endif
+%filter_setup
+}
+
 Name:		python-zope-interface
 Version:	4.5.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	Zope 3 Interface Infrastructure
 Group:		Development/Libraries
 License:	ZPLv2.1
@@ -34,6 +34,7 @@ or contract.
 
 This is a separate distribution of the zope.interface package used in Zope 3.
 
+%if %{with python2}
 %package -n python2-zope-interface
 Summary:	Zope 3 Interface Infrastructure
 Group:		Development/Libraries
@@ -60,8 +61,10 @@ Interfaces are a mechanism for labeling objects as conforming to a given API
 or contract.
 
 This is a separate distribution of the zope.interface package used in Zope 3.
+%endif
 
-%if 0%{?with_python3}
+
+%if %{with python3}
 %package -n python%{python3_pkgversion}-zope-interface
 Summary:	Zope 3 Interface Infrastructure
 Group:		Development/Libraries
@@ -91,15 +94,17 @@ rm -rf %{modname}.egg-info
 
 
 %build
+%if %{with python2}
 %py2_build
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_build
 %endif
 
 
 %install
 # python3 block
-%if 0%{?with_python3}
+%if %{with python3}
 %py3_install
 
 # Will put docs in %%{_docdir} instead
@@ -109,7 +114,8 @@ rm -rf %{modname}.egg-info
 %{__rm} -f %{buildroot}%{python3_sitearch}/zope/interface/_zope_interface_coptimizations.c
 %endif
 
-# do it again for python2
+%if %{with python2}
+# do it for python2
 %py2_install
 
 # Will put docs in %%{_docdir} instead
@@ -117,13 +123,19 @@ rm -rf %{modname}.egg-info
 
 # C files don't need to be packaged
 %{__rm} -f %{buildroot}%{python2_sitearch}/zope/interface/_zope_interface_coptimizations.c
-
-%check
-PYTHONPATH=$(pwd) nosetests-2
-%if 0%{?with_python3}
-PYTHONPATH=$(pwd) nosetests-3
 %endif
 
+%if %{with tests}
+%check
+%if %{with python2}
+PYTHONPATH=$(pwd) nosetests-2
+%endif
+%if %{with python3}
+PYTHONPATH=$(pwd) nosetests-3
+%endif
+%endif
+
+%if %{with python2}
 %files -n python2-zope-interface
 %doc README.rst CHANGES.rst COPYRIGHT.txt docs/
 %license LICENSE.txt
@@ -134,8 +146,9 @@ PYTHONPATH=$(pwd) nosetests-3
 %exclude %{python2_sitearch}/zope/interface/common/tests/
 %{python2_sitearch}/zope.interface-*.egg-info
 %{python2_sitearch}/zope.interface-*-nspkg.pth
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-zope-interface
 %doc README.rst CHANGES.rst COPYRIGHT.txt docs/
 %license LICENSE.txt
@@ -149,6 +162,9 @@ PYTHONPATH=$(pwd) nosetests-3
 %endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.0-4
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.0-3
 - Support for Python 3 on Amazon Linux 2
 

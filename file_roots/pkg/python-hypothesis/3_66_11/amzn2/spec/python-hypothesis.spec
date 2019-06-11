@@ -8,12 +8,15 @@
 %bcond_without docs
 %endif
 
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 
 Name:           python-%{srcname}
 Version:        3.66.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Library for property based testing
 
 License:        MPLv2.0
@@ -38,6 +41,7 @@ flow.
 
 %description %{_description}
 
+%if %{with python2}
 %package     -n python2-%{srcname}
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{srcname}}
@@ -59,10 +63,11 @@ BuildRequires:  python2dist(enum34)
 %endif
 
 %description -n python2-%{srcname} %{_description}
-
 Python 2 version.
+%endif
 
 %package     -n python%{python3_pkgversion}-%{srcname}
+%if %{with python3}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
@@ -83,26 +88,35 @@ BuildRequires:  python3dist(coverage)
 %endif
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-
 Python 3 version.
+%endif
 
 %prep
 %autosetup -n %{srcname}-%{srcname}-python-%{version}/%{srcname}-python -p1
 
 %build
+%if %{with python2}
 %py2_build
+%endif
+%if %{with python3}
 %py3_build
+%endif
 %if %{with docs}
 PYTHONPATH=src READTHEDOCS=True sphinx-build -b man docs docs/_build/man
 %endif
 
 %install
+%if %{with python2}
 %py2_install
+%endif
+%if %{with python3}
 %py3_install
+%endif
 %if %{with docs}
 %{__install} -Dpm0644 -t %{buildroot}%{_mandir}/man1 docs/_build/man/hypothesis.1
 %endif
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %license ../LICENSE.txt
 %doc README.rst
@@ -111,7 +125,9 @@ PYTHONPATH=src READTHEDOCS=True sphinx-build -b man docs docs/_build/man
 %if %{with docs}
 %{_mandir}/man1/hypothesis.1*
 %endif
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %license ../LICENSE.txt
 %doc README.rst
@@ -120,8 +136,12 @@ PYTHONPATH=src READTHEDOCS=True sphinx-build -b man docs docs/_build/man
 %if %{with docs}
 %{_mandir}/man1/hypothesis.1*
 %endif
+%endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.66.11-3
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.66.11-2
 - Support for Python 3 on Amazon Linux 2
 

@@ -1,22 +1,11 @@
 %{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
+
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
-%bcond_without python2
-%bcond_without python3
-%else
-%if 0%{?fedora} || 0%{?rhel} > 7
-# Enable python3 build by default
-%bcond_without python3
-%else
-%bcond_with python3
-%endif
-
-%if 0%{?rhel} > 7
-# Disable python2 build by default
-%bcond_with python2
-%else
-%bcond_without python2
-%endif
 %endif
 
 %global modname freezegun
@@ -24,7 +13,7 @@
 
 Name:               python-freezegun
 Version:            0.3.8
-Release:            12%{?dist}
+Release:            13%{?dist}
 Summary:            %{sum}
 
 Group:              Development/Libraries
@@ -123,6 +112,7 @@ popd
 %py2_install
 %endif # with python2
 
+%if %{with tests}
 %check
 %if %{with python3}
 pushd %{py3dir}
@@ -133,6 +123,7 @@ popd
 %if %{with python2}
 nosetests-%{python2_version} tests/
 %endif # with python2
+%endif
 
 %if %{with python2}
 %files -n python2-freezegun
@@ -149,6 +140,9 @@ nosetests-%{python2_version} tests/
 %endif # with python3
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.3.8-13
+- Made support for Python 2 optional
+
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.3.8-12
 - Support for Python 3 on Amazon Linux 2
 

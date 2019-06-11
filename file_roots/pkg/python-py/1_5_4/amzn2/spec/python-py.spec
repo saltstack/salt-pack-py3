@@ -1,3 +1,6 @@
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -18,9 +21,6 @@
 %endif
 %endif
 
-%bcond_without python2
-%bcond_without python3
-
 %global pytest_version_lb 2.9.0
 %global pytest_version_ub 2.10
 
@@ -28,7 +28,7 @@
 
 Name:           python-%{srcname}
 Version:        1.5.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Library with cross-python path, ini-parsing, io, code, log facilities
 License:        MIT and Public Domain
 #               main package: MIT, except: doc/style.css: Public Domain
@@ -222,6 +222,9 @@ popd
 
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-5
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-4
 - Support for Python 3 on Amazon Linux 2
 

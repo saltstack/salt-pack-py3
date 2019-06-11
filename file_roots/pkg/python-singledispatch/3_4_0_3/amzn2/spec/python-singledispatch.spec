@@ -1,21 +1,20 @@
 %global pypi_name singledispatch
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
-%if 0%{?fedora} || 0%{?rhel} > 7
-%global with_python3 1
-%endif
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
-%global with_python3 1
 %global with_amzn2 1
 %endif
 
 
 Name:           python-%{pypi_name}
 Version:        3.4.0.3
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        This library brings functools.singledispatch from Python 3.4 to Python 2.6-3.3
 
 License:        MIT
@@ -30,6 +29,7 @@ known as single-dispatch generic functions.
 
 This library is a backport of this functionality to Python 2.6 - 3.3.
 
+%if %{with python2}
 %package -n python2-%{pypi_name}
 Summary:        This library brings functools.singledispatch from Python 3.4 to Python 2.6-3.3
 %{?python_provide:%python_provide python2-%{pypi_name}}
@@ -53,9 +53,10 @@ module in Python 3.4 that provides a simple form of generic programming
 known as single-dispatch generic functions.
 
 This library is a backport of this functionality to Python 2.6 - 3.3.
+%endif
 
 # python3 packaging stuff
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python3-%{pypi_name}
 Summary:        This library brings functools.singledispatch from Python 3.4 to Python 2.6-3.3
 %{?python_provide:%python_provide python3-%{pypi_name}}
@@ -66,11 +67,8 @@ BuildRequires:  python3-rpm-macros
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
-
 Requires:       python3-six
-%endif
 
-%if 0%{?with_python3}
 %description -n python3-%{pypi_name}
 PEP 443 proposed to expose a mechanism in the functools standard library
 module in Python 3.4 that provides a simple form of generic programming 
@@ -87,33 +85,43 @@ sed -i '1d' singledispatch.py
 sed -i '1d' singledispatch_helpers.py
 
 %build
+%if %{with python2}
 %{__python2} setup.py build
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %{__python3} setup.py build
 %endif
 
 %install
+%if %{with python2}
 %{__python2} setup.py install --skip-build --root %{buildroot}
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %{__python3} setup.py install --skip-build --root %{buildroot}
 %endif
 
+%if %{with tests}
 %check
+%if %{with python3}
 %{__python2} setup.py test
-
-%if 0%{?with_python3}
-%{__python3} setup.py test
 %endif
 
+%if %{with python3}
+%{__python3} setup.py test
+%endif
+%endif
+
+%if %{with python2}
 %files -n python2-%{pypi_name}
 %doc README.rst
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 %{python2_sitelib}/%{pypi_name}.py*
 %{python2_sitelib}/%{pypi_name}_helpers.py*
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python3-%{pypi_name}
 %doc README.rst
 %{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
@@ -123,6 +131,9 @@ sed -i '1d' singledispatch_helpers.py
 %endif
 
 %changelog
+* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.4.0.3-15
+- Made support for Python 2 optional
+
 * Thu Feb 07 2019 SaltStack Packaging Team <packaging@#saltstack.com> - 3.4.0.3-14
 - Support for Python 3 on Amazon Linux 2
 
