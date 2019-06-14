@@ -103,19 +103,17 @@ Support Python 3 version.
 %{python2_sitelib}/more_itertools-%{version}-py%{python2_version}.egg-info
 %endif
 
-%if %{with python2}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
-echo "XXXXXXXXXXXXXXXXXXXXXX DGM %{python3_sitelib}"
 %license LICENSE
 %doc README.rst PKG-INFO
-%{python3_sitelib}/more_itertools*
-%{python3_sitelib}/more_itertools/tests/
-%{python3_sitelib}/more_itertools/tests/__pycache__/*
-%{python3_sitelib}/more_itertools-%{version}-py%{python3_pkgversion}.egg-info*
+%{python3_sitelib}/more_itertools/
+%exclude %{python3_sitelib}/more_itertools/tests
+%{python3_sitelib}/more_itertools-%{version}-py%{python3_version}.egg-info
 %endif
 
 %changelog
-* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.0-6
+* Fri Jun 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.0-6
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.0-5

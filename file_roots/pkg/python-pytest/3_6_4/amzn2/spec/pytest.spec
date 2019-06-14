@@ -260,8 +260,10 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %doc _htmldocs/html
 %endif
 %license LICENSE
+%{_bindir}/pytest
 %{_bindir}/pytest-3
 %{_bindir}/pytest-%{python3_version}
+%{_bindir}/py.test
 %{_bindir}/py.test-3
 %{_bindir}/py.test-%{python3_version}
 %{python3_sitelib}/pytest-*.egg-info/
@@ -271,7 +273,7 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.4-3
+* Fri Jun 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.4-3
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 3.6.4-2

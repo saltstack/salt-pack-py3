@@ -37,7 +37,11 @@ Requires: usermode-consoleonly
 %else
 Requires: usermode
 %endif
+%if 0%{?with_amzn2}
+Requires: createrepo
+%else
 Requires: createrepo_c
+%endif
 Requires: mock-core-configs >= 27.4
 
 %if %{with python2}
@@ -250,7 +254,7 @@ pylint-3 py/mockbuild/ py/*.py py/mockbuild/plugins/* || :
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-3
+* Fri Jun 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-3
 - Added support for Amazon Linux 2 Python 3
 
 * Wed May 15 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-2
