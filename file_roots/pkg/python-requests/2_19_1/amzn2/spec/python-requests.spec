@@ -176,7 +176,7 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
 %{python2_sitelib}/requests/
 %endif
 
-%if %{with python2}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-requests
 %license LICENSE
 %doc README.rst HISTORY.rst
@@ -186,7 +186,7 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-5
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-5
 - Made support for Python 2 optional
 
 * Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-4

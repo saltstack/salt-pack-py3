@@ -42,48 +42,9 @@ Patch0:         babel-2.3.4-remove-pytz-version.patch
 
 BuildArch:      noarch
 
-%if %{with python2}
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python-devel
-%else
-BuildRequires:  python2-devel
-%endif
-BuildRequires:  python2-setuptools
-BuildRequires:  python2-pytz
-BuildRequires:  python2-pytest
-BuildRequires:  python2-freezegun
-%endif
-
-%if %{with python3}
-%if 0%{?with_amzn2}
-BuildRequires:  python3-rpm-macros
-%endif
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-%if !%{bootstrap}
-BuildRequires:  python%{python3_pkgversion}-pytz
-BuildRequires:  python%{python3_pkgversion}-pytest
-BuildRequires:  python%{python3_pkgversion}-freezegun
-%endif
-%endif
 
 # build the documentation
 BuildRequires:  make
-
-%if %{bootstrap} && %{with python2}
-BuildRequires:  python2-sphinx
-%else
-%if %{with docs} && %{with python3}
-BuildRequires:  python3-sphinx
-%endif
-%endif
-
-%if %{with python3}
-Requires:       python%{python3_pkgversion}-babel
-Requires:       python%{python3_pkgversion}-setuptools
-%endif
-
 
 %description
 Babel is composed of two major parts:
@@ -98,6 +59,20 @@ Babel is composed of two major parts:
 %if %{with python2}
 %package -n python2-babel
 Summary:        %sum
+
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+%else
+BuildRequires:  python2-devel
+%endif
+BuildRequires:  python2-setuptools
+BuildRequires:  python2-pytz
+BuildRequires:  python2-pytest
+BuildRequires:  python2-freezegun
+%if %{bootstrap}
+BuildRequires:  python2-sphinx
+%endif
 
 Requires:       python2-setuptools
 Requires:       python2-pytz
@@ -118,7 +93,22 @@ Babel is composed of two major parts:
 %package -n python%{python3_pkgversion}-babel
 Summary:        %sum
 
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%if !%{bootstrap}
+BuildRequires:  python%{python3_pkgversion}-pytz
+BuildRequires:  python%{python3_pkgversion}-pytest
+BuildRequires:  python%{python3_pkgversion}-freezegun
+%endif
+%if %{with docs}
+BuildRequires:  python3-sphinx
+%endif
+
 Requires:       python%{python3_pkgversion}-setuptools
+Requires:       python%{python3_pkgversion}-babel
 Requires:       python%{python3_pkgversion}-pytz
 
 %{?python_provide:%python_provide python%{python3_pkgversion}-babel}
@@ -196,19 +186,20 @@ export TZ=America/New_York
 %endif
 %endif
 
-%files
+%if %{with python2}
+%files -n python2-babel
 %doc CHANGES AUTHORS
 %license LICENSE
 %{_bindir}/pybabel
-
-%if %{with python2}
-%files -n python2-babel
 %{python2_sitelib}/Babel-%{version}-py*.egg-info
 %{python2_sitelib}/babel
 %endif
 
 %if %{with python3}
 %files -n python%{python3_pkgversion}-babel
+%doc CHANGES AUTHORS
+%license LICENSE
+%{_bindir}/pybabel
 %{python3_sitelib}/Babel-%{version}-py*.egg-info
 %{python3_sitelib}/babel
 %endif
@@ -219,7 +210,7 @@ export TZ=America/New_York
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-7
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-7
 - Made support for Python 2 optional
 
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-6

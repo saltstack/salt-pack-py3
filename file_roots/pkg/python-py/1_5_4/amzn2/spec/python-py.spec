@@ -130,8 +130,12 @@ find %{srcname}-%{version} \
    -exec sed -i '1{/^#!/d}' {} \; \
    -exec chmod u=rw,go=r {} \;
 
+%if %{with python2}
 mv %{srcname}-%{version} python2
-cp -a python2 python3
+%endif
+%if %{with python3}
+mv %{srcname}-%{version} python3
+%endif
 
 
 %build
@@ -222,7 +226,7 @@ popd
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-5
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-5
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-4

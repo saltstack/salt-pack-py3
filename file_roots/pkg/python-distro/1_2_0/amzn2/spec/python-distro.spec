@@ -27,6 +27,8 @@
 
 %endif
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 Name:           python-%{pypi_name}
 Version:        1.2.0
 Release:        5%{?dist}
@@ -36,7 +38,7 @@ License:        ASL 2.0
 URL:            https://github.com/nir0s/distro
 Source0:        https://files.pythonhosted.org/packages/source/%(n=%{pypi_name}; echo ${n:0:1})/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
- 
+
 %global _description \
 The distro (for: Linux Distribution) package provides information about the\
 Linux distribution it runs on, such as a reliable machine-readable ID, or\
@@ -59,7 +61,9 @@ for more information.
 %if %{with python2}
 %package -n     python2-%{pypi_name}
 Summary:        %{summary}
-%{?python_provide:%python_provide python2-%{pypi_name}}
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
 BuildRequires:  python2-devel
 %if 0%{?rhel} && 0%{?rhel} <= 7
 BuildRequires:  python-setuptools
@@ -72,6 +76,7 @@ Suggests:       /usr/bin/lsb_release
 %if %{with tests}
 BuildRequires: python%{python3_pkgversion}-tox >= 2.4.0
 %endif
+%{?python_provide:%python_provide python2-%{pypi_name}}
 
 %description -n python2-%{pypi_name} %{_description}
 
@@ -81,7 +86,9 @@ Python 2 version.
 %if %{with python3}
 %package -n     python%{python3_pkgversion}-%{pypi_name}
 Summary:        %{summary}
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{pypi_name}}
+%if 0%{?with_amzn2}
+BuildRequires:  python%{python3_pkgversion}-rpm-macros
+%endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 %if 0%{?fedora}
@@ -91,6 +98,7 @@ Suggests:       /usr/bin/lsb_release
 # /usr/bin/distro was moved from there
 Conflicts:      python2-%{pypi_name} < 1.2.0-2
 %endif
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{pypi_name}}
 
 %description -n python%{python3_pkgversion}-%{pypi_name} %{_description}
 
@@ -145,7 +153,7 @@ tox
 %{_bindir}/distro
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.2.0-5
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.2.0-5
 - Added support for Amazon Linux 2 Python 3
 
 * Wed May 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.2.0-4

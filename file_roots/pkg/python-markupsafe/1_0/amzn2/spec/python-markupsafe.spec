@@ -90,10 +90,11 @@ rm %{buildroot}%{python3_sitearch}/markupsafe/*.c
 %if %{with python3}
 %{__python3} setup.py test
 %endif
+%endif
 
 
-%files -n python2-markupsafe
 %if %{with python2}
+%files -n python2-markupsafe
 %license LICENSE
 %doc AUTHORS CHANGES README.rst
 %{python2_sitearch}/MarkupSafe-%{version}-py%{python2_version}.egg-info/
@@ -111,7 +112,7 @@ rm %{buildroot}%{python3_sitearch}/markupsafe/*.c
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-3
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-3
 - Made support for Python 2 optional
 
 * Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-2

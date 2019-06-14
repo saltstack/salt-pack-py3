@@ -1,0 +1,32 @@
+From 1bdcd0500865efd3566efd7f951228f69b58e755 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Wed, 19 Feb 2014 14:16:38 +0200
+Subject: [PATCH] Dont eat newlines on parametrized macro invocations
+ (RhBug:1045723)
+
+- Makes the testcase from commit f082b5baa4dcf9601eeb1e0e520ff06e77dc61c0
+  succeed. While the old behavior is non-sensical and most likely entirely
+  unintentional, we're changing a very long-standing behavior here (tested
+  back to rpm 4.4.x and almost certainly much much older than that) so
+  its entirely possible people are actually relying on the old
+  behavior. Lets see what breaks...
+---
+ rpmio/macro.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rpmio/macro.c b/rpmio/macro.c
+index e1c2a91..72471a2 100644
+--- a/rpmio/macro.c
++++ b/rpmio/macro.c
+@@ -764,7 +764,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
+ 
+ exit:
+     argvFree(argv);
+-    return *lastc ? lastc + 1 : lastc; 
++    return (*lastc == '\0' || *lastc == '\n') ? lastc : lastc + 1;
+ }
+ 
+ /**
+-- 
+2.1.0
+

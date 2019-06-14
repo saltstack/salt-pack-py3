@@ -65,7 +65,9 @@ BuildRequires:  python3-rpm-macros
 %endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
+%if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-unittest2
+%endif
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{pypi_name}}
 
 %description -n python%{python3_pkgversion}-%{pypi_name}
@@ -91,7 +93,7 @@ sed -i '/extras_require/,+3d' setup.py
 %endif
 
 %build
-%if %{with python3}
+%if %{with python2}
 %py2_build
 %endif
 %if %{with python3}
@@ -111,8 +113,7 @@ rm -rf html/.{doctrees,buildinfo}
 %if %{with python3}
 %py3_install
 %endif
-
-%if %{with python3}
+%if %{with python2}
 %py2_install
 %endif
 
@@ -150,7 +151,7 @@ rm -rf html/.{doctrees,buildinfo}
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.2-13
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.2-13
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.0.2-12

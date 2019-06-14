@@ -1,0 +1,102 @@
+diff -up rpm-4.11.3/build/pack.c.weakdep-tags rpm-4.11.3/build/pack.c
+--- rpm-4.11.3/build/pack.c.weakdep-tags	2017-11-13 16:46:28.552714717 +0200
++++ rpm-4.11.3/build/pack.c	2017-11-13 16:47:44.942681784 +0200
+@@ -228,8 +228,6 @@ static rpmTagVal depevrtags[] = {
+     RPMTAG_CONFLICTVERSION,
+     RPMTAG_ORDERVERSION,
+     RPMTAG_TRIGGERVERSION,
+-    RPMTAG_SUGGESTSVERSION,
+-    RPMTAG_ENHANCESVERSION,
+     0
+ };
+ 
+diff -up rpm-4.11.3/lib/rpmtag.h.weakdep-tags rpm-4.11.3/lib/rpmtag.h
+--- rpm-4.11.3/lib/rpmtag.h.weakdep-tags	2017-11-02 12:21:38.248264213 +0200
++++ rpm-4.11.3/lib/rpmtag.h	2017-11-02 12:24:16.159193622 +0200
+@@ -217,14 +217,14 @@ typedef enum rpmTag_e {
+     RPMTAG_PRETRANSPROG		= 1153,	/* s[] */
+     RPMTAG_POSTTRANSPROG	= 1154,	/* s[] */
+     RPMTAG_DISTTAG		= 1155,	/* s */
+-    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension (unimplemented) */
+-#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] (unimplemented) */
+-    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension (unimplemented) */
+-    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[] extension (unimplemented) */
+-    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder (unimplemented) */
+-#define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] (unimplemented) */
+-    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder (unimplemented) */
+-    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[] extension placeholder (unimplemented) */
++    RPMTAG_OLDSUGGESTSNAME		= 1156,	/* s[] extension (unimplemented) */
++#define	RPMTAG_OLDSUGGESTS RPMTAG_OLDSUGGESTSNAME	/* s[] (unimplemented) */
++    RPMTAG_OLDSUGGESTSVERSION	= 1157,	/* s[] extension (unimplemented) */
++    RPMTAG_OLDSUGGESTSFLAGS	= 1158,	/* i[] extension (unimplemented) */
++    RPMTAG_OLDENHANCESNAME		= 1159,	/* s[] extension placeholder (unimplemented) */
++#define	RPMTAG_OLDENHANCES RPMTAG_OLDENHANCESNAME	/* s[] (unimplemented) */
++    RPMTAG_OLDENHANCESVERSION	= 1160,	/* s[] extension placeholder (unimplemented) */
++    RPMTAG_OLDENHANCESFLAGS	= 1161,	/* i[] extension placeholder (unimplemented) */
+     RPMTAG_PRIORITY		= 1162, /* i[] extension placeholder (unimplemented) */
+     RPMTAG_CVSID		= 1163, /* s (unimplemented) */
+ #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s (unimplemented) */
+@@ -307,6 +307,22 @@ typedef enum rpmTag_e {
+     RPMTAG_OBSOLETENEVRS	= 5043, /* s[] extension */
+     RPMTAG_CONFLICTNEVRS	= 5044, /* s[] extension */
+     RPMTAG_FILENLINKS		= 5045,	/* i[] extension */
++    RPMTAG_RECOMMENDNAME	= 5046,	/* s[] */
++#define	RPMTAG_RECOMMENDS RPMTAG_RECOMMENDNAME	/* s[] */
++    RPMTAG_RECOMMENDVERSION	= 5047,	/* s[] */
++    RPMTAG_RECOMMENDFLAGS	= 5048,	/* i[] */
++    RPMTAG_SUGGESTNAME		= 5049,	/* s[] */
++#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTNAME	/* s[] */
++    RPMTAG_SUGGESTVERSION	= 5050,	/* s[] extension */
++    RPMTAG_SUGGESTFLAGS		= 5051,	/* i[] extension */
++    RPMTAG_SUPPLEMENTNAME	= 5052,	/* s[] */
++#define	RPMTAG_SUPPLEMENTS RPMTAG_SUPPLEMENTNAME /* s[] */
++    RPMTAG_SUPPLEMENTVERSION	= 5053,	/* s[] */
++    RPMTAG_SUPPLEMENTFLAGS	= 5054,	/* i[] */
++    RPMTAG_ENHANCENAME		= 5055,	/* s[] */
++#define	RPMTAG_ENHANCES RPMTAG_ENHANCENAME	/* s[] */
++    RPMTAG_ENHANCEVERSION	= 5056,	/* s[] */
++    RPMTAG_ENHANCEFLAGS		= 5057,	/* i[] */
+ 
+     RPMTAG_FIRSTFREE_TAG	/*!< internal */
+ } rpmTag;
+diff -up rpm-4.11.3/tests/rpmgeneral.at.weakdep-tags rpm-4.11.3/tests/rpmgeneral.at
+--- rpm-4.11.3/tests/rpmgeneral.at.weakdep-tags	2012-11-07 14:55:24.000000000 +0200
++++ rpm-4.11.3/tests/rpmgeneral.at	2017-11-02 12:21:38.248264213 +0200
+@@ -79,6 +79,10 @@ DISTTAG
+ DISTURL
+ DSAHEADER
+ E
++ENHANCEFLAGS
++ENHANCENAME
++ENHANCES
++ENHANCEVERSION
+ EPOCH
+ EPOCHNUM
+ EVR
+@@ -199,6 +203,10 @@ PROVIDES
+ PROVIDEVERSION
+ PUBKEYS
+ R
++RECOMMENDFLAGS
++RECOMMENDNAME
++RECOMMENDS
++RECOMMENDVERSION
+ RECONTEXTS
+ RELEASE
+ REMOVETID
+@@ -219,7 +227,15 @@ SOURCE
+ SOURCEPACKAGE
+ SOURCEPKGID
+ SOURCERPM
++SUGGESTFLAGS
++SUGGESTNAME
++SUGGESTS
++SUGGESTVERSION
+ SUMMARY
++SUPPLEMENTFLAGS
++SUPPLEMENTNAME
++SUPPLEMENTS
++SUPPLEMENTVERSION
+ TRIGGERCONDS
+ TRIGGERFLAGS
+ TRIGGERINDEX

@@ -26,7 +26,7 @@ Requires:	distribution-gpg-keys >= 1.29
 
 Requires(pre):	shadow-utils
 Requires(post): coreutils
-%if 0%{?fedora} || 0%{?mageia} || 0%{?rhel} > 7 || 0%{?with_amzn2}
+%if 0%{?fedora} || 0%{?mageia} || 0%{?rhel} > 7
 # to detect correct default.cfg
 Requires(post):	python3-dnf
 Requires(post):	python3-hawkey
@@ -134,7 +134,7 @@ fi
 %ghost %config(noreplace,missingok) %{_sysconfdir}/mock/default.cfg
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 30.3-2
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 30.3-2
 - Added support for Amazon Linux 2 Python 3
 
 * Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 30.3-1

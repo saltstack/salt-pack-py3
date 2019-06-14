@@ -9,9 +9,10 @@
 %global with_amzn2 1
 %endif
 
-%global _description Coverage.py is a Python module that measures code coverage during Python \
-execution. It uses the code analysis tools and tracing hooks provided in the \
-Python standard library to determine which lines are executable, and which \
+%global _description\
+Coverage.py is a Python module that measures code coverage during Python\
+execution. It uses the code analysis tools and tracing hooks provided in the\
+Python standard library to determine which lines are executable, and which\
 have been executed.
 
 
@@ -31,7 +32,7 @@ Source0:        http://pypi.python.org/packages/source/c/coverage/coverage-%{ver
 
 BuildRequires:  gcc
 
-%description %{_description}
+%description %_description
 
 %if %{with python2}
 %package -n python2-coverage
@@ -53,7 +54,7 @@ Provides:       bundled(js-jquery-hotkeys) = 0.8
 Provides:       bundled(js-jquery-isonscreen) = 1.2.0
 Provides:       bundled(js-jquery-tablesorter)
 
-%description -n python2-coverage %{_description}
+%description -n python2-coverage %_description
 Support Python 2 version.
 %endif
 
@@ -76,7 +77,7 @@ Provides:       bundled(js-jquery-isonscreen) = 1.2.0
 Provides:       bundled(js-jquery-tablesorter)
 Obsoletes:      platform-python-coverage < %{version}-%{release}
 
-%description -n python%{python3_pkgversion}-coverage %{_description}
+%description -n python%{python3_pkgversion}-coverage %_description
 Supports Python 3 version.
 %endif
 
@@ -96,20 +97,21 @@ sed -i 's/\r//g' README.rst
 %endif
 
 %install
-%if %{with python2}
+%if %{with python3}
 %py3_install
-mv %{buildroot}/%{_bindir}/coverage %{buildroot}/%{_bindir}/python%{python3_pkgversion}-coverage
+## mv %%{buildroot}/%%{_bindir}/coverage %%{buildroot}/%%{_bindir}/python%%{python3_pkgversion}-coverage
 %endif
 
-%if %{with python3}
+%if %{with python2}
 %py2_install
+## mv %%{buildroot}/%%{_bindir}/coverage %%{buildroot}/%%{_bindir}/python-coverage
 %endif
 
 # rename binaries, make compat symlinks
 pushd %{buildroot}%{_bindir}
-mv coverage python-coverage
 
 %if %{with python2}
+mv coverage python-coverage
 rm -rf coverage-2* coverage2
 for i in python2-coverage coverage coverage2 coverage-%{python2_version}; do
   ln -s python-coverage $i
@@ -117,6 +119,7 @@ done
 %endif
 
 %if %{with python3}
+mv coverage python%{python3_pkgversion}-coverage
 rm -rf coverage-3* coverage3
 for i in coverage3 coverage-%{python3_version}; do
   ln -s	python%{python3_pkgversion}-coverage $i
@@ -149,7 +152,7 @@ popd
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.1-5
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.1-5
 - Made support for Python 2 optional
 
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com>- 4.5.1-4

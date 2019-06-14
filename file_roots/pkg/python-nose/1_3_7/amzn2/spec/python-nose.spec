@@ -134,8 +134,8 @@ popd
 
 %install
 mkdir -p %{buildroot}%{_mandir}/man1
-pushd python2
 %if %{with python2}
+pushd python2
 %py2_install
 mv %{buildroot}%{_bindir}/nosetests{,-%{python2_version}}
 ln -sf nosetests-%{python2_version} %{buildroot}%{_bindir}/nosetests-2
@@ -182,6 +182,7 @@ pushd python3
 %{__python3} selftest.py
 popd
 %endif
+%endif
 
 %if %{with python2}
 %files -n python2-%{modname}
@@ -199,8 +200,10 @@ popd
 %if %{with python3}
 %files -n python%{python3_pkgversion}-%{modname}
 %license lgpl.txt
+%{_bindir}/nosetests
 %{_bindir}/nosetests-3
 %{_bindir}/nosetests-%{python3_version}
+%{_mandir}/man1/nosetests.1*
 %{_mandir}/man1/nosetests-3.1*
 %{_mandir}/man1/nosetests-%{python3_version}.1*
 %{python3_sitelib}/nose-*.egg-info/
@@ -209,13 +212,13 @@ popd
 
 %files docs
 %license lgpl.txt
-%doc AUTHORS CHANGELOG examples NEWS README.txt reST
+%doc AUTHORS CHANGELOG examples NEWS README.txt
 %if %{with docs}
-%doc html
+%doc html reST
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.7-23
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.7-23
 - Made support for Python 2 optional
 
 * Wed Oct 03 2018 SaltSTack Packaging Team >packaging@saltstack.com> - 1.3.7-22

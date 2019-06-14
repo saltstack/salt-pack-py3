@@ -10,7 +10,7 @@ See https://pythonhosted.org/more-itertools/index.html for documentation.\
 
 %bcond_with python2
 %bcond_without python3
-%bcond_without tests
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -65,7 +65,8 @@ Support Python 3 version.
 %endif
 
 %prep
-%autosetup -n %{srcname}-%{version} -p1
+## %%autosetup -n %%{srcname}-%%{version} -p1
+%setup -n %{srcname}-%{version} 
 
 %build
 %if %{with python2}
@@ -91,6 +92,7 @@ Support Python 3 version.
 %if %{with python3}
 %{__python3} ./setup.py test
 %endif
+%endif
 
 %if %{with python2}
 %files -n python2-%{srcname}
@@ -103,15 +105,17 @@ Support Python 3 version.
 
 %if %{with python2}
 %files -n python%{python3_pkgversion}-%{srcname}
+echo "XXXXXXXXXXXXXXXXXXXXXX DGM %{python3_sitelib}"
 %license LICENSE
 %doc README.rst PKG-INFO
-%{python3_sitelib}/more_itertools/
-%exclude %{python3_sitelib}/more_itertools/tests
-%{python3_sitelib}/more_itertools-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/more_itertools*
+%{python3_sitelib}/more_itertools/tests/
+%{python3_sitelib}/more_itertools/tests/__pycache__/*
+%{python3_sitelib}/more_itertools-%{version}-py%{python3_pkgversion}.egg-info*
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.0-6
+* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.0-6
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 4.1.0-5

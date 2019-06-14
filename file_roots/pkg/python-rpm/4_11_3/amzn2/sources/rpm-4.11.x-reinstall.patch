@@ -1,0 +1,368 @@
+This patchset consists of following upstream commits:
+- 1f3164ae6975747e72af383f2d74c27245e6fe36
+- fd40d58efa0fbff535f273e5ae5c200d43d28aef
+- bfa76529864b9dfb29258f4dedc3fa9de9c5aeca
+- 6665503ec6fb6430ecaafb3e318a4730f146efa9
+- bf856744f2820a1625ef9428284b5788d18103f3
+- c5200145fa08da884ce2c1ed85941363eeae6407
+- 80dee39fb1f97ab3927c10bdd13c7c438b5677be
+
+with some changes to make RPM to compile.
+
+diff -uNr rpm-4.11.3/doc/rpm.8 rpm-4.11.3.reinstall/doc/rpm.8
+--- rpm-4.11.3/doc/rpm.8	2017-07-12 16:57:41.711722771 +0200
++++ rpm-4.11.3.reinstall/doc/rpm.8	2017-07-12 16:14:26.842680581 +0200
+@@ -110,7 +110,7 @@
+ One of the following basic modes must be selected:
+ \fBQuery\fR,
+ \fBVerify\fR,
+-\fBInstall/Upgrade/Freshen\fR,
++\fBInstall/Upgrade/Freshen/Reinstall\fR,
+ \fBUninstall\fR,
+ \fBSet Owners/Groups\fR,
+ \fBShow Querytags\fR, and
+@@ -206,6 +206,13 @@
+ This will upgrade packages, but only ones for which an earlier version is
+ installed.
+ .PP
++The general form of an rpm reinstall command is 
++.PP
++\fBrpm\fR {\fB--reinstall\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
++.PP
++This reinstalls a previously installed package.
++.PP
++.PP
+ .TP
+ \fB--allfiles\fR
+ Installs or upgrades all the missingok files in the package,
+diff -uNr rpm-4.11.3/lib/depends.c rpm-4.11.3.reinstall/lib/depends.c
+--- rpm-4.11.3/lib/depends.c	2017-07-12 16:57:41.742723041 +0200
++++ rpm-4.11.3.reinstall/lib/depends.c	2017-07-12 16:14:12.203550634 +0200
+@@ -54,6 +54,12 @@
+ #undef HASHTYPE
+ #undef HTKEYTYPE
+ 
++enum addOp_e {
++    RPMTE_INSTALL	= 0,
++    RPMTE_UPGRADE	= 1,
++    RPMTE_REINSTALL	= 2,
++};
++
+ /**
+  * Check for supported payload format in header.
+  * @param h		header to check
+@@ -126,7 +132,7 @@
+ }
+ 
+ /* Return rpmdb iterator with removals optionally pruned out */
+-static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
++rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
+ 					      const char * key, int prune)
+ {
+     rpmdbMatchIterator mi = rpmtsInitIterator(ts, tag, key, 0);
+@@ -152,22 +158,29 @@
+ }
+ 
+ /* Add erase elements for older packages of same color (if any). */
+-static int addUpgradeErasures(rpmts ts, rpm_color_t tscolor,
++static int addSelfErasures(rpmts ts, rpm_color_t tscolor, int op,
+ 				rpmte p, rpm_color_t hcolor, Header h)
+ {
+     Header oh;
+     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
+     int rc = 0;
++    int cmp;
+ 
+     while((oh = rpmdbNextIterator(mi)) != NULL) {
+ 	/* Ignore colored packages not in our rainbow. */
+ 	if (skipColor(tscolor, hcolor, headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
+ 	    continue;
+ 
+-	/* Skip packages that contain identical NEVR. */
+-	if (rpmVersionCompare(h, oh) == 0)
++	cmp = rpmVersionCompare(h, oh);
++
++	/* On upgrade, skip packages that contain identical NEVR. */
++	if ((op == RPMTE_UPGRADE) && (cmp == 0))
+ 	    continue;
+ 
++	/* On reinstall, skip packages with differing NEVR. */
++	if ((op == RPMTE_REINSTALL) && (cmp != 0))
++	    continue;
++	
+ 	if (removePackage(ts, oh, p)) {
+ 	    rc = 1;
+ 	    break;
+@@ -385,8 +398,8 @@
+     return al;
+ }
+ 
+-int rpmtsAddInstallElement(rpmts ts, Header h,
+-			fnpyKey key, int upgrade, rpmRelocation * relocs)
++static int addPackage(rpmts ts, Header h,
++		    fnpyKey key, int op, rpmRelocation * relocs)
+ {
+     tsMembers tsmem = rpmtsMembers(ts);
+     rpm_color_t tscolor = rpmtsColor(ts);
+@@ -403,10 +416,10 @@
+ 
+     /* Source packages are never "upgraded" */
+     if (isSource)
+-	upgrade = 0;
++	op = RPMTE_INSTALL;
+ 
+     /* Do lazy (readonly?) open of rpm database for upgrades. */
+-    if (upgrade && rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
++    if (op != RPMTE_INSTALL && rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
+ 	if ((ec = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
+ 	    goto exit;
+     }
+@@ -419,7 +432,7 @@
+ 
+     /* Check binary packages for redundancies in the set */
+     if (!isSource) {
+-	oc = findPos(ts, tscolor, p, upgrade);
++	oc = findPos(ts, tscolor, p, (op == RPMTE_UPGRADE));
+ 	/* If we're replacing a previously added element, free the old one */
+ 	if (oc >= 0 && oc < tsmem->orderCount) {
+ 	    rpmalDel(tsmem->addedPackages, tsmem->order[oc]);
+@@ -451,15 +464,33 @@
+ 
+     /* Add erasure elements for old versions and obsoletions on upgrades */
+     /* XXX TODO: If either of these fails, we'd need to undo all additions */
+-    if (upgrade) {
+-	addUpgradeErasures(ts, tscolor, p, rpmteColor(p), h);
++    if (op != RPMTE_INSTALL)
++	addSelfErasures(ts, tscolor, op, p, rpmteColor(p), h);
++    if (op == RPMTE_UPGRADE)
+ 	addObsoleteErasures(ts, tscolor, p);
+-    }
+ 
+ exit:
+     return ec;
+ }
+ 
++int rpmtsAddInstallElement(rpmts ts, Header h,
++			fnpyKey key, int upgrade, rpmRelocation * relocs)
++{
++    int op = (upgrade == 0) ? RPMTE_INSTALL : RPMTE_UPGRADE;
++    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
++	return 1;
++    return addPackage(ts, h, key, op, relocs);
++}
++
++int rpmtsAddReinstallElement(rpmts ts, Header h, fnpyKey key)
++{
++    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
++	return 1;
++    /* TODO: pull relocations from installed package */
++    /* TODO: should reinstall of non-installed package fail? */
++    return addPackage(ts, h, key, RPMTE_REINSTALL, NULL);
++}
++
+ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
+ {
+     return removePackage(ts, h, NULL);
+diff -uNr rpm-4.11.3/lib/poptI.c rpm-4.11.3.reinstall/lib/poptI.c
+--- rpm-4.11.3/lib/poptI.c	2013-06-07 09:37:21.000000000 +0200
++++ rpm-4.11.3.reinstall/lib/poptI.c	2017-07-12 16:14:26.842680581 +0200
+@@ -247,6 +247,10 @@
+ 	&rpmIArgs.installInterfaceFlags, (INSTALL_UPGRADE|INSTALL_INSTALL),
+ 	N_("upgrade package(s)"),
+ 	N_("<packagefile>+") },
++ { "reinstall", '\0', POPT_BIT_SET,
++	&rpmIArgs.installInterfaceFlags, (INSTALL_REINSTALL|INSTALL_INSTALL),
++	N_("reinstall package(s)"),
++	N_("<packagefile>+") },
+ 
+    POPT_TABLEEND
+ };
+diff -uNr rpm-4.11.3/lib/rpmcli.h rpm-4.11.3.reinstall/lib/rpmcli.h
+--- rpm-4.11.3/lib/rpmcli.h	2017-07-12 16:57:41.741723032 +0200
++++ rpm-4.11.3.reinstall/lib/rpmcli.h	2017-07-12 16:14:26.842680581 +0200
+@@ -293,7 +293,8 @@
+     INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
+     INSTALL_INSTALL	= (1 << 7),	/*!< from --install */
+     INSTALL_ERASE	= (1 << 8),	/*!< from --erase */
+-    INSTALL_ALLMATCHES	= (1 << 9)	/*!< from --allmatches */
++    INSTALL_ALLMATCHES	= (1 << 9),	/*!< from --allmatches */
++    INSTALL_REINSTALL	= (1 << 10),	/*!< from --reinstall */
+ };
+ 
+ typedef rpmFlags rpmInstallFlags;
+@@ -354,7 +355,7 @@
+ };
+ 
+ /** \ingroup rpmcli
+- * Install/upgrade/freshen binary rpm package.
++ * Install/upgrade/freshen/reinstall binary rpm package.
+  * @param ts		transaction set
+  * @param ia		mode flags and parameters
+  * @param fileArgv	array of package file names (NULL terminated)
+diff -uNr rpm-4.11.3/lib/rpminstall.c rpm-4.11.3.reinstall/lib/rpminstall.c
+--- rpm-4.11.3/lib/rpminstall.c	2014-09-05 13:48:07.000000000 +0200
++++ rpm-4.11.3.reinstall/lib/rpminstall.c	2017-07-12 16:14:26.843680590 +0200
+@@ -552,7 +552,10 @@
+ 	        continue;
+ 	    }
+ 
+-	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
++	if (ia->installInterfaceFlags & INSTALL_REINSTALL)
++	    rc = rpmtsAddReinstallElement(ts, h, (fnpyKey)fileName);
++	else
++	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
+ 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
+ 			relocations);
+ 
+diff -uNr rpm-4.11.3/lib/rpmts.h rpm-4.11.3.reinstall/lib/rpmts.h
+--- rpm-4.11.3/lib/rpmts.h	2017-07-12 16:57:41.710722762 +0200
++++ rpm-4.11.3.reinstall/lib/rpmts.h	2017-07-12 16:14:12.203550634 +0200
+@@ -544,6 +544,16 @@
+ 		rpmRelocation * relocs);
+ 
+ /** \ingroup rpmts
++ * Add package to be reinstalled to transaction set.
++ *
++ * @param ts		transaction set
++ * @param h		header
++ * @param key		package retrieval key (e.g. file name)
++ * @return		0 on success
++ */
++int rpmtsAddReinstallElement(rpmts ts, Header h, const fnpyKey key);
++
++/** \ingroup rpmts
+  * Add package to be erased to transaction set.
+  * @param ts		transaction set
+  * @param h		header
+diff -uNr rpm-4.11.3/lib/rpmts_internal.h rpm-4.11.3.reinstall/lib/rpmts_internal.h
+--- rpm-4.11.3/lib/rpmts_internal.h	2014-06-04 11:25:23.000000000 +0200
++++ rpm-4.11.3.reinstall/lib/rpmts_internal.h	2017-07-12 16:44:18.613959252 +0200
+@@ -86,6 +86,11 @@
+ RPM_GNUC_INTERNAL
+ tsMembers rpmtsMembers(rpmts ts);
+ 
++/* Return rpmdb iterator with removals optionally pruned out */
++RPM_GNUC_INTERNAL
++rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
++					      const char * key, int prune);
++
+ RPM_GNUC_INTERNAL
+ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types);
+ 
+@@ -118,6 +123,9 @@
+  */
+ void rpmtsSELabelFini(rpmts ts, int close_status);
+ 
++RPM_GNUC_INTERNAL
++rpmRC rpmtsSetupTransactionPlugins(rpmts ts);
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff -uNr rpm-4.11.3/lib/transaction.c rpm-4.11.3.reinstall/lib/transaction.c
+--- rpm-4.11.3/lib/transaction.c	2017-07-12 16:57:41.747723085 +0200
++++ rpm-4.11.3.reinstall/lib/transaction.c	2017-07-12 16:43:59.563741144 +0200
+@@ -1138,7 +1138,7 @@
+ 	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG)) {
+ 	    Header h;
+ 	    rpmdbMatchIterator mi;
+-	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
++	    mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, rpmteN(p), 1);
+ 	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
+ 	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
+ 	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(p));
+@@ -1444,7 +1444,7 @@
+     return rc;
+ }
+ 
+-static rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
++rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
+ {
+     rpmRC rc = RPMRC_OK;
+     ARGV_t files = NULL;
+diff -uNr rpm-4.11.3/python/rpm/transaction.py rpm-4.11.3.reinstall/python/rpm/transaction.py
+--- rpm-4.11.3/python/rpm/transaction.py	2014-02-05 14:04:02.000000000 +0100
++++ rpm-4.11.3.reinstall/python/rpm/transaction.py	2017-07-12 16:14:22.573642686 +0200
+@@ -50,7 +50,7 @@
+         else:
+             return tuple(keys)
+ 
+-    def addInstall(self, item, key, how="u"):
++    def _f2hdr(self, item):
+         if isinstance(item, _string_types):
+             f = open(item)
+             header = self.hdrFromFdno(f)
+@@ -59,6 +59,10 @@
+             header = item
+         else:
+             header = self.hdrFromFdno(item)
++        return header
++
++    def addInstall(self, item, key, how="u"):
++        header = self._f2hdr(item)
+ 
+         if not how in ['u', 'i']:
+             raise ValueError('how argument must be "u" or "i"')
+@@ -67,6 +71,12 @@
+         if not TransactionSetCore.addInstall(self, header, key, upgrade):
+             raise rpm.error("adding package to transaction failed")
+ 
++    def addReinstall(self, item, key):
++        header = self._f2hdr(item)
++
++        if not TransactionSetCore.addReinstall(self, header, key):
++            raise rpm.error("adding package to transaction failed")
++
+     def addErase(self, item):
+         hdrs = []
+         if isinstance(item, rpm.hdr):
+diff -uNr rpm-4.11.3/python/rpmts-py.c rpm-4.11.3.reinstall/python/rpmts-py.c
+--- rpm-4.11.3/python/rpmts-py.c	2017-07-12 16:57:41.741723032 +0200
++++ rpm-4.11.3.reinstall/python/rpmts-py.c	2017-07-12 16:14:18.800609194 +0200
+@@ -190,6 +190,24 @@
+ }
+ 
+ static PyObject *
++rpmts_AddReinstall(rpmtsObject * s, PyObject * args)
++{
++    Header h = NULL;
++    PyObject * key;
++    int rc;
++
++    if (!PyArg_ParseTuple(args, "O&O:AddReinstall", 
++			  hdrFromPyObject, &h, &key))
++	return NULL;
++
++    rc = rpmtsAddReinstallElement(s->ts, h, key);
++    if (key && rc == 0) {
++	PyList_Append(s->keyList, key);
++    }
++    return PyBool_FromLong((rc == 0));
++}
++
++static PyObject *
+ rpmts_AddErase(rpmtsObject * s, PyObject * args)
+ {
+     Header h;
+@@ -693,6 +711,8 @@
+ static struct PyMethodDef rpmts_methods[] = {
+  {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
+ 	NULL },
++ {"addReinstall",	(PyCFunction) rpmts_AddReinstall,	METH_VARARGS,
++	NULL },
+  {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,
+ 	NULL },
+  {"check",	(PyCFunction) rpmts_Check,	METH_VARARGS|METH_KEYWORDS,
+diff -uNr rpm-4.11.3/rpmqv.c rpm-4.11.3.reinstall/rpmqv.c
+--- rpm-4.11.3/rpmqv.c	2012-11-07 13:55:24.000000000 +0100
++++ rpm-4.11.3.reinstall/rpmqv.c	2017-07-12 16:14:26.843680590 +0200
+@@ -135,7 +135,8 @@
+ #ifdef	IAM_RPMEIU
+   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_IE))
+     {	int iflags = (ia->installInterfaceFlags &
+-		(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL));
++			(INSTALL_UPGRADE|INSTALL_FRESHEN|
++			 INSTALL_INSTALL|INSTALL_REINSTALL));
+ 	int eflags = (ia->installInterfaceFlags & INSTALL_ERASE);
+ 
+ 	if (iflags & eflags)

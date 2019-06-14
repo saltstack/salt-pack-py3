@@ -450,7 +450,11 @@ pkgbuild_registry:
       build_deps:
         - mock-core-configs
         - python-distro
+        - python-jinja2
+        - python-requests
         - python-pyroute2
+        - python-rpm
+        - python-six
       results:
         - mock
         - mock-lvm
@@ -669,7 +673,7 @@ pkgbuild_registry:
         - python2-pyflakes
         - python3-pyflakes
     python-pyroute2:
-      version: 0.4.13-3
+      version: 0.5.3-4
       noarch: True
       results:
         - python3-pyroute2
@@ -725,6 +729,10 @@ pkgbuild_registry:
         - python-urllib3
       results:
         - python3-requests
+    python-rpm:
+      version: 4.11.3-5
+      results:
+        - python3-rpm
     python-setuptools_scm:
       version: 3.1.0-3
       noarch: True
