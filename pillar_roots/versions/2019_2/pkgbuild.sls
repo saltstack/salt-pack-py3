@@ -731,6 +731,14 @@ pkgbuild_registry:
         - python3-requests
     python-rpm:
       version: 4.11.3-5
+      build_deps:
+        - rpm
+        - rpm-build
+        - rpm-build-libs
+        - rpm-libs
+        - rpm-plugin-systemd-inhibit
+        - rpm-python
+        - rpm-sign
       results:
         - python3-rpm
     python-setuptools_scm:
@@ -815,6 +823,18 @@ pkgbuild_registry:
         - python-zope-event
       results:
         - python3-zope-interface
+    rpm:
+      version: 4.11.3-36
+      results:
+        - rpm
+        - rpm-build
+        - rpm-build-libs
+        - rpm-libs
+        - rpm-plugin-systemd-inhibit
+        - rpm-python
+        - rpm-sign
+        - rpm-debuginfo
+        - rpm-devel
     salt:
       version: 2019.2.0tobereplaced_date-0
       noarch: True

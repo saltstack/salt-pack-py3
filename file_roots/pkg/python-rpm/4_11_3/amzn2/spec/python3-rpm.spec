@@ -190,9 +190,6 @@ programs that will manipulate RPM packages and databases.
 %package -n python%{python3_pkgversion}-rpm
 Summary: %{summary}
 Requires: rpm = %{rpmver}
-%if ! 0%{?with_amzn2}
-Requires: rpm >= %{rpmver}-%{rpmrel}
-%endif
 
 %description -n python%{python3_pkgversion}-rpm
 The python%{python3_pkgversion}-rpm package contains a module that permits applications
@@ -343,8 +340,8 @@ test -f %{buildroot}%{python3_sitearch}/rpm-%{version}-py%{python3_version}.egg-
 %{python3_sitearch}/rpm-%{version}-py%{python3_version}.egg-info
 
 %changelog
-* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.11.3-5
-- Made support for Amazon Linux 2 Python 3 with lifted restriction on %{rpmver}-%{rpmrel}
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.11.3-5
+- Made support for Amazon Linux 2 Python 3
 
 * Wed Apr 24 2019 Miro Hrončok <mhroncok@redhat.com> - 4.11.3-4
 - Add lower bound for rpm release

@@ -1,0 +1,87 @@
+diff -up rpm-4.11.3/lib/rpmchecksig.c.orig rpm-4.11.3/lib/rpmchecksig.c
+--- rpm-4.11.3/lib/rpmchecksig.c.orig	2013-11-22 11:31:31.000000000 +0100
++++ rpm-4.11.3/lib/rpmchecksig.c	2017-03-15 18:18:20.688251955 +0100
+@@ -242,8 +242,8 @@ static void formatResult(rpmTagVal sigta
+     free(msg);
+ }
+ 
+-static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
+-			   FD_t fd, const char *fn)
++int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags, FD_t fd,
++                     const char *fn)
+ {
+ 
+     char *buf = NULL;
+diff -up rpm-4.11.3/lib/rpmcli.h.orig rpm-4.11.3/lib/rpmcli.h
+--- rpm-4.11.3/lib/rpmcli.h.orig	2014-02-05 14:04:02.000000000 +0100
++++ rpm-4.11.3/lib/rpmcli.h	2017-03-15 18:18:20.689251950 +0100
+@@ -254,6 +254,17 @@ int showVerifyPackage(QVA_t qva, rpmts t
+  */
+ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn);
+ 
++/**
++ * Check package and header signatures.
++ * @param keyring	keyring handle
++ * @param flags		flags to control what to verify
++ * @param fd		package file handle
++ * @param fn		package file name
++ * @return		0 on success, 1 on failure
++ */
++int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags, FD_t fd,
++                     const char *fn);
++
+ /** \ingroup rpmcli
+  * Verify package install.
+  * @todo hack: RPMQV_ALL can pass char ** arglist = NULL, not char * arg. Union?
+diff -up rpm-4.11.3/python/rpmts-py.c.orig rpm-4.11.3/python/rpmts-py.c
+--- rpm-4.11.3/python/rpmts-py.c.orig	2014-02-05 14:04:02.000000000 +0100
++++ rpm-4.11.3/python/rpmts-py.c	2017-03-15 18:18:20.689251950 +0100
+@@ -7,6 +7,8 @@
+ #include <rpm/rpmpgp.h>
+ #include <rpm/rpmdb.h>
+ #include <rpm/rpmbuild.h>
++#include <rpm/rpmcli.h>
++#include <rpm/rpmkeyring.h>
+ 
+ #include "header-py.h"
+ #include "rpmds-py.h"	/* XXX for rpmdsNew */
+@@ -671,6 +672,24 @@ exit:
+     return mio;
+ }
+ 
++static PyObject *
++rpmts_VerifySigs(rpmtsObject * s, PyObject * args)
++{
++    rpmfdObject *fdo = NULL;
++    char *fn = NULL;
++    rpmQueryFlags flags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
++    int rc = 1;
++
++    if (!PyArg_ParseTuple(args, "O&s|i:VerifySigs", rpmfdFromPyObject, &fdo,
++                          &fn, &flags))
++        return NULL;
++
++    rpmKeyring keyring = rpmtsGetKeyring(s->ts, 1);
++    rc = rpmpkgVerifySigs(keyring, flags, rpmfdGetFd(fdo), fn);
++    rpmKeyringFree(keyring);
++    return PyBool_FromLong(rc == 0);
++}
++
+ static struct PyMethodDef rpmts_methods[] = {
+  {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
+ 	NULL },
+@@ -729,6 +748,14 @@ Remove all elements from the transaction
+  {"dbIndex",     (PyCFunction) rpmts_index,	METH_VARARGS|METH_KEYWORDS,
+ "ts.dbIndex(TagN) -> ii\n\
+ - Create a key iterator for the default transaction rpmdb.\n" },
++ {"_verifySigs",         (PyCFunction) rpmts_VerifySigs, METH_VARARGS,
++  "ts._verifySigs(fdno, fn, [flags]) -- Verify package signature\n\n"
++  "Returns True if it verifies, False otherwise.\n\n"
++  "Args:\n"
++  "  fdno  : file descriptor of the package to verify\n"
++  "  fn    : package file name (just for logging purposes)\n"
++  "  flags : bitfield to control what to verify\n"
++  "          (default is rpm.VERIFY_SIGNATURE | rpm.VERIFY_DIGEST)"},
+     {NULL,		NULL}		/* sentinel */
+ };
+ 
