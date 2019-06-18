@@ -200,14 +200,14 @@ pkgbuild_registry:
       results:
         - python3-msgpack
     python-mock:
-      version: 2.0.0-14
+      version: 2.0.0-15
       noarch: True
       build_deps:
         - python-pbr
       results:
         - python3-mock
     python-pbr:
-      version: 5.1.2-3
+      version: 5.1.2-4
       noarch: True
       results:
         - python3-pbr

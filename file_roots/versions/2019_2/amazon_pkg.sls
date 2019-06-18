@@ -36,7 +36,7 @@ include:
     - pkg.python-libcloud.2_2_1.amzn2    ## latest is 2.3.0
     - pkg.python-m2crypto.0_31_0.amzn2   ## latest 0.31.0
     - pkg.python-markupsafe.1_0.amzn2
-    - pkg.python-mock.1_0_1.amzn2        ## should not be needed since Py3.3 as part of Standard Library, list as dependencies in some packages
+    - pkg.python-mock.2_0_0.amzn2           ## should not be needed since Py3.3 as part of Standard Library, list as dependencies in some packages
     - pkg.python-msgpack.0_5_6.amzn2     ## latest 0.5.6
     - pkg.python-more-itertools.4_1_0.amzn2
     - pkg.python-nose.1_3_7.amzn2        ## latest 1.3.7

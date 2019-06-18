@@ -61,6 +61,9 @@ Suggests: iproute2
 BuildRequires: bash-completion
 
 %if %{with python3}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
 Requires: python3
 Requires: python3-distro
 Requires: python3-jinja2
@@ -75,6 +78,9 @@ BuildRequires: python3-pylint
 %endif
 
 %if %{with python2}
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
 Requires: python-ctypes
 Requires: python2-distro
 Requires: python-jinja2
@@ -254,7 +260,7 @@ pylint-3 py/mockbuild/ py/*.py py/mockbuild/plugins/* || :
 %endif
 
 %changelog
-* Fri Jun 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-3
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-3
 - Added support for Amazon Linux 2 Python 3
 
 * Wed May 15 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.4.15-2

@@ -52,6 +52,7 @@ BuildRequires:  python2-zope-interface
 
 %if %{with python3}
 %if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
 BuildRequires:  python3-rpm-macros
 %endif
 
@@ -102,14 +103,19 @@ Support Python 3 version.
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 %install
 # Doesn't install anything to /usr/bin, so I don't think the order of
 # installing python2 and python3 actually matters.
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 %if %{with python2}
 %py2_install
@@ -140,7 +146,7 @@ PYTHONPATH=%{buildroot}/%{python3_sitelib} py.test-3 -v
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.4.0-9
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.4.0-9
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 17.4.0-8
