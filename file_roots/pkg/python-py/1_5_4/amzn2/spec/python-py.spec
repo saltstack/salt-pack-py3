@@ -150,7 +150,10 @@ popd
 
 %if %{with python3}
 pushd python3
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %if %{with docs}
 make -C doc html PYTHONPATH=$(pwd) SPHINXBUILD=sphinx-build-3
 %endif # with docs
@@ -169,7 +172,9 @@ popd
 
 %if %{with python3}
 pushd python3
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 # remove hidden file
 rm -rf doc/_build/html/.buildinfo
 popd
@@ -226,7 +231,7 @@ popd
 
 
 %changelog
-* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-5
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-5
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-4

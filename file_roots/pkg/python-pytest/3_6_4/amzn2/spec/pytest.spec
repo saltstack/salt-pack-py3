@@ -146,8 +146,11 @@ py.test provides simple, yet powerful testing for Python.
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
 %endif
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 
 %if %{with docs}
 for l in doc/* ; do
@@ -172,7 +175,9 @@ ln -snf py.test-%{python2_version} %{buildroot}%{_bindir}/py.test
 %endif
 
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 mv %{buildroot}%{_bindir}/pytest %{buildroot}%{_bindir}/pytest-%{python3_version}
 ln -snf pytest-%{python3_version} %{buildroot}%{_bindir}/pytest-3
 mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test-%{python3_version}
@@ -273,7 +278,7 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %endif
 
 %changelog
-* Fri Jun 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.4-3
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.4-3
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 3.6.4-2

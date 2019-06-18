@@ -26,7 +26,7 @@
 
 Name:           python-%{modname}
 Version:        7.43.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A Python interface to libcurl
 
 License:        LGPLv2+ or MIT
@@ -129,7 +129,10 @@ sed -e 's/ --show-skipped//' \
 %py2_build -- --with-openssl
 %endif
 %if %{with python3}
-%py3_build -- --with-openssl
+## %%py3_build -- --with-openssl
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*} -- --with-openssl
+sleep 1
 %endif
 
 %install
@@ -138,7 +141,9 @@ export PYCURL_SSL_LIBRARY=openssl
 %py2_install
 %endif
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 
@@ -172,6 +177,9 @@ rm -fv tests/fake-curl/libcurl/*.so
 %endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 7.43.0.2-5
+- Support for Python 3 on Amazon Linux 2,compensate for macro failure 
+
 * Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 7.43.0.2-4
 - Support for Python 3 on Amazon Linux 2
 

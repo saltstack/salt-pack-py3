@@ -88,7 +88,10 @@ This is a Python %{python3_version} (de)serializer for MessagePack.
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 %install
@@ -96,7 +99,9 @@ This is a Python %{python3_version} (de)serializer for MessagePack.
 %if %{with python2}
 %endif
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 
 %if %{with tests}
@@ -123,7 +128,7 @@ py.test-%{python3_version} -v test
 
 %endif
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-7
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-7
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-6

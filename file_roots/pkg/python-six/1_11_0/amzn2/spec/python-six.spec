@@ -101,9 +101,15 @@ Python 3 version.
 
 %if %{with python3}
 %if 0%{?build_wheel}
-%py3_build_wheel
+## %%py3_build_wheel
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} bdist_wheel %{?*}
+sleep 1
 %else
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 %endif
 
@@ -119,9 +125,13 @@ Python 3 version.
 
 %if %{with python3}
 %if 0%{?build_wheel}
-%py3_install_wheel %{python3_wheelname}
+## %%py3_install_wheel %{python3_wheelname}
+## amzn2 has issue with %{py_setup} expansion
+pip%{python3_version} install -I dist/%{python3_wheelname} --root %{buildroot} --strip-file-prefix %{buildroot} --no-deps
 %else
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 %endif
 
@@ -156,7 +166,7 @@ py.test-3 -rfsxX test_six.py
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.11.0-8
+* Tue Jun 18 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.11.0-8
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.11.0-7

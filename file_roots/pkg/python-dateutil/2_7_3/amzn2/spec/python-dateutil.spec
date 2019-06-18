@@ -1,4 +1,3 @@
-%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %bcond_with python2
 %bcond_without python3
@@ -11,6 +10,8 @@
 %bcond_without docs
 %bcond_without tests
 %endif
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %global modname dateutil
 
@@ -96,8 +97,11 @@ mv NEWS.new NEWS
 %if %{with python2}
 %py2_build
 %endif
-%if %{with python2}
-%py3_build
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 %if %{with docs}
 make -C docs html
@@ -108,7 +112,9 @@ make -C docs html
 %py2_install
 %endif
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 
 %if %{with tests}
@@ -144,7 +150,7 @@ make -C docs html
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1:2.7.3-3
+* Tue Jun 18 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1:2.7.3-3
 - Made support for Python 2 optional
 
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1:2.7.3-2

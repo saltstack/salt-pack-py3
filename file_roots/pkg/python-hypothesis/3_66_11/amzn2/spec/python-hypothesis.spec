@@ -99,7 +99,10 @@ Python 3 version.
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 %if %{with docs}
 PYTHONPATH=src READTHEDOCS=True sphinx-build -b man docs docs/_build/man
@@ -110,7 +113,9 @@ PYTHONPATH=src READTHEDOCS=True sphinx-build -b man docs docs/_build/man
 %py2_install
 %endif
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 %if %{with docs}
 %{__install} -Dpm0644 -t %{buildroot}%{_mandir}/man1 docs/_build/man/hypothesis.1
@@ -139,7 +144,7 @@ PYTHONPATH=src READTHEDOCS=True sphinx-build -b man docs docs/_build/man
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.66.11-3
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.66.11-3
 - Made support for Python 2 optional
 
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.66.11-2

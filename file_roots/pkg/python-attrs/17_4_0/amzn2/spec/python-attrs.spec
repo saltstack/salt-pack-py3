@@ -52,7 +52,6 @@ BuildRequires:  python2-zope-interface
 
 %if %{with python3}
 %if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
 BuildRequires:  python3-rpm-macros
 %endif
 

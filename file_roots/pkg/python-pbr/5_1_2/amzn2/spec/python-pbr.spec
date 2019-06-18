@@ -100,7 +100,10 @@ export SKIP_PIP_INSTALL=1
 %endif
 
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 %if %{with docs}
@@ -116,7 +119,9 @@ rm -rf html/.{doctrees,buildinfo}
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 rm -rf %{buildroot}%{python3_sitelib}/pbr/tests
 mv %{buildroot}%{_bindir}/pbr %{buildroot}%{_bindir}/pbr-3
 %endif

@@ -128,7 +128,10 @@ popd
 %endif
 %if %{with python3}
 pushd python3
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 popd
 %endif
 
@@ -145,7 +148,9 @@ popd
 %endif
 %if %{with python3}
 pushd python3
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 mv %{buildroot}%{_bindir}/nosetests{,-%{python3_version}}
 ln -sf nosetests-%{python3_version} %{buildroot}%{_bindir}/nosetests-3
 mv %{buildroot}%{_prefix}/man/man1/nosetests.1 %{buildroot}%{_mandir}/man1/nosetests-%{python3_version}.1
@@ -218,7 +223,7 @@ popd
 %endif
 
 %changelog
-* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.7-23
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.3.7-23
 - Made support for Python 2 optional
 
 * Wed Oct 03 2018 SaltSTack Packaging Team >packaging@saltstack.com> - 1.3.7-22

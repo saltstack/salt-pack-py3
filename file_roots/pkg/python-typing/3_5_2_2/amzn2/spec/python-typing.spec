@@ -78,7 +78,10 @@ cd -
 %endif
 %if %{with python3}
 cd python3
-%{py3_build}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 cd -
 %endif
 
@@ -90,7 +93,9 @@ cd -
 %endif
 %if %{with python3}
 cd python3
-%{py3_install}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 cd -
 %endif
 
@@ -110,7 +115,7 @@ cd -
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.5.2.2-5
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.5.2.2-5
 - Made support for Python 2 optional
 
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.5.2.2-4

@@ -112,7 +112,10 @@ rm -rf test/contrib/
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 
@@ -121,8 +124,10 @@ rm -rf test/contrib/
 %py2_install
 %endif
 %if %{with python3}
-%py3_install
 %endif
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 
 %if %{with python2}
 # Unbundle the Python 2 build
@@ -184,7 +189,7 @@ py.test-3
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-6
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-6
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.23-5

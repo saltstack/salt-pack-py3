@@ -80,7 +80,10 @@ Requires:       tzdata
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 
@@ -92,7 +95,9 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitelib}
 %endif
 
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 rm -r %{buildroot}%{python3_sitelib}/pytz/zoneinfo
 pathfix.py -pn -i %{__python3} %{buildroot}%{python3_sitelib}
 %endif
@@ -127,7 +132,7 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.5-3
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.5-3
 - Made support for Python 2 optional
 
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.5-2

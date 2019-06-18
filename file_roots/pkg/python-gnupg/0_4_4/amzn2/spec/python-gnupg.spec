@@ -50,7 +50,10 @@ GnuPG bindings for python. This uses the gpg command.
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif # with python3
 
 %install
@@ -58,7 +61,9 @@ GnuPG bindings for python. This uses the gpg command.
 %py2_install
 %endif
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif # with python3
 
 %if %{with python2}
@@ -80,7 +85,7 @@ GnuPG bindings for python. This uses the gpg command.
 %endif # with python3
 
 %changelog
-* Tue Jun 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.4.4-2
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.4.4-2
 - Added support for Redhat 7 Python 3.6, and support for Python 2 packages optional
 
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.4.3-2

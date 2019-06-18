@@ -401,8 +401,11 @@ cp -a . %{py3dir}
 %build
 %if 0%{?with_python3}
 pushd %{py3dir}
-%py3_build
 popd
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %else
 %py2_build
 %endif
@@ -418,7 +421,9 @@ cd $RPM_BUILD_DIR/%{name}-%{version}
 ## rm -rf %%{buildroot}
 
 pushd %{py3dir}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -871,7 +876,7 @@ rm -rf %%{buildroot}
 
 
 %changelog
-* Mon Mar 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1
 - Support for Python 3 on Amazon Linux 2
 
 * Mon Mar 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-1

@@ -64,7 +64,10 @@ A library for safe markup escaping. Python 3 version.
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 
@@ -76,7 +79,9 @@ rm %{buildroot}%{python2_sitearch}/markupsafe/*.c
 %endif
 
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 # C code errantly gets installed
 rm %{buildroot}%{python3_sitearch}/markupsafe/*.c
 %endif
@@ -112,7 +117,7 @@ rm %{buildroot}%{python3_sitearch}/markupsafe/*.c
 
 
 %changelog
-* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-3
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-3
 - Made support for Python 2 optional
 
 * Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-2

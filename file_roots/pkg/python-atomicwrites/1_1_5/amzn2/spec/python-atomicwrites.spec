@@ -108,7 +108,10 @@ unset PYTHONPATH
 %endif
 
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 
 %if %{with docs}
 export PYTHONPATH=`pwd`
@@ -126,7 +129,9 @@ unset PYTHONPATH
 %endif
 
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 
 %if %{with docs}
@@ -164,7 +169,7 @@ cp -r docs/_build/man/*.1 "$RPM_BUILD_ROOT%{_mandir}/man1"
 %endif
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.1.5-14
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.1.5-14
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.1.5-13

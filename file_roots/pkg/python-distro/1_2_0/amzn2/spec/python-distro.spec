@@ -115,7 +115,10 @@ rm -rf %{pypi_name}.egg-info
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 
@@ -130,7 +133,9 @@ tox
 %py2_install
 %endif
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 
 %if %{with python2}
@@ -153,7 +158,7 @@ tox
 %{_bindir}/distro
 
 %changelog
-* Thu Jun 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.2.0-5
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.2.0-5
 - Added support for Amazon Linux 2 Python 3
 
 * Wed May 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.2.0-4

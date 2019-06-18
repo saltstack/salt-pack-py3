@@ -185,7 +185,10 @@ CFLAGS="%{optflags}" %{__python2} setup.py build_ext --inplace
 
 %if %{with python3}
 CFLAGS="%{optflags}" %{__python3} setup.py build_ext --inplace
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+## CFLAGS="%%{optflags}" %%{__python3} setup.py %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
+sleep 1
 %endif # with_python3
 
 
@@ -196,7 +199,9 @@ CFLAGS="%{optflags}" %{__python3} setup.py build_ext --inplace
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 pathfix.py -pn -i %{__python3} %{buildroot}%{python3_sitearch}
 %endif # with_python3
 
@@ -247,7 +252,7 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-5
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-5
 - Made support for Python 2 optional, added conditional for tests
 
 * Wed Feb 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-4

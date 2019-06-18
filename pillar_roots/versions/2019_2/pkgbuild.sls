@@ -602,8 +602,11 @@ pkgbuild_registry:
       results:
         - python3-markupsafe
     python-mock:
-      version: 1.0.1-13
+      version: 2.0.0-15
       noarch: True
+      build_deps:
+        - python-pbr
+        - python-six
       results:
         - python3-mock
     python-more-itertools:
@@ -624,11 +627,17 @@ pkgbuild_registry:
       version: 1.3.7-23
       noarch: True
       build_deps:
-        - python-setuptools
-        - python-mock
         - python-coverage
+        - python-mock
+        - python-setuptools
+        - python-six
       results:
         - python3-nose
+    python-pbr:
+      version: 5.1.2-4
+      noarch: True
+      results:
+        - python3-pbr
     python-pluggy:
       version: 0.7.1-3
       noarch: True

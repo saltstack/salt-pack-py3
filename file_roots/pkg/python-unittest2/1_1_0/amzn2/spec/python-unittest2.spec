@@ -108,7 +108,10 @@ rm -rf %{pypi_name}.egg-info
 %py2_build
 %endif
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 
@@ -117,7 +120,9 @@ rm -rf %{pypi_name}.egg-info
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 pushd %{buildroot}%{_bindir}
 mv unit2 unit2-%{python3_version}
 ln -s unit2-%{python3_version} unit2-3
@@ -173,7 +178,7 @@ popd
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.1.0-17
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.1.0-17
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.1.0-16
