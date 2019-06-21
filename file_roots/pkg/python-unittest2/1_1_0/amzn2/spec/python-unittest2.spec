@@ -1,6 +1,9 @@
 # Created by pyp2rpm-1.1.1
 %global pypi_name unittest2
-%global with_python3 1
+
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -13,7 +16,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.1.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        The new features in unittest backported to Python 2.4+
 
 License:        BSD
@@ -36,6 +39,7 @@ framework in Python 2.7 and onwards. It is tested to run on Python 2.6, 2.7,
 3.2, 3.3, 3.4 and pypy.
 
 
+%if %{with python2}
 %package -n     python2-%{pypi_name}
 Summary:        The new features in unittest backported to Python 2.4+
 %{?python_provide:%python_provide python2-%{pypi_name}}
@@ -54,14 +58,14 @@ Requires:       python2-traceback2
 Requires:       python2-setuptools
 Requires:       python2-six
 
-
 %description -n python2-%{pypi_name}
 unittest2 is a backport of the new features added to the unittest testing
 framework in Python 2.7 and onwards. It is tested to run on Python 2.6, 2.7,
 3.2, 3.3, 3.4 and pypy.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n     python%{python3_pkgversion}-%{pypi_name}
 Summary:        The new features in unittest backported to Python 2.4+
 %{?python_provide:%python_provide python-%{python3_pkgversion}%{pypi_name}}
@@ -79,7 +83,6 @@ Requires:       python%{python3_pkgversion}-six
 %if ! 0%{?bootstrap_traceback2}
 Requires:       python%{python3_pkgversion}-traceback2
 %endif
-
 
 %description -n python%{python3_pkgversion}-%{pypi_name}
 unittest2 is a backport of the new features added to the unittest testing
@@ -101,10 +104,14 @@ rm -rf %{pypi_name}.egg-info
 
 
 %build
+%if %{with python2}
 %py2_build
-
-%if 0%{?with_python3}
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 
@@ -112,8 +119,10 @@ rm -rf %{pypi_name}.egg-info
 # Must do the subpackages' install first because the scripts in /usr/bin are
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
-%if 0%{?with_python3}
-%py3_install
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 pushd %{buildroot}%{_bindir}
 mv unit2 unit2-%{python3_version}
 ln -s unit2-%{python3_version} unit2-3
@@ -122,24 +131,31 @@ ln -s unit2-%{python3_version} python%{python3_pkgversion}-unit2
 popd
 %endif
 
+%if %{with python2}
 %py2_install
 pushd %{buildroot}%{_bindir}
 mv unit2 unit2-%{python2_version}
 ln -s unit2-%{python2_version} unit2-2
 ln -s unit2-2 unit2
 popd
+%endif
 
 
+%if %{with tests}
 %check
 %if ! 0%{?bootstrap_traceback2}
+%if %{with python2}
 %{__python2} -m unittest2
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %{__python3} -m unittest2
 %endif # with_python3
 %endif # bootstrap_traceback2
+%endif
 
 
+%if %{with python2}
 %files -n python2-%{pypi_name}
 %doc README.txt
 %{_bindir}/unit2
@@ -147,9 +163,10 @@ popd
 %{_bindir}/unit2-%{python2_version}
 %{python2_sitelib}/%{pypi_name}
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{pypi_name}
 %doc README.txt
 %{_bindir}/unit2-3
@@ -161,6 +178,9 @@ popd
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.1.0-17
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.1.0-16
 - Support for Python 3 on Amazon Linux 2
 

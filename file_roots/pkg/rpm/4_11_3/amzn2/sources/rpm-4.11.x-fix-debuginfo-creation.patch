@@ -1,0 +1,27 @@
+From 659614aeb6fffe3b249c12b442bd85129100f73b Mon Sep 17 00:00:00 2001
+From: Pascal Terjan <pterjan@gmail.com>
+Date: Mon, 16 Feb 2015 13:08:50 +0100
+Subject: [PATCH] Fix debuginfo creation for changed file output.
+
+file will print a "warning" that it only processed up to 256 notes.
+Fixes: http://rpm.org/ticket/887
+---
+ scripts/find-debuginfo.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
+index 57449f7..264fad5 100644
+--- a/scripts/find-debuginfo.sh
++++ b/scripts/find-debuginfo.sh
+@@ -205,7 +205,7 @@ $strict || strict_error=WARNING
+ find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*.debug" -type f \
+      		     \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \
+ 		     -print |
+-file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped/\1/p' |
++file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped.*/\1/p' |
+ xargs --no-run-if-empty stat -c '%h %D_%i %n' |
+ while read nlinks inum f; do
+   get_debugfn "$f"
+-- 
+2.1.0
+

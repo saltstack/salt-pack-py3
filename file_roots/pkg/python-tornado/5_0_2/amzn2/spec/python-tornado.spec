@@ -1,9 +1,6 @@
-# python2 is not available on RHEL > 7
-%if 0%{?rhel} > 7
 %bcond_with python2
-%else
-%bcond_without python2
-%endif
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -15,7 +12,7 @@
 
 Name:           python-%{srcname}
 Version:        5.0.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -30,21 +27,6 @@ Patch0:         fix-erroneous-deprecation-warnings.patch
 
 BuildRequires:  gcc
 
-%if %{with python2}
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python3-rpm-macros
-BuildRequires:  python-devel
-BuildRequires:  python-singledispatch
-%else
-BuildRequires:  python2-devel
-BuildRequires:  python2-singledispatch
-%endif
-BuildRequires:  python2-backports_abc
-BuildRequires:  python2-futures
-%endif # with python2
-BuildRequires:  python%{python3_pkgversion}-setuptools
-BuildRequires:  python%{python3_pkgversion}-devel
 
 %description
 Tornado is an open source version of the scalable, non-blocking web
@@ -59,13 +41,25 @@ ideal for real-time web services.
 %if %{with python2}
 %package -n python2-%{srcname}
 Summary:        Scalable, non-blocking web server and tools
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+BuildRequires:  python-singledispatch
+%else
+BuildRequires:  python2-devel
+BuildRequires:  python2-singledispatch
+%endif
+BuildRequires:  python2-backports_abc
+BuildRequires:  python2-futures
 %{?python_provide:%python_provide python2-%{srcname}}
 
-Requires:       python2-pycurl
-Requires:       python2-backports_abc
 %if 0%{?with_amzn2}
+Requires:       python-pycurl
+Requires:       python-backports_abc
 Requires:       python-singledispatch
 %else
+Requires:       python2-pycurl
+Requires:       python2-backports_abc
 Requires:       python2-singledispatch
 %endif
 Requires:       python2-futures
@@ -81,6 +75,7 @@ handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
 %endif  # with python2
 
+%if %{with python3}
 %package doc
 Summary:        Examples for python-tornado
 Group:          Documentation
@@ -93,8 +88,13 @@ server and and tools. This package contains some example applications.
 
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        Scalable, non-blocking web server and tools
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-devel
 Requires:       python%{python3_pkgversion}-pycurl
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 %description -n python%{python3_pkgversion}-%{srcname}
 Tornado is an open source version of the scalable, non-blocking web
@@ -105,6 +105,7 @@ The framework is distinct from most mainstream web server frameworks
 reasonably fast. Because it is non-blocking and uses epoll, it can
 handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
+%endif
 
 %prep 
 ## %%setup -q -n %%{srcname}-%%{version}
@@ -114,17 +115,35 @@ ideal for real-time web services.
 %{__sed} -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
 
 %build
-%py3_build
-%{?with_python2:%py2_build}
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
+%if %{with python2}
+%py2_build
+%endif
 
 
 %install
-%py3_install
-%{?with_python2:%py2_install}
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
+%if %{with python2}
+%py2_install
+%endif
 
-## %%check
-## %%{__python3} -m tornado.test.runtests --verbose
-## %%{?with_python2:%%{__python2} -m tornado.test.runtests --verbose}
+%if %{with tests}
+%check
+%if %{with python3}
+%{__python3} -m tornado.test.runtests --verbose
+%endif
+%if %{with python2}
+%{__python2} -m tornado.test.runtests --verbose
+%endif
 
 %if %{with python2}
 %files -n python2-%{srcname}
@@ -136,15 +155,21 @@ ideal for real-time web services.
 
 %files doc
 %doc demos
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %license LICENSE
 %doc README.rst
 %{python3_sitearch}/%{srcname}/
 %{python3_sitearch}/%{srcname}-%{version}-*.egg-info
+%endif
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.0.2-6
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.0.2-5
 - Ported to Amazon Linux 2 for Python 3 support
 

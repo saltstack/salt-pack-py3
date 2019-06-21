@@ -1,0 +1,77 @@
+From 08473f4ad8d79e6d232832c6863b2848f8a41734 Mon Sep 17 00:00:00 2001
+From: Michal Domonkos <mdomonko@redhat.com>
+Date: Mon, 7 Dec 2015 17:13:26 +0100
+Subject: [PATCH] Add RPMCALLBACK_ELEM_PROGRESS callback type
+
+Currently, there's no callback type that would be issued per each
+transaction element.  RPMCALLBACK_TRANS_PROGRESS is only issued during
+the prepare phase but not when packages are actually installed or
+erased.  Likewise, RPMCALLBACK_INST_ST* and RPMCALLBACK_UNINST_ST* won't
+be issued if an install or erase operation is skipped for some reason (a
+script or package upgrade failure).
+
+Having such a callback would allow the Python API consumers to always
+know upfront which element is about to be processed, before any other
+callbacks are issued.  This is important since not every callback type
+carries enough data about the subject package; while the INST types
+provide the user object passed to a former addInstall call, the UNINST
+types only provide the package name (which may not be unique within the
+transaction set).
+
+This commit adds such a callback.
+
+(cherry picked from commit 448db68ceb5be3c7171b7ec0ea908d905792dc2f)
+---
+ lib/rpmcallback.h  | 1 +
+ lib/transaction.c  | 4 ++++
+ python/rpmmodule.c | 1 +
+ 3 files changed, 6 insertions(+)
+
+diff --git a/lib/rpmcallback.h b/lib/rpmcallback.h
+index b3b05c6c1..b6d434c01 100644
+--- a/lib/rpmcallback.h
++++ b/lib/rpmcallback.h
+@@ -31,6 +31,7 @@ typedef enum rpmCallbackType_e {
+     RPMCALLBACK_SCRIPT_START	= (1 << 16),
+     RPMCALLBACK_SCRIPT_STOP	= (1 << 17),
+     RPMCALLBACK_INST_STOP	= (1 << 18),
++    RPMCALLBACK_ELEM_PROGRESS	= (1 << 19),
+ } rpmCallbackType;
+ 
+ /**
+diff --git a/lib/transaction.c b/lib/transaction.c
+index 45c30b5ba..1cd9ca674 100644
+--- a/lib/transaction.c
++++ b/lib/transaction.c
+@@ -1410,12 +1410,16 @@ exit:
+ static int rpmtsProcess(rpmts ts)
+ {
+     rpmtsi pi;	rpmte p;
++    tsMembers tsmem = rpmtsMembers(ts);
+     int rc = 0;
++    int i = 0;
+ 
+     pi = rpmtsiInit(ts);
+     while ((p = rpmtsiNext(pi, 0)) != NULL) {
+ 	int failed;
+ 
++	rpmtsNotify(ts, NULL, RPMCALLBACK_ELEM_PROGRESS, i++,
++		tsmem->orderCount);
+ 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+ 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+ 
+diff --git a/python/rpmmodule.c b/python/rpmmodule.c
+index 04285a63f..fc8115d30 100644
+--- a/python/rpmmodule.c
++++ b/python/rpmmodule.c
+@@ -459,6 +459,7 @@ static int initModule(PyObject *m)
+     REGISTER_ENUM(RPMCALLBACK_SCRIPT_START);
+     REGISTER_ENUM(RPMCALLBACK_SCRIPT_STOP);
+     REGISTER_ENUM(RPMCALLBACK_INST_STOP);
++    REGISTER_ENUM(RPMCALLBACK_ELEM_PROGRESS);
+ 
+     REGISTER_ENUM(RPMPROB_BADARCH);
+     REGISTER_ENUM(RPMPROB_BADOS);
+-- 
+2.13.2
+

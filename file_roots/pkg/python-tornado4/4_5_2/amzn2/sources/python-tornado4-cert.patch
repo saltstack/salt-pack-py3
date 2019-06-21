@@ -1,0 +1,80 @@
+diff -Naur a/setup.py b/setup.py
+--- a/setup.py	2019-05-13 13:25:30.463907760 -0600
++++ b/setup.py	2019-05-13 13:27:36.179024511 -0600
+@@ -133,10 +133,6 @@
+         install_requires.append('backports.ssl_match_hostname')
+     if sys.version_info < (3, 4):
+         install_requires.append('singledispatch')
+-        # Certifi is also optional on 2.7.9+, although making our dependencies
+-        # conditional on micro version numbers seems like a bad idea
+-        # until we have more declarative metadata.
+-        install_requires.append('certifi')
+     if sys.version_info < (3, 5):
+         install_requires.append('backports_abc>=0.4')
+     kwargs['install_requires'] = install_requires
+diff -Naur a/tornado/netutil.py b/tornado/netutil.py
+--- a/tornado/netutil.py	2019-05-13 13:25:30.446907744 -0600
++++ b/tornado/netutil.py	2019-05-13 14:24:36.346235696 -0600
+@@ -35,14 +35,8 @@
+     # ssl is not available on Google App Engine
+     ssl = None
+ 
+-try:
+-    import certifi
+-except ImportError:
+-    # certifi is optional as long as we have ssl.create_default_context.
+-    if ssl is None or hasattr(ssl, 'create_default_context'):
+-        certifi = None
+-    else:
+-        raise
++def _get_certs():
++    return '/etc/pki/tls/cert.pem'
+ 
+ if PY3:
+     xrange = range
+@@ -70,7 +64,7 @@
+         # Python 3.2-3.3
+         _client_ssl_defaults = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+         _client_ssl_defaults.verify_mode = ssl.CERT_REQUIRED
+-        _client_ssl_defaults.load_verify_locations(certifi.where())
++        _client_ssl_defaults.load_verify_locations(_get_certs())
+         _server_ssl_defaults = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+         if hasattr(ssl, 'OP_NO_COMPRESSION'):
+             # Disable TLS compression to avoid CRIME and related attacks.
+@@ -81,7 +75,7 @@
+ elif ssl:
+     # Python 2.6-2.7.8
+     _client_ssl_defaults = dict(cert_reqs=ssl.CERT_REQUIRED,
+-                                ca_certs=certifi.where())
++                                ca_certs=_get_certs())
+     _server_ssl_defaults = {}
+ else:
+     # Google App Engine
+diff -Naur a/tornado/simple_httpclient.py b/tornado/simple_httpclient.py
+--- a/tornado/simple_httpclient.py	2019-05-13 13:25:30.446907744 -0600
++++ b/tornado/simple_httpclient.py	2019-05-13 13:48:12.955165334 -0600
+@@ -1,4 +1,3 @@
+-#!/usr/bin/env python
+ from __future__ import absolute_import, division, print_function
+ 
+ from tornado4.escape import utf8, _unicode
+@@ -34,18 +33,8 @@
+     # ssl is not available on Google App Engine.
+     ssl = None
+ 
+-try:
+-    import certifi
+-except ImportError:
+-    certifi = None
+-
+-
+ def _default_ca_certs():
+-    if certifi is None:
+-        raise Exception("The 'certifi' package is required to use https "
+-                        "in simple_httpclient")
+-    return certifi.where()
+-
++    return '/etc/pki/tls/cert.pem'
+ 
+ class SimpleAsyncHTTPClient(AsyncHTTPClient):
+     """Non-blocking HTTP client with no external dependencies.

@@ -1,5 +1,8 @@
 %global srcname setuptools_scm
 
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -12,7 +15,7 @@
 
 Name:           python-%{srcname}
 Version:        3.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Blessed package to manage your versions by scm tags
 
 License:        MIT
@@ -30,6 +33,7 @@ BuildRequires:  mercurial
 Setuptools_scm handles managing your python package versions in scm metadata.
 It also handles file finders for the suppertes scms.
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -47,7 +51,9 @@ BuildRequires:  python2-pytest
 %description -n python2-%{srcname}
 Setuptools_scm handles managing your python package versions in scm metadata.
 It also handles file finders for the suppertes scms.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -64,17 +70,31 @@ Obsoletes:      platform-python-%{srcname} < %{version}-%{release}
 %description -n python%{python3_pkgversion}-%{srcname}
 Setuptools_scm handles managing your python package versions in scm metadata.
 It also handles file finders for the suppertes scms.
+%endif
 
 %prep
 %autosetup -n %{srcname}-%{version}
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 %install
+%if %{with python2}
 %py2_install
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
 
 %if %{with tests}
 %check
@@ -82,19 +102,27 @@ PYTHONPATH=%{buildroot}%{python2_sitelib} py.test-%{python2_version} -v -k 'not 
 PYTHONPATH=%{buildroot}%{python2_sitelib} py.test-%{python3_version} -v -k 'not (test_pip_download or test_old_setuptools_fails or test_old_setuptools_allows_with_warnings or test_distlib_setuptools_works)'
 %endif
 
+
+%if %{with python2}
 %files -n python2-%{srcname}
 %license LICENSE
 %doc README.rst
 %{python2_sitelib}/%{srcname}/
 %{python2_sitelib}/%{srcname}-*.egg-info/
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %license LICENSE
 %doc README.rst
 %{python3_sitelib}/%{srcname}/
 %{python3_sitelib}/%{srcname}-*.egg-info
+%endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.1.0-3
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.1.0-2
 - Support for Python 3 on Amazon Linux 2
 

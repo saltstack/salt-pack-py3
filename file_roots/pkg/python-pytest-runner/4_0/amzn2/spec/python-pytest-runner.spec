@@ -1,6 +1,10 @@
 %global modulename pytest-runner
 %global _modulename pytest_runner
 
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -9,7 +13,7 @@
 
 Name:           python-%{modulename}
 Version:        4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Invoke py.test as distutils command with dependency resolution
 
 License:        MIT
@@ -24,6 +28,7 @@ Setup scripts can use pytest-runner to add setup.py test support for pytest runn
 
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-%{modulename}
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{modulename}}
@@ -39,9 +44,10 @@ BuildRequires:  python2-setuptools_scm
 BuildRequires:  python2-pytest
 
 %description -n python2-%{modulename} %{_description}
-
 Python 2 version.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{modulename}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -55,38 +61,66 @@ BuildRequires:  python%{python3_pkgversion}-setuptools_scm
 BuildRequires:  python%{python3_pkgversion}-pytest
 
 %description -n python3-%{modulename} %{_description}
-
 Python 3 version.
+%endif
 
 %prep
 %autosetup -n %{modulename}-%{version}
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 %install
+%if %{with python2}
 %py2_install
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
 
+%if %{with tests}
 %check
+%if %{with python2}
 %{__python2} setup.py test
+%endif
+%if %{with python3}
 %{__python3} setup.py test
+%endif
+%endif
 
+
+%if %{with python2}
 %files -n python2-%{modulename}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/ptr.py*
 %{python2_sitelib}/%{_modulename}-%{version}-py%{python2_version}.egg-info/
+%endif
 
+
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{modulename}
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/ptr.py
 %{python3_sitelib}/%{_modulename}-%{version}-py%{python3_version}.egg-info/
 %{python3_sitelib}/__pycache__/ptr.*
+%endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.0-5
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 4.0-4
 - Support for Python 3 on Amazon Linux 2
 

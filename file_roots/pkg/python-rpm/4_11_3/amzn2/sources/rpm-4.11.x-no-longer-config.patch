@@ -1,0 +1,46 @@
+From 3c99b06c7776345cfc3a3d4fd0c59fe671644317 Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Wed, 21 Oct 2015 15:25:47 +0200
+Subject: [PATCH] Overwrite a file if it is not marked as config any more.
+
+If a file was marked as config in the previous version of a package but
+it is not marked as config in currently being installed version of
+the package then backup the old file as .rpmsave and overwrite it with
+the new file. (rhbz:1263859)
+---
+ lib/rpmfi.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/lib/rpmfi.c b/lib/rpmfi.c
+index 924ff4b..28a697e 100644
+--- a/lib/rpmfi.c
++++ b/lib/rpmfi.c
+@@ -1040,6 +1040,12 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
+ 	        goto exit;		/* file identical in new, replace. */
+ 	}
+ 
++	/* if new file is no longer config, backup it and replace it */
++	if (!(newFlags & RPMFILE_CONFIG)) {
++	    action = FA_SAVE;
++	    goto exit;
++	}
++
+ 	/* If file can be determined identical in old and new pkg, let it be */
+ 	if (newWhat == REG && oalgo == nalgo && odiglen == ndiglen) {
+ 	    if (odigest && ndigest && memcmp(odigest, ndigest, odiglen) == 0) {
+@@ -1071,6 +1077,12 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
+ 		goto exit;		/* unmodified config file, replace. */
+ 	}
+ 
++	/* if new file is no longer config, backup it and replace it */
++	if (!(newFlags & RPMFILE_CONFIG)) {
++	    action = FA_SAVE;
++	    goto exit;
++	}
++
+ 	/* If link is identical in old and new pkg, let it be */
+ 	if (newWhat == LINK && oFLink && nFLink && rstreq(oFLink, nFLink)) {
+ 	    action = FA_SKIP;		/* identical file, don't bother. */
+-- 
+2.5.5
+

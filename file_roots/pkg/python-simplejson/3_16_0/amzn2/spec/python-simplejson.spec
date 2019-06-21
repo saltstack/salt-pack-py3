@@ -1,3 +1,7 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -10,7 +14,7 @@
 Name:           python-simplejson
 
 Version:        3.16.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python
 
 # The main code is licensed MIT.
@@ -40,6 +44,7 @@ with Python 2.5.  It gets updated more regularly than the json module in the
 python stdlib.
 
 
+%if %{with python2}
 %package -n python2-simplejson
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python2
 BuildRequires:  gcc
@@ -70,8 +75,10 @@ simplejson is the externally maintained development version of the json library
 included with Python 2.6 and Python 3.0, but maintains backwards compatibility
 with Python 2.5.  It gets updated more regularly than the json module in the
 python stdlib.
+%endif
 
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-simplejson
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python3
 BuildRequires: python%{python3_pkgversion}-devel
@@ -102,14 +109,22 @@ simplejson is the externally maintained development version of the json library
 included with Python 2.6 and Python 3.0, but maintains backwards compatibility
 with Python 2.5.  It gets updated more regularly than the json module in the
 python stdlib.
+%endif
 
 
 %prep
 %setup -q -n simplejson-%{version}
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 %if %{with docs}
 PATH=%{_libexecdir}/python%{python3_pkgversion}-sphinx:$PATH %{__python3} scripts/make_docs.py
@@ -119,14 +134,27 @@ rm docs/.nojekyll
 %endif
 
 %install
+%if %{with python2}
 %py2_install
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
 
+%if %{with tests}
 %check
+%if %{with python2}
 %{__python2} -m nose
+%endif
+%if %{with python3}
 %{__python3} -m nose
+%endif
+%endif
 
 
+%if %{with python2}
 %files -n python2-simplejson
 %license LICENSE.txt
 %if %{with docs}
@@ -134,7 +162,9 @@ rm docs/.nojekyll
 %endif
 %{python2_sitearch}/simplejson/
 %{python2_sitearch}/simplejson-%{version}-py?.?.egg-info/
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-simplejson
 %license LICENSE.txt
 %if %{with docs}
@@ -142,8 +172,12 @@ rm docs/.nojekyll
 %endif
 %{python3_sitearch}/simplejson/
 %{python3_sitearch}/simplejson-%{version}-py?.?.egg-info/
+%endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.16.0-3
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.16.0-2
 - Ported to Amazon Linux 2 for Python 3 support
 

@@ -1,0 +1,22 @@
+--- rpm-4.11.1/lib/fsm.c.orig	2014-11-13 13:38:56.742934031 +0100
++++ rpm-4.11.1/lib/fsm.c	2014-11-13 13:42:13.036380024 +0100
+@@ -726,12 +726,17 @@
+ {
+     FD_t wfd = NULL;
+     const struct stat * st = &fsm->sb;
+-    rpm_loff_t left = st->st_size;
++    rpm_loff_t left = rpmfiFSizeIndex(fsmGetFi(fsm), fsm->ix);
+     const unsigned char * fidigest = NULL;
+     pgpHashAlgo digestalgo = 0;
+     int rc = 0;
+ 
+-    wfd = Fopen(fsm->path, "w.ufdio");
++    /* Create the file with 000 permissions. */
++    {
++	mode_t old_umask = umask(0777);
++	wfd = Fopen(fsm->path, "w.ufdio");
++	umask(old_umask);
++    }                      
+     if (Ferror(wfd)) {
+ 	rc = CPIOERR_OPEN_FAILED;
+ 	goto exit;

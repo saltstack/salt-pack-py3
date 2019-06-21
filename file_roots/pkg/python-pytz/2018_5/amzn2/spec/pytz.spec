@@ -1,3 +1,7 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -6,7 +10,7 @@
 
 Name:           pytz
 Version:        2018.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        World Timezone Definitions for Python
 
 License:        MIT
@@ -32,6 +36,7 @@ Almost all (over 540) of the Olson timezones are supported.
 %description %_description
 
 
+%if %{with python2}
 %package -n python2-%{name}
 Summary:        %summary
 %{?python_provide:%python_provide python2-%{name}}
@@ -48,8 +53,10 @@ Provides: pytz = %{version}-%{release}
 Obsoletes: pytz < %{version}-%{release}
 
 %description -n python2-%{name} %_description
+%endif
 
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{name}
 Summary:        %summary
 %if 0%{?with_amzn2}
@@ -61,6 +68,7 @@ BuildRequires:  python%{python3_pkgversion}-pytest
 Requires:       tzdata
 
 %description -n python%{python3_pkgversion}-%{name} %_description
+%endif
 
 
 %prep
@@ -68,39 +76,65 @@ Requires:       tzdata
 
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 
 %install
+%if %{with python2}
 %py2_install
 rm -r %{buildroot}%{python2_sitelib}/pytz/zoneinfo
 pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitelib}
+%endif
 
-%py3_install
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 rm -r %{buildroot}%{python3_sitelib}/pytz/zoneinfo
 pathfix.py -pn -i %{__python3} %{buildroot}%{python3_sitelib}
+%endif
 
 
+%if %{with tests}
 %check
+%if %{with python2}
 PYTHONPATH=%{buildroot}%{python2_sitelib} %{__python2} -m pytest -v
+%endif
+%if %{with python3}
 PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
+%endif
+%endif
 
 
+%if %{with python2}
 %files -n python2-%{name}
 %license LICENSE.txt
 %doc README.txt
 %{python2_sitelib}/pytz/
 %{python2_sitelib}/*.egg-info
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-pytz
 %license LICENSE.txt
 %doc README.txt
 %{python3_sitelib}/pytz/
 %{python3_sitelib}/*.egg-info
+%endif
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.5-3
+- Made support for Python 2 optional
+
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.5-2
 - Support for Python 3 on Amazon Linux 2
 

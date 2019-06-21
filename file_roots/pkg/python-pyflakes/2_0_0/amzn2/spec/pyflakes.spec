@@ -9,11 +9,9 @@
 %endif
 %endif
 
-%if 0%{?rhel} > 7
-%global with_python2 0
-%else
-%global with_python2 1
-%endif
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -31,7 +29,7 @@ Source1:        http://cdn.debian.net/debian/pool/main/p/pyflakes/pyflakes_1.6.0
 Patch0:         %{name}-1.1.0-python3-man.patch
 
 BuildArch:      noarch
-%if %{with_python2}
+%if %{with python2}
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python-devel >= 2.7
@@ -52,7 +50,7 @@ check on style.
 
 %description %_description
 
-%if %{with_python2}
+%if %{with python2}
 %package -n python2-pyflakes
 Summary: %summary
 Requires:       python2-setuptools
@@ -64,6 +62,7 @@ Obsoletes: pyflakes < %{version}-%{release}
 %description -n python2-pyflakes %_description
 %endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{name}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -76,21 +75,30 @@ Requires:       python%{python3_pkgversion}-setuptools
 
 %description -n python%{python3_pkgversion}-%{name}
 %{desc}
+%endif
 
 %prep
 %setup -q -a 1
 %patch0 -p1
 
 %build
-%if %{with_python2}
+%if %{with python2}
 %py2_build
 %endif
-%py3_build
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 %install
 rm -rf %{buildroot}
 
-%py3_install
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 mv %{buildroot}%{_bindir}/pyflakes %{buildroot}%{_bindir}/pyflakes-%{python3_version}
 ln -s pyflakes-%{python3_version} %{buildroot}%{_bindir}/pyflakes-3
 install -Dpm 644 debian/pyflakes3.1 %{buildroot}%{_mandir}/man1/pyflakes-%{python3_version}.1
@@ -98,8 +106,9 @@ ln -s pyflakes-%{python3_version}.1 %{buildroot}%{_mandir}/man1/pyflakes-3.1
 # python3-pyflakes: backwards compat
 ln -s pyflakes-3 %{buildroot}%{_bindir}/python3-pyflakes
 ln -s pyflakes-3.1 %{buildroot}%{_mandir}/man1/python3-pyflakes.1
+%endif
 
-%if %{with_python2}
+%if %{with python2}
 %py2_install
 mv %{buildroot}%{_bindir}/pyflakes %{buildroot}%{_bindir}/pyflakes-%{python2_version}
 ln -s pyflakes-%{python2_version} %{buildroot}%{_bindir}/pyflakes-2
@@ -111,12 +120,14 @@ ln -s pyflakes-%{defaultpython} %{buildroot}%{_bindir}/pyflakes
 ln -s pyflakes-%{defaultpython}.1 %{buildroot}%{_mandir}/man1/pyflakes.1
 
 %check
-%if %{with_python2}
+%if %{with python2}
 %{__python2} -Wall setup.py test
 %endif
+%if %{with python3}
 %{__python3} -Wall setup.py test
+%endif
 
-%if %{with_python2}
+%if %{with python2}
 %files -n python2-pyflakes
 %license LICENSE
 %doc AUTHORS NEWS.txt README.rst
@@ -132,6 +143,8 @@ ln -s pyflakes-%{defaultpython}.1 %{buildroot}%{_mandir}/man1/pyflakes.1
 %endif
 %endif
 
+
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{name}
 %license LICENSE
 %doc AUTHORS NEWS.txt README.rst
@@ -147,8 +160,12 @@ ln -s pyflakes-%{defaultpython}.1 %{buildroot}%{_mandir}/man1/pyflakes.1
 %{_bindir}/pyflakes
 %{_mandir}/man1/pyflakes.1*
 %endif
+%endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-9
+- Support for Python 3 and 2 optional
+
 * Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-8
 - Support for Python 3 on Amazon Linux 2
 

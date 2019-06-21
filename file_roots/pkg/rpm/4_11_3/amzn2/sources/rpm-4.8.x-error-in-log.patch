@@ -1,0 +1,20 @@
+--- rpm-4.8.0/rpmio/rpmlog.c.error-in-log	2015-02-23 13:18:29.696116399 +0100
++++ rpm-4.8.0/rpmio/rpmlog.c	2015-02-23 13:28:19.630394971 +0100
+@@ -127,10 +127,14 @@
+         break;
+     }
+ 
+-    (void) fputs(rpmlogLevelPrefix(rec->pri), msgout);
++    if (fputs(rpmlogLevelPrefix(rec->pri), msgout) == EOF)
++	perror("Error occurred during writing of a log message");
+ 
+-    (void) fputs(rec->message, msgout);
+-    (void) fflush(msgout);
++    if (fputs(rec->message, msgout) == EOF)
++	perror("Error occurred during writing of a log message");
++
++    if (fflush(msgout) == EOF)
++	perror("Error occurred during writing of a log message");
+ 
+     return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
+ }

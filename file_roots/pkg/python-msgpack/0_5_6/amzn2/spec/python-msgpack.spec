@@ -1,6 +1,9 @@
 %global srcname msgpack
 %global sum A Python MessagePack (de)serializer
 
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -12,7 +15,7 @@
 
 Name:           python-%{srcname}
 Version:        0.5.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        %{sum}
 
 License:        ASL 2.0
@@ -22,30 +25,25 @@ Source0:        http://pypi.python.org/packages/source/m/%{srcname}/%{srcname}-%
 
 BuildRequires:  gcc-c++
 BuildRequires:  Cython
-BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
-%if %{with tests}
-BuildRequires:  python2-pytest
-%endif
-BuildRequires:  python2-funcsigs
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python%{python3_pkgversion}-rpm-macros
-%endif
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-%if %{with tests}
-BuildRequires:  python%{python3_pkgversion}-pytest
-%endif
-BuildRequires:  python%{python3_pkgversion}-funcsigs
+
 
 %description
 MessagePack is a binary-based efficient data interchange format that is
 focused on high performance. It is like JSON, but very fast and small.
 This is a Python (de)serializer for MessagePack.
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{sum}
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+BuildRequires:  python2-funcsigs
+%if %{with tests}
+BuildRequires:  python2-pytest
+%endif
 %{?python_provide:%python_provide python2-%{srcname}}
 
 # For backwards compatibility
@@ -56,9 +54,20 @@ Provides:       python%{python2_version}dist(%{srcname}-python) = %{version}
 MessagePack is a binary-based efficient data interchange format that is
 focused on high performance. It is like JSON, but very fast and small.
 This is a Python (de)serializer for MessagePack.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{sum}
+%if 0%{?with_amzn2}
+BuildRequires:  python%{python3_pkgversion}-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-funcsigs
+%if %{with tests}
+BuildRequires:  python%{python3_pkgversion}-pytest
+%endif
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 # For backwards compatibility
@@ -69,17 +78,31 @@ Provides:       python%{python3_version}dist(%{srcname}-python) = %{version}
 MessagePack is a binary-based efficient data interchange format that is
 focused on high performance. It is like JSON, but very fast and small.
 This is a Python %{python3_version} (de)serializer for MessagePack.
+%endif
 
 %prep
 %autosetup -n %{srcname}-%{version}
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 %install
+%if %{with python2}
 %py2_install
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
 
 %if %{with tests}
 %check
@@ -88,19 +111,26 @@ py.test-2 -v test
 py.test-%{python3_version} -v test
 %endif
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %doc README.rst
 %license COPYING
 %{python2_sitearch}/%{srcname}/
 %{python2_sitearch}/%{srcname}*.egg-info
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %doc README.rst
 %license COPYING
 %{python3_sitearch}/%{srcname}/
 %{python3_sitearch}/%{srcname}*.egg-info
 
+%endif
 %changelog
+* Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-7
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-6
 - Ported to Amazon Linux 2 for Python 3 support
 

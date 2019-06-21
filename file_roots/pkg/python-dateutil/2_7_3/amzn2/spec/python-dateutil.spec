@@ -1,4 +1,6 @@
-%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%bcond_with python2
+%bcond_without python3
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
@@ -9,11 +11,13 @@
 %bcond_without tests
 %endif
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 %global modname dateutil
 
 Name:           python-%{modname}
 Version:        2.7.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Epoch:          1
 Summary:        Powerful extensions to the standard datetime module
 
@@ -33,6 +37,7 @@ module available in Python.
 
 %description %_description
 
+%if %{with python2}
 %package -n python2-%{modname}
 Summary:        %summary
 %if 0%{?with_amzn2}
@@ -52,7 +57,9 @@ Requires:       python2-six
 %{?python_provide:%python_provide python2-%{modname}}
 
 %description -n python2-%{modname}  %_description
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{modname}
 Summary:        %summary
 %if 0%{?with_amzn2}
@@ -72,6 +79,7 @@ Requires:       python%{python3_pkgversion}-six
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}}
 
 %description -n python%{python3_pkgversion}-%{modname}  %_description
+%endif
 
 %if %{with docs}
 %package doc
@@ -86,33 +94,54 @@ iconv --from=ISO-8859-1 --to=UTF-8 NEWS > NEWS.new
 mv NEWS.new NEWS
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 %if %{with docs}
 make -C docs html
 %endif
 
 %install
+%if %{with python2}
 %py2_install
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
 
 %if %{with tests}
 %check
+%if %{with python2}
 %{__python2} -m pytest
+%endif
+%if %{with python3}
 %{__python3} -m pytest
 %endif
+%endif
 
+%if %{with python2}
 %files -n python2-%{modname}
 %license LICENSE
 %doc NEWS README.rst
 %{python2_sitelib}/%{modname}/
 %{python2_sitelib}/*.egg-info
+%endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{modname}
 %license LICENSE
 %doc NEWS README.rst
 %{python3_sitelib}/%{modname}/
 %{python3_sitelib}/*.egg-info
+%endif
 
 %if %{with docs}
 %files doc
@@ -121,6 +150,9 @@ make -C docs html
 %endif
 
 %changelog
+* Tue Jun 18 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1:2.7.3-3
+- Made support for Python 2 optional
+
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1:2.7.3-2
 - Support for Python 3 on Amazon Linux 2
 

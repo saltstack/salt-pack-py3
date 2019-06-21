@@ -1,3 +1,6 @@
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -18,9 +21,6 @@
 %endif
 %endif
 
-%bcond_without python2
-%bcond_without python3
-
 %global pytest_version_lb 2.9.0
 %global pytest_version_ub 2.10
 
@@ -28,7 +28,7 @@
 
 Name:           python-%{srcname}
 Version:        1.5.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Library with cross-python path, ini-parsing, io, code, log facilities
 License:        MIT and Public Domain
 #               main package: MIT, except: doc/style.css: Public Domain
@@ -130,8 +130,12 @@ find %{srcname}-%{version} \
    -exec sed -i '1{/^#!/d}' {} \; \
    -exec chmod u=rw,go=r {} \;
 
+%if %{with python2}
 mv %{srcname}-%{version} python2
-cp -a python2 python3
+%endif
+%if %{with python3}
+mv %{srcname}-%{version} python3
+%endif
 
 
 %build
@@ -146,7 +150,10 @@ popd
 
 %if %{with python3}
 pushd python3
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %if %{with docs}
 make -C doc html PYTHONPATH=$(pwd) SPHINXBUILD=sphinx-build-3
 %endif # with docs
@@ -165,7 +172,9 @@ popd
 
 %if %{with python3}
 pushd python3
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 # remove hidden file
 rm -rf doc/_build/html/.buildinfo
 popd
@@ -222,6 +231,9 @@ popd
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-5
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.5.4-4
 - Support for Python 3 on Amazon Linux 2
 

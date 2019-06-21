@@ -1,6 +1,9 @@
 %global modname six
 %global build_wheel 1
 
+%bcond_with python2
+%bcond_without python3
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -10,16 +13,12 @@
 %bcond_without tests
 %endif
 
-
-%bcond_without python2
-%bcond_without python3
-
 %global python2_wheelname %{modname}-%{version}-py2.py3-none-any.whl
 %global python3_wheelname %python2_wheelname
 
 Name:           python-%{modname}
 Version:        1.11.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 
 License:        MIT
@@ -58,7 +57,6 @@ BuildRequires:  python2-wheel
 
 %description -n python2-%{modname} %{_description}
 Python 2 version.
-
 %endif
 
 
@@ -85,7 +83,6 @@ BuildRequires:  python%{python3_pkgversion}-wheel
 
 %description -n python%{python3_pkgversion}-%{modname} %{_description}
 Python 3 version.
-
 %endif
 
 
@@ -104,9 +101,15 @@ Python 3 version.
 
 %if %{with python3}
 %if 0%{?build_wheel}
-%py3_build_wheel
+## %%py3_build_wheel
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} bdist_wheel %{?*}
+sleep 1
 %else
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 %endif
 
@@ -122,17 +125,25 @@ Python 3 version.
 
 %if %{with python3}
 %if 0%{?build_wheel}
-%py3_install_wheel %{python3_wheelname}
+## %%py3_install_wheel %{python3_wheelname}
+## amzn2 has issue with %{py_setup} expansion
+pip%{python3_version} install -I dist/%{python3_wheelname} --root %{buildroot} --strip-file-prefix %{buildroot} --no-deps
 %else
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 %endif
 
 
 %if %{with tests}
 %check
+%if %{with python2}
 py.test-2 -rfsxX test_six.py
+%endif
+%if %{with python3}
 py.test-3 -rfsxX test_six.py
+%endif
 %endif
 
 
@@ -155,6 +166,9 @@ py.test-3 -rfsxX test_six.py
 
 
 %changelog
+* Tue Jun 18 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.11.0-8
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 1.11.0-7
 - Support for Python 3 on Amazon Linux 2
 

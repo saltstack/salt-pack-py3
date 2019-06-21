@@ -4,9 +4,12 @@
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
 %global bootstrap 1
-%global with_python2 0
 %bcond_with docs
 %global py_setup setup.py
+%bcond_with python2
+%bcond_without python3
+
+%bcond_with tests
 %else
 
 %bcond_without docs
@@ -19,7 +22,9 @@
 # build without Python 2 support. This setting allows us to
 # "flip the switch" easily once Fedora actually drops support
 # for Python 2.
-%global with_python2 1
+%bcond_without python2
+%bcond_with python3
+
 %endif
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
@@ -27,7 +32,7 @@
 
 Name:           babel
 Version:        2.6.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Tools for internationalizing Python applications
 
 License:        BSD
@@ -37,44 +42,9 @@ Patch0:         babel-2.3.4-remove-pytz-version.patch
 
 BuildArch:      noarch
 
-%if %{with_python2}
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python-devel
-%else
-BuildRequires:  python2-devel
-%endif
-BuildRequires:  python2-setuptools
-BuildRequires:  python2-pytz
-BuildRequires:  python2-pytest
-BuildRequires:  python2-freezegun
-%endif
-
-%if 0%{?with_amzn2}
-BuildRequires:  python3-rpm-macros
-%endif
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-%if !%{bootstrap}
-BuildRequires:  python%{python3_pkgversion}-pytz
-BuildRequires:  python%{python3_pkgversion}-pytest
-BuildRequires:  python%{python3_pkgversion}-freezegun
-%endif
 
 # build the documentation
 BuildRequires:  make
-
-%if %{bootstrap} && %{with_python2}
-BuildRequires:  python2-sphinx
-%else
-%if %{with docs}
-BuildRequires:  python3-sphinx
-%endif
-%endif
-
-Requires:       python%{python3_pkgversion}-babel
-Requires:       python%{python3_pkgversion}-setuptools
-
 
 %description
 Babel is composed of two major parts:
@@ -86,13 +56,26 @@ Babel is composed of two major parts:
   and date formatting, etc.
 
 
-%if %{with_python2}
+%if %{with python2}
 %package -n python2-babel
 Summary:        %sum
 
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+%else
+BuildRequires:  python2-devel
+%endif
+BuildRequires:  python2-setuptools
+BuildRequires:  python2-pytz
+BuildRequires:  python2-pytest
+BuildRequires:  python2-freezegun
+%if %{bootstrap}
+BuildRequires:  python2-sphinx
+%endif
+
 Requires:       python2-setuptools
 Requires:       python2-pytz
-
 %{?python_provide:%python_provide python2-babel}
 
 %description -n python2-babel
@@ -106,10 +89,26 @@ Babel is composed of two major parts:
 %endif
 
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-babel
 Summary:        %sum
 
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%if !%{bootstrap}
+BuildRequires:  python%{python3_pkgversion}-pytz
+BuildRequires:  python%{python3_pkgversion}-pytest
+BuildRequires:  python%{python3_pkgversion}-freezegun
+%endif
+%if %{with docs}
+BuildRequires:  python3-sphinx
+%endif
+
 Requires:       python%{python3_pkgversion}-setuptools
+Requires:       python%{python3_pkgversion}-babel
 Requires:       python%{python3_pkgversion}-pytz
 
 %{?python_provide:%python_provide python%{python3_pkgversion}-babel}
@@ -122,13 +121,18 @@ Babel is composed of two major parts:
 * a Python interface to the CLDR (Common Locale Data Repository),
   providing access to various locale display names, localized number
   and date formatting, etc.
+%endif
 
 %if %{with docs}
 %package doc
 Summary:        Documentation for Babel
+%if %{with python2}
 Provides:       python-babel-doc = %{version}-%{release}
 Provides:       python2-babel-doc = %{version}-%{release}
+%endif
+%if %{with python3}
 Provides:       python3-babel-doc = %{version}-%{release}
+%endif
 
 %description doc
 Documentation for Babel
@@ -139,10 +143,15 @@ Documentation for Babel
 %setup -n %{srcname}-%{version}
 
 %build
-%if %{with_python2}
+%if %{with python2}
 %py2_build
 %endif
-%py3_build
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 
 %if %{with docs}
@@ -162,34 +171,43 @@ rm -f "$BUILDDIR/html/.buildinfo"
 %endif
 
 %install
-%if %{with_python2}
+%if %{with python2}
 %py2_install
 %endif
-%py3_install
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
 
 %check
 export TZ=America/New_York
-%if %{with_python2}
+%if %{with python2}
 %{__python2} -m pytest
 %endif
 %if !%{bootstrap}
+%if %{with python3}
 %{__python3} -m pytest
 %endif
+%endif
 
-%files
+%if %{with python2}
+%files -n python2-babel
 %doc CHANGES AUTHORS
 %license LICENSE
 %{_bindir}/pybabel
-
-%if %{with_python2}
-%files -n python2-babel
 %{python2_sitelib}/Babel-%{version}-py*.egg-info
 %{python2_sitelib}/babel
 %endif
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-babel
+%doc CHANGES AUTHORS
+%license LICENSE
+%{_bindir}/pybabel
 %{python3_sitelib}/Babel-%{version}-py*.egg-info
 %{python3_sitelib}/babel
+%endif
 
 %if %{with docs}
 %files doc
@@ -197,6 +215,9 @@ export TZ=America/New_York
 %endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-7
+- Made support for Python 2 optional
+
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.6.0-6
 - Support for Python 3 on Amazon Linux 2
 

@@ -1,6 +1,6 @@
-%if 0%{?fedora} || 0%{?rhel} > 6 || ("0%{?dist}" == "0.amzn2")
-%global with_python3 1
-%endif
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
@@ -33,6 +33,7 @@ BuildArch:      noarch
 
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-mock
 Summary:    %{summary}
 BuildRequires:  python2-devel
@@ -49,9 +50,10 @@ BuildRequires:  python-unittest2
 
 %description -n python2-mock %{_description}
 Python 2 version.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-mock
 Summary:    %{summary}
 %if 0%{?with_amzn2}
@@ -75,28 +77,49 @@ cp -p %{SOURCE1} .
 
 
 %build
+%if %{with python2}
 %{py2_build}
-%{py3_build}
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 
-## %%check
-## %%{__python2} setup.py test
+%if %{with tests}
+%check
+%if %{with python2}
+%{__python2} setup.py test
+%endif
+%if %{with python3}
 # Failing
-# %%{__python3} setup.py test
+%{__python3} setup.py test
+%endif
+%endif
 
 
 %install
-%{py3_install}
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
+%if %{with python2}
 %{py2_install}
+%endif
 
- 
+
+%if %{with python2}
 %files -n python2-mock
 %license LICENSE.txt
 %doc docs/* README.txt PKG-INFO
 %{python2_sitelib}/*.egg-info
 %{python2_sitelib}/%{mod_name}.py*
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-mock
 %license LICENSE.txt
 %doc docs/* README.txt PKG-INFO
@@ -107,13 +130,16 @@ cp -p %{SOURCE1} .
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-13
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-12
 - Update to allow for Python 3 support for Amazon Linux 2
 
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-11
 - Add support for Python 3
 
-* Thu Jan 11 2018 SaltStack Packaging Team <packaging@saltstack.com> -1.0.1-10 
+* Thu Jan 11 2018 SaltStack Packaging Team <packaging@saltstack.com> -1.0.1-10
 - Support for Python 3 on RHEL
 
 * Wed Jan 6 2016 Orion Poplawski <orion@cora.nwra.com> - 1.0.1-9

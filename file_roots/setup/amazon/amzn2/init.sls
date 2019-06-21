@@ -18,10 +18,33 @@ include:
 build_additional_pkgs_{{build_cfg.build_release}}:
   pkg.installed:
     - pkgs:
-      - mock
-      - python2-rpm-macros
       - python3-rpm-macros
       - gcc
+      - dbus-devel
+      - dos2unix
+      - libdb-devel
+      - elfutils-devel
+      - elfutils-libelf-devel
+      - readline-devel
+      - zlib-devel
+      - nss-devel
+      - nss-softokn-freebl-devel
+      - popt-devel
+      - file-devel
+      - gettext-devel
+      - libselinux-devel
+      - libsemanage-devel
+      - ncurses-devel
+      - bzip2-devel
+      - lua-devel
+      - libcap-devel
+      - libacl-devel
+      - xz-devel
+      - audit-libs-devel
+      - binutils-devel
+      - automake
+      - libtool
+      - chrpath
 
 
 build_additional_{{build_cfg.build_release}}_{{build_cfg.build_runas}}:

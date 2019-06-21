@@ -1,0 +1,32 @@
+From 6a8754b2153e0e4305ef2bc5a789bfe02f65e889 Mon Sep 17 00:00:00 2001
+From: Florian Festi <ffesti@redhat.com>
+Date: Tue, 14 Jun 2016 15:01:16 +0200
+Subject: [PATCH] perl.req: Skip over multi line return statements See
+ Rhbz#1275551
+
+---
+ scripts/perl.req | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/perl.req b/scripts/perl.req
+index f1000c8..7155518 100755
+--- a/scripts/perl.req
++++ b/scripts/perl.req
+@@ -160,11 +160,12 @@ sub process_file {
+ 
+     #
+     # The (require|use) match further down in this subroutine will match lines
+-    # within a multi-line print statement.  So, let's skip over such print
++    # within a multi-line print or return statements.  So, let's skip over such
+     # statements whose content should not be loading modules anyway. -BEF-
+     #
+     if (m/print(?:\s+|\s+\S+\s+)\<\<\s*(["'`])(.+?)\1/ ||
+-        m/print(\s+|\s+\S+\s+)\<\<(\w+)/) {
++        m/print(\s+|\s+\S+\s+)\<\<(\w+)/ ||
++	m/return(\s+)\<\<(\w+)/ ) {
+ 
+         my $tag = $2;
+         while (<FILE>) {
+-- 
+2.5.5
+

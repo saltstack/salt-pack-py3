@@ -1,57 +1,20 @@
-%if ( "0%{?dist}" == "0.amzn1" )
-%global with_explicit_python27 1
-%global pybasever 2.7
-%global __python_ver 27
-%global __python %{_bindir}/python%{?pybasever}
-%global __python2 %{_bindir}/python%{?pybasever}
-
-%global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-%global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
-
-%{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
-
-%global __inst_layout --install-layout=unix
-
-%else
-
-%{!?python2_sitelib: %global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
-
-%if 0%{?rhel} == 6
-%global with_python3 0
-
-%global with_explicit_python27 1
-%global pybasever 2.7
-%global __python_ver 27
-%global __python %{_bindir}/python%{?pybasever}
-%global __python2 %{_bindir}/python%{?pybasever}
-%global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-%global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
-%global __os_install_post %{__python27_os_install_post}
-%endif
-
-%endif  ## %if ( "0%{?dist}" == "0.amzn1" )
-
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
-%global with_python3 1
-%global py_setup setup.py
-%{!?python3_pkgversion:%global python3_pkgversion 3}
 %endif
 
-## Only enable Python 3 support if Redhat 7
-%if 0%{?rhel} >= 7
-%global with_python3 1
+## Only enable Python 3 support
+%bcond_with python2
+%bcond_without python3
+
+%bcond_with tests
+%bcond_with docs
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
-%endif
-
-
-%global include_tests 0
 
 
 # Release Candidate
 %define __rc_ver tobereplaced_date
+## %%define __rc_ver %{nil}
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
@@ -85,8 +48,9 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-## Patch0:  salt-%%{version}-tests.patch
-
+## Patch0:  salt-py3-%%{version}-rpmsign.patch
+Patch1:  salt-py3-%{version}-tornado4.patch
+Patch2:  salt-py3-%{version}-gpg-strbytes.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -105,97 +69,8 @@ Requires: yum-utils
 %endif
 
 
-%if ! 0%{?with_python3}
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-%endif
-
-%if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
-## BuildRequires: python%%{?__python_ver}-tornado >= 4.2.1, python%%{?__python_ver}-tornado < 5.0
-BuildRequires: python%{?__python_ver}-tornado >= 4.2.1
-BuildRequires: python%{?__python_ver}-futures >= 2.0
-BuildRequires: python%{?__python_ver}-crypto >= 2.6.1
-BuildRequires: python%{?__python_ver}-jinja2
-BuildRequires: python%{?__python_ver}-msgpack >= 0.4
-BuildRequires: python%{?__python_ver}-pip
-BuildRequires: python%{?__python_ver}-zmq
-
-%if 0%{?with_explicit_python27}
-BuildRequires: PyYAML%{?__python_ver}
-%else
-BuildRequires: PyYAML
-%endif
-
-BuildRequires: python%{?__python_ver}-requests
-## BuildRequires: python%{?__python_ver}-unittest2
-# this BR causes windows tests to happen
-# clearly, that's not desired
-# https://github.com/saltstack/salt/issues/3749
-BuildRequires: python%{?__python_ver}-mock
-BuildRequires: git
-BuildRequires: python%{?__python_ver}-libcloud
-BuildRequires: python%{?__python_ver}-six
-
-%if ((0%{?rhel} == 6) && 0%{?include_tests})
-# argparse now a salt-testing requirement
-BuildRequires: python-argparse
-%endif
-
-%endif  ##  ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
-
-BuildRequires: python%{?__python_ver}-devel
-
-
-Requires: python%{?__python_ver}-jinja2
-Requires: python%{?__python_ver}-msgpack >= 0.4
-Requires: python%{?__python_ver}-crypto >= 2.6.1
-
-%if ( "0%{?dist}" == "0.amzn1" )
-Requires: python27-PyYAML
-Requires: python%{?__python_ver}
-%else
-%if 0%{?with_explicit_python27}
-Requires: python%{?__python_ver}  >= 2.7.9-1
-Requires: PyYAML%{?__python_ver}
-%else
-Requires: PyYAML
-%endif
-
-%endif  ## %if ( "0%{?dist}" == "0.amzn1" )
-
-Requires: python%{?__python_ver}-zmq
-Requires: python%{?__python_ver}-markupsafe
-## Requires: python%%{?__python_ver}-tornado >= 4.2.1, python%%{?__python_ver}-tornado < 5.0
-Requires: python%{?__python_ver}-tornado >= 4.2.1
-Requires: python%{?__python_ver}-futures >= 2.0
-Requires: python%{?__python_ver}-six
-Requires: python%{?__python_ver}-psutil
-
-%endif ## not python3
-
-
-%if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
-
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(preun): initscripts
-Requires(postun): initscripts
-
-%else
-
-%if 0%{?systemd_preun:1}
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-%endif
-
-BuildRequires: systemd-units
-Requires:      systemd-python
-
-%endif  ## %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
-
 ## Python 3 support
-%if 0%{?with_python3}
+%if %{with python3}
 %if 0%{?with_amzn2}
 BuildRequires:  python3-rpm-macros
 %endif
@@ -216,8 +91,16 @@ Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
+
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
-Requires: python%{python3_pkgversion}-tornado >= 4.2.1
+## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1
+
+%if 0%{?with_amzn2}
+Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
+%else
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
+%endif
+
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 %if 0%{?with_amzn2}
@@ -226,7 +109,60 @@ Requires: python%{python3_pkgversion}-pyyaml
 Requires: python%{python3_pkgversion}-PyYAML
 %endif
 
-%endif  ## %if 0%{?with_python3}
+%endif  ## with python3
+
+
+%if %{with python2}
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
+
+%if 0%{?with tests}
+## BuildRequires: python-tornado >= 4.2.1, python-tornado < 5.0
+BuildRequires: python-tornado >= 4.2.1
+BuildRequires: python-futures >= 2.0
+BuildRequires: python-crypto >= 2.6.1
+BuildRequires: python-jinja2
+BuildRequires: python-msgpack >= 0.4
+BuildRequires: python-pip
+BuildRequires: python-zmq
+BuildRequires: PyYAML
+BuildRequires: python-requests
+## BuildRequires: python-unittest2
+# this BR causes windows tests to happen
+# clearly, that's not desired
+# https://github.com/saltstack/salt/issues/3749
+BuildRequires: python-mock
+BuildRequires: git
+BuildRequires: python-libcloud
+BuildRequires: python-six
+%endif  ##  with tests
+
+BuildRequires: python-devel
+
+Requires: python-jinja2
+Requires: python-msgpack >= 0.4
+Requires: python-crypto >= 2.6.1
+Requires: PyYAML
+
+Requires: python-zmq
+Requires: python-markupsafe
+## Requires: python-tornado >= 4.2.1, python-tornado < 5.0
+Requires: python-tornado >= 4.2.1
+Requires: python-futures >= 2.0
+Requires: python-six
+Requires: python-psutil
+%endif ## python2
+
+
+%if 0%{?systemd_preun:1}
+Requires(post): systemd-units
+Requires(preun): systemd-units
+Requires(postun): systemd-units
+%endif
+
+BuildRequires: systemd-units
+Requires:      systemd-python
 
 
 %description
@@ -237,18 +173,17 @@ malleable. Salt accomplishes this via its ability to handle larger loads of
 information, and not just dozens, but hundreds or even thousands of individual
 servers, handle them quickly and through a simple and manageable interface.
 
-
 ## Python 3 Support
 ## build either Python 3 or Python 2, but not both since code expects salt
 ## for example systemctl
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package    master
 Summary:    Management component for salt, a parallel remote execution system
 Group:      System Environment/Daemons
 Requires:   %{name} = %{version}-%{release}
 ## TBD system-python is py2, no py3 version and Fedora is python3-systemd ?????
-%if (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
+%if 0%{?rhel} >= 7 || 0%{?with_amzn2}
 Requires: systemd-python
 %endif
 
@@ -313,9 +248,9 @@ The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 Supports Python 3.
 
-
 %else
 
+## python2
 %package master
 Summary: Management component for salt, a parallel remote execution system
 Group:   System Environment/Daemons
@@ -384,26 +319,30 @@ Requires: %{name} = %{version}-%{release}
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 Supports Python 2.
-
-
-%endif
+%endif  ## with Python 3
 
 
 %prep
-%autosetup
-
-%if 0%{?with_python3}
-rm -rf %{py3dir}
-cp -a . %{py3dir}
-%endif # with_python3
+## %%autosetup
+%setup -q -c
+cd %{name}-%{version}
+## %%if 0%%{?rhel} > 7
+## %%patch0 -p1
+## %%endif
+%patch1 -p1
+%patch2 -p1
 
 
 %build
-%if 0%{?with_python3}
-pushd %{py3dir}
-%py3_build
-popd
-%else
+%if %{with python3}
+cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
+
+%if %{with python2}
 %py2_build
 %endif
 
@@ -412,13 +351,13 @@ popd
 rm -rf %{buildroot}
 cd $RPM_BUILD_DIR/%{name}-%{version}
 
-%if 0%{?with_python3}
+%if %{with python3}
 ## Python 3
-
 ## rm -rf %%{buildroot}
-
-pushd %{py3dir}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -431,17 +370,17 @@ install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/minion.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/master
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/minion
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
 
 # Add the config files
 install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
 install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
-install -p -m 0600 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
+install -p -m 0640 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
 install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
 install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/salt/proxy
 
@@ -462,7 +401,7 @@ install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d/
 install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/bash_completion.d/salt.bash
 
-# Fish completion (TBD remove -v)
+# Fish completion
 mkdir -p %{buildroot}%{fish_dir}
 install -p -m 0644  %{SOURCE13} %{buildroot}%{fish_dir}/salt.fish
 install -p -m 0644  %{SOURCE14} %{buildroot}%{fish_dir}/salt_common.fish
@@ -473,14 +412,12 @@ install -p -m 0644  %{SOURCE18} %{buildroot}%{fish_dir}/salt-master.fish
 install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
+%endif  ## with python3
 
-popd
 
-%else
+%if %{with python2}
 ## Python 2
-
 %py2_install
-
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
 touch %{buildroot}%{_var}/log/salt/minion
@@ -492,17 +429,17 @@ install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/minion.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/master
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/minion
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
 
 # Add the config files
 install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
 install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
-install -p -m 0600 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
+install -p -m 0640 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
 install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
 install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/salt/proxy
 
@@ -522,14 +459,6 @@ install -p -m 0644 %{SOURCE9} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/
 %endif
 
-## # Force python2.7 on EPEL6
-## # https://github.com/saltstack/salt/issues/22003
-## %if 0%{?rhel} == 6
-## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/spm
-## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/salt*
-## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_initrddir}/salt*
-## %endif
-
 # Logrotate
 install -p %{SOURCE10} .
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
@@ -551,10 +480,10 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
-%endif  ## %if 0%{?with_python3}
+%endif  ## %if %{with python2}
 
 
-%if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
+%if %{with tests}
 %check
 ## cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 cd $RPM_BUILD_DIR/%{name}-%{version}
@@ -564,11 +493,11 @@ PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
 
 
 %clean
-rm -rf %%{buildroot}
+rm -rf %{buildroot}
 
 
+%if %{with python3}
 %files
-%if 0%{?with_python3}
 %defattr(-,root,root,-)
 %{python3_sitelib}/%{name}/*
 %{python3_sitelib}/%{name}-*-py?.?.egg-info
@@ -577,10 +506,10 @@ rm -rf %%{buildroot}
 %{_var}/cache/salt
 %{_var}/log/salt
 
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
-%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
-%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
+%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
+%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
+## %%doc $RPM_BUILD_DIR/python3-%%{name}-%%{version}-%%{release}/LICENSE
+## %%doc $RPM_BUILD_DIR/python3-%%{name}-%%{version}-%%{release}/README.fedora
 
 /%{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
@@ -648,28 +577,24 @@ rm -rf %%{buildroot}
 %doc %{_mandir}/man1/salt-ssh.1*
 %{_bindir}/salt-ssh
 %config(noreplace) %{_sysconfdir}/salt/roster
+%endif  ## with python3
 
-%else
+
 ## Python 2
-
+%if %{with python2}
+%files
 %defattr(-,root,root,-)
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-%doc $RPM_BUILD_DIR/%{name}-%{version}/LICENSE
+%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
+## %%doc $RPM_BUILD_DIR/%{name}-%{version}/LICENSE
 
 %{python2_sitelib}/%{name}/*
 #%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
-
-%if ( "0%{?dist}" == "0.amzn1" )
-%{python2_sitelib}/%{name}-%{version}.egg-info
-%else
 %{python2_sitelib}/%{name}-*-py?.?.egg-info
-%endif
-
 %{_sysconfdir}/logrotate.d/salt
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
 %doc $RPM_BUILD_DIR/%{name}-%{version}/README.fedora
 %{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
@@ -753,8 +678,7 @@ rm -rf %%{buildroot}
 %doc %{_mandir}/man1/salt-ssh.1*
 %{_bindir}/salt-ssh
 %config(noreplace) %{_sysconfdir}/salt/roster
-
-%endif      ## %if 0%{?with_python3}
+%endif      ## %if %{with python2}
 
 
 # less than RHEL 8 / Fedora 16
@@ -871,6 +795,9 @@ rm -rf %%{buildroot}
 
 
 %changelog
+* Fri Jun 21 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-2
+- Made support for Python 2 on Amazon Linux 2 optional
+
 * Mon Mar 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1
 - Support for Python 3 on Amazon Linux 2
 

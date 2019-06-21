@@ -1,0 +1,96 @@
+Adjusted lib/package.c section to apply, and 4.11.x requires the
+same change in lib/signature.c as well.
+
+From 89dce2b91d7d73a1e225461a7392c3d6d7a30a95 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Wed, 19 Oct 2016 14:48:08 +0300
+Subject: [PATCH] Verify data is within range and does not overlap in
+ headerVerifyInfo()
+
+Checking whether data start offset is within header data area is of no use
+whatsoever if the entire chunk doesn't fit. Validate the entire data
+fits within range and that it does not overlap, however with string
+types we can only check the array size is sane but we cant check the
+actual content.
+
+Adjust the upper limit for region trailer in headerVerifyRegion() so
+it fits the new rules, but in reality calling headerVerifyInfo() for
+the region tags is rather pointless since they're so different.
+
+Partial fix for RhBug:1373107.
+---
+ lib/header.c  | 21 ++++++++++++++++-----
+ lib/package.c |  2 +-
+ 2 files changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/lib/header.c b/lib/header.c
+index 7f7c115..cac5c94 100644
+--- a/lib/header.c
++++ b/lib/header.c
+@@ -196,7 +196,8 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+ {
+     entryInfo pe = (entryInfo) pev;
+     entryInfo info = iv;
+-    int i;
++    int i, tsize;
++    int32_t end = 0;
+ 
+     for (i = 0; i < il; i++) {
+ 	info->tag = ntohl(pe[i].tag);
+@@ -206,16 +207,26 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+ 	    info->offset = -info->offset;
+ 	info->count = ntohl(pe[i].count);
+ 
++	/* Previous data must not overlap */
++	if (end > info->offset)
++	    return i;
++
+ 	if (hdrchkType(info->type))
+ 	    return i;
+ 	if (hdrchkAlign(info->type, info->offset))
+ 	    return i;
+-	if (hdrchkRange(dl, info->offset))
+-	    return i;
+-	if (hdrchkData(info->count))
+-	    return i;
+ 
++	/* For string types we can only check the array size is sane */
++	tsize = typeSizes[info->type];
++	if (tsize < 1)
++	    tsize = 1;
++
++	/* Verify the data actually fits */
++	end = info->offset + (info->count * tsize);
++	if (hdrchkRange(dl, end))
++	    return i;
+     }
++
+     return -1;
+ }
+
+diff --git a/lib/package.c b/lib/package.c
+index b6bea09..bb83163 100644
+--- a/lib/package.c
++++ b/lib/package.c
+@@ -339,7 +339,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
+     (void) memcpy(&info, regionEnd, REGION_TAG_COUNT);
+     regionEnd += REGION_TAG_COUNT;
+ 
+-    if (headerVerifyInfo(1, il * sizeof(*pe), &info, &entry.info, 1) != -1 ||
++    if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &info, &entry.info, 1) != -1 ||
+ 	!(entry.info.tag == RPMTAG_HEADERIMMUTABLE
+        && entry.info.type == REGION_TAG_TYPE
+        && entry.info.count == REGION_TAG_COUNT))
+diff --git a/lib/signature.c b/lib/signature.c
+index d8017dc..ddf2eb8 100644
+--- a/lib/signature.c
++++ b/lib/signature.c
+@@ -165,7 +165,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
+ 	}
+ 	dataEnd += REGION_TAG_COUNT;
+ 
+-	xx = headerVerifyInfo(1, il * sizeof(*pe), &info, &entry.info, 1);
++	xx = headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &info, &entry.info, 1);
+ 	if (xx != -1 ||
+ 	    !((entry.info.tag == RPMTAG_HEADERSIGNATURES || entry.info.tag == RPMTAG_HEADERIMAGE)
+ 	   && entry.info.type == REGION_TAG_TYPE

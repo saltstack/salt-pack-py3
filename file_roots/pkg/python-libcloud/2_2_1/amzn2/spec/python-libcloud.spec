@@ -1,3 +1,7 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
 %endif
@@ -18,7 +22,7 @@ any of the services that it supports.
 
 Name:           python-libcloud
 Version:        2.2.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        A Python library to address multiple cloud provider APIs
 
 Group:          Development/Languages
@@ -30,6 +34,7 @@ BuildArch:      noarch
 
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -44,7 +49,9 @@ BuildRequires:  python2-pytest-runner
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
+%endif
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -59,6 +66,7 @@ Patch0: 000-async.patch
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
 Python 3 version.
+%endif
 
 %prep
 %autosetup -p1 -n %{tarball_name}-%{version}
@@ -67,34 +75,56 @@ Python 3 version.
 sed -i '1d' demos/gce_demo.py demos/compute_demo.py
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 # Fix permissions for demos
 chmod -x demos/gce_demo.py demos/compute_demo.py
 
 %install
+%if %{with python2}
 %py2_install
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
+
 
 # Don't package the test suite. We dont run it anyway
 # because it requires some valid cloud credentials
+%if %{with python2}
 rm -r $RPM_BUILD_ROOT%{python2_sitelib}/%{srcname}/test
-rm -r $RPM_BUILD_ROOT%{python3_sitelib}/%{srcname}/test
 
 %files -n python2-%{srcname}
 %doc README.rst demos/
 %license LICENSE
 %{python2_sitelib}/%{srcname}/
 %{python2_sitelib}/%{eggname}-*.egg-info/
+%endif
+
+%if %{with python3}
+rm -r $RPM_BUILD_ROOT%{python3_sitelib}/%{srcname}/test
 
 %files -n python%{python3_pkgversion}-%{srcname}
 %doc README.rst demos/
 %license LICENSE
 %{python3_sitelib}/%{srcname}/
 %{python3_sitelib}/%{eggname}-*.egg-info/
+%endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.2.1-10
+- Made support for Python 2 optional
+
 * Wed Oct 10 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.2.1-9
 - Ported to Amazon Linux 2 for Python 3 support
 

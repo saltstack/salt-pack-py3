@@ -1,20 +1,7 @@
-%global with_python3 1
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
-%{!?__python2: %global __python2 /usr/bin/python%{?pybasever}}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-
-
-%if 0%{?rhel} == 6
-%global with_explicit_python27 1
-%global pybasever 2.7
-%global __python_ver 27
-%global __python %{_bindir}/python%{?pybasever}
-%global __python2 %{_bindir}/python%{?pybasever}
-%global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-%global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
-%global __os_install_post %{__python27_os_install_post}
-%endif
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -35,7 +22,7 @@ timelib.strtotime
 
 Name:           python%{?__python_ver}-%{srcname}
 Version:        0.2.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Parse English textual date descriptions
 Group:          Development/Languages/Python
 
@@ -49,21 +36,20 @@ BuildRoot:      %{_tmppath}/%{srcname}-%{version}-%{release}-root-%(%{__id_u} -n
 BuildArch:      noarch
 
 
-BuildRequires:  python%{?__python_ver}-devel
-BuildRequires:  python%{?__python_ver}-setuptools
-
-
 # We don't want to provide private python extension libs
 %{?filter_setup:
+%if %{with python2}
 %filter_provides_in %{python2_sitearch}/.*\.so$
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %filter_provides_in %{python3_sitearch}/.*\.so$
 %endif
 %filter_setup
 }
 
-%description    %{_description} 
+%description    %{_description}
 
+%if %{with python2}
 %package    -n  python2-%{srcname}
 Summary:        %{summary}
 Group:          %{group}
@@ -77,9 +63,10 @@ BuildRequires:  python2-rpm-macros
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package    -n  python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 Group:          %{group}
@@ -90,7 +77,7 @@ BuildRequires:  python%{python3_pkgversion}-rpm-macros
 %endif
 Provides:       python%{python3_pkgversion}-%{srcname}
 
-%description -n python%{python3_pkgversion}-%{srcname} %{_description} 
+%description -n python%{python3_pkgversion}-%{srcname} %{_description}
 Python 3 version.
 %endif
 
@@ -98,37 +85,46 @@ Python 3 version.
 ##%%autosetup -n %{srcname}-%{version}
 %setup -n %{srcname}-%{version}
 
-%if 0%{?with_python3}
+%if %{with python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
 %endif
 
 %build
+%if %{with python2}
 %py2_build
-%if 0%{?with_python3}
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 %install
-rm -rf %{buildroot}
+%if %{with python2}
 %py2_install
-
-%if 0%{?with_python3}
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 
 %clean
 rm -rf %{buildroot}
 
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %defattr(-,root,root,-)
 %{python2_sitearch}/%{srcname}*.so
 %{python2_sitearch}/%{srcname}*.egg-info
 %exclude %{_libdir}/debug/
 %exclude %{_libdir}/../src/debug/
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %defattr(-,root,root,-)
 %{python3_sitearch}/%{srcname}*.so
@@ -136,6 +132,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-5
+- Made support for Python 2 optional
+
 * Tue Oct 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.2.4-4
 - Ported to support Python 3 on Amazon Linux 2
 

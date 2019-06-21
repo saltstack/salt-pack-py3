@@ -1,6 +1,8 @@
-%global with_python3 1
 %global srcname idna
 
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -10,7 +12,7 @@
 
 Name:           python-%{srcname}
 Version:        2.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Internationalized Domain Names in Applications (IDNA)
 
 License:        BSD and Python and Unicode
@@ -18,21 +20,6 @@ URL:            https://github.com/kjd/idna
 Source0:        https://pypi.io/packages/source/i/%{srcname}/%{srcname}-%{version}.tar.gz
 BuildArch:      noarch
 
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python-devel
-%else
-BuildRequires:  python2-devel
-%endif
-BuildRequires:  python2-setuptools
-
-%if 0%{?with_python3}
-%if 0%{?with_amzn2}
-BuildRequires:  python3-rpm-macros
-%endif
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-%endif # with_python3
 
 %description
 A library to support the Internationalised Domain Names in Applications (IDNA)
@@ -44,8 +31,16 @@ The library is also intended to act as a suitable drop-in replacement for the
 "encodings.idna" module that comes with the Python standard library but
 currently only supports the older 2003 specification.
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        Internationalized Domain Names in Applications (IDNA)
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python-devel
+%else
+BuildRequires:  python2-devel
+%endif
+BuildRequires:  python2-setuptools
 %{?python_provide:%python_provide python2-%{srcname}}
 
 %description -n python2-%{srcname}
@@ -57,10 +52,16 @@ different results from the earlier standard from 2003.
 The library is also intended to act as a suitable drop-in replacement for the
 "encodings.idna" module that comes with the Python standard library but
 currently only supports the older 2003 specification.
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        Internationalized Domain Names in Applications (IDNA)
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 %description -n python%{python3_pkgversion}-%{srcname}
@@ -80,32 +81,43 @@ currently only supports the older 2003 specification.
 rm -rf %{srcname}.egg-info
 
 %build
+%if %{with python2}
 %py2_build
+%endif
 
-%if 0%{?with_python3}
-%py3_build
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif # with_python3
 
 %install
-%if 0%{?with_python3}
-%py3_install
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif # with_python3
-
+%if %{with python2}
 %py2_install
+%endif
 
 %check
+%if %{with python2}
 %{__python2} setup.py test
-
+%endif
 %if 0%{?with_python3}
 %{__python3} setup.py test
 %endif # with_python3
 
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %license LICENSE.rst
 %doc README.rst HISTORY.rst
 %{python2_sitelib}/%{srcname}
 %{python2_sitelib}/%{srcname}-%{version}-py%{python2_version}.egg-info
+%endif
 
 %if 0%{?with_python3}
 %files -n python%{python3_pkgversion}-%{srcname}
@@ -116,6 +128,9 @@ rm -rf %{srcname}.egg-info
 %endif # with_python3
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.7-5
+- Made support for Python 2 optional
+
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@#saltstack.com> - 2.7-4
 - Support for Python 3 on Amazon Linux 2
 

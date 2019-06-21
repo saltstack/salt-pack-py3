@@ -5,8 +5,9 @@
 %global eggname %{nsname}
 %global modname Cryptodome
 
-
-%global with_python3 1
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -19,7 +20,7 @@
 
 Name:           python-%{srcname}
 Version:        3.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Self-contained Python package of low-level cryptographic primitives
 
 # Only OCB blockcipher mode is patented, but according to
@@ -73,6 +74,7 @@ conflicts with the PyCrypto library.
 
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-%{eggname}
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{eggname}}
@@ -86,8 +88,9 @@ BuildRequires:  python%{python2_pkgversion}-setuptools
 
 %description -n python2-%{eggname} %{_description}
 Python 2 version.
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{eggname}
 Summary:        %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
@@ -118,29 +121,44 @@ mv lib/Crypto/SelfTest/__main__.py.new lib/Crypto/SelfTest/__main__.py
 
 
 %build
+%if %{with python2}
 %py2_build
-%if 0%{?with_python3}
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 %install
+%if %{with python2}
 %py2_install
-%if 0%{?with_python3}
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 
-## %check
-## %{__python2} setup.py test -v
-## %if 0%{?with_python3}
-## %{__python3} setup.py test -v
-## %endif
+%if %{with tests}
+%check
+%if %{with python2}
+%{__python2} setup.py test -v
+%endif
+%if %{with python3}
+%{__python3} setup.py test -v
+%endif
+%endif
 
+%if %{with python2}
 %files -n python2-%{eggname}
 %license Doc/LEGAL/
 %{python2_sitearch}/%{eggname}-*.egg-info/
 %{python2_sitearch}/%{modname}/
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{eggname}
 %license Doc/LEGAL/
 %{python3_sitearch}/%{eggname}-*.egg-info/
@@ -148,6 +166,9 @@ mv lib/Crypto/SelfTest/__main__.py.new lib/Crypto/SelfTest/__main__.py
 %endif
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.1-4
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.1-3
 - Ported for support Python 3 on Amazon Linux 2
 

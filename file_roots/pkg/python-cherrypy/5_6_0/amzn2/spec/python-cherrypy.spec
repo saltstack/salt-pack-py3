@@ -1,8 +1,6 @@
-%if !(0%{?fedora} > 12 || 0%{?rhel} > 5)
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%endif
-
-%global with_python3 1
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %global _description \
 CherryPy allows developers to build web applications in much the same way \
@@ -19,7 +17,7 @@ results in smaller source code developed in less time.
 
 Name:           python-cherrypy
 Version:        5.6.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Pythonic, object-oriented web development framework
 Group:          Development/Libraries
 License:        BSD
@@ -35,13 +33,9 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
 
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-nose
-
-
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{summary}
 BuildRequires:  python2-devel
@@ -53,8 +47,9 @@ BuildRequires:  python2-rpm-macros
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 %if 0%{?with_amzn2}
@@ -63,8 +58,7 @@ BuildRequires:  python3-rpm-macros
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-nose
-##%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
-Provides: python%{python3_pkgversion}-%{srcname}
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
 Python 3 version.
@@ -83,43 +77,56 @@ Python 3 version.
 
 %build
 ## %%{__python} setup.py build
+%if %{with python2}
 %py2_build
+%endif
 
-%if 0%{?with_python3}
-%py3_build
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
 
 %install
 ## rm -rf $RPM_BUILD_ROOT
 ## %%{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
+%if %{with python2}
 %py2_install
-%if 0%{?with_python3}
-%py3_install
+%endif
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif
 
 
+%if %{with tests}
 %check
 cd cherrypy/test
 # These two tests hang in the buildsystem so we have to disable them.
 # The third fails in cherrypy 3.2.2.
 PYTHONPATH='../../' nosetests -s ./ -e 'test_SIGTERM' -e \
   'test_SIGHUP_tty' -e 'test_file_stream'
+%endif
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 
+%if %{with python2}
 %files -n python2-%{srcname}
 %defattr(-,root,root,-)
 ## %doc README.txt
 %doc cherrypy/tutorial
 %{_bindir}/cherryd
 %{python2_sitelib}/*
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %defattr(-,root,root,-)
 ## %doc README.txt
@@ -130,6 +137,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-6
+- Made support for Python 2 optional
+
 * Wed Oct 03 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.6.0-5
 - Ported to Amazon Linux 2 for Python 3 support
 

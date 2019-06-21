@@ -1,30 +1,18 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
-%bcond_without python2
-%bcond_without python3
 %bcond_without async
 %bcond_with docs
 %else
-%if 0%{?fedora} || 0%{?rhel} > 7
-# Enable python3 build by default
-%bcond_without python3
-%else
-%bcond_with python3
-%endif
-
-%if 0%{?rhel} > 7
-# Disable python2 build by default
-%bcond_with python2
-%else
-%bcond_without python2
-%endif
 
 # Enable building without docs to avoid a circular dependency between this
 # and python-sphinx:
 %bcond_without docs
-
 %if 0%{?fedora} > 25 || 0%{?rhel} > 7
 %bcond_without async
 %else
@@ -35,7 +23,7 @@
 
 Name:           python-jinja2
 Version:        2.10
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        General purpose template engine
 Group:          Development/Languages
 License:        BSD
@@ -147,7 +135,6 @@ cp -av python3 python2
 %if %{with python2}
 pushd python2
 %py2_build
-
 %if %{with docs}
 make -C docs html PYTHONPATH=$(pwd) SPHINXBUILD=sphinx-build-2
 %endif # with docs
@@ -156,7 +143,10 @@ popd
 
 %if %{with python3}
 pushd python3
-%py3_build
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %if %{with docs}
 make -C docs html PYTHONPATH=$(pwd) SPHINXBUILD=sphinx-build-3
 %endif # with docs
@@ -180,7 +170,9 @@ popd
 
 %if %{with python3}
 pushd python3
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 
 # remove hidden file
 rm -rf docs/_build/html/.buildinfo
@@ -194,20 +186,22 @@ popd
 %endif # with python3
 
 
+%if %{with tests}
 %check
 %if %{with python2}
 pushd python2
 # there are currently no tests in the jinja2 tarball
-# make test
+make test
 popd
 %endif # with python2
 
 %if %{with python3}
 pushd python3
 # there are currently no tests in the jinja2 tarball
-# make test
+make test
 popd
 %endif # with python3
+%endif
 
 
 %if %{with python2}
@@ -241,6 +235,9 @@ popd
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.10-8
+- Made support for Python 2 optional
+
 * Fri Oct 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.10-7
 - Support for Python 3 on Amazon Linux 2
 

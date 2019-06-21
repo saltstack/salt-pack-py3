@@ -1,0 +1,70 @@
+--- ./rpm-4.11.1/configure.aa	2014-04-25 08:59:19.704797276 -0700
++++ ./rpm-4.11.1/configure	2014-04-25 09:08:29.701167788 -0700
+@@ -8433,7 +8433,7 @@
+   rm -rf conftest*
+   ;;
+ 
+-x86_64-*kfreebsd*-gnu|x86_64-*linux*|ppc*-*linux*|powerpc*-*linux*| \
++x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
+ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
+   # Find out which ABI we are using.
+   echo 'int i;' > conftest.$ac_ext
+@@ -8451,7 +8451,10 @@
+ 	  x86_64-*linux*)
+ 	    LD="${LD-ld} -m elf_i386"
+ 	    ;;
+-	  ppc64-*linux*|powerpc64-*linux*)
++	  powerpc64le-*linux*)
++	    LD="${LD-ld} -m elf32lppclinux"
++	    ;;
++	  powerpc64-*linux*)
+ 	    LD="${LD-ld} -m elf32ppclinux"
+ 	    ;;
+ 	  s390x-*linux*)
+@@ -8470,7 +8472,10 @@
+ 	  x86_64-*linux*)
+ 	    LD="${LD-ld} -m elf_x86_64"
+ 	    ;;
+-	  ppc*-*linux*|powerpc*-*linux*)
++	  powerpcle-*linux*)
++	    LD="${LD-ld} -m elf64lppc"
++	    ;;
++	  powerpc-*linux*)
+ 	    LD="${LD-ld} -m elf64ppc"
+ 	    ;;
+ 	  s390*-*linux*|s390*-*tpf*)
+--- ./rpm-4.11.1/m4/libtool.m4.aa	2014-04-25 09:11:55.512115764 -0700
++++ ./rpm-4.11.1/m4/libtool.m4	2014-04-25 09:12:08.932179982 -0700
+@@ -1312,7 +1312,7 @@
+   rm -rf conftest*
+   ;;
+ 
+-x86_64-*kfreebsd*-gnu|x86_64-*linux*|ppc*-*linux*|powerpc*-*linux*| \
++x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
+ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
+   # Find out which ABI we are using.
+   echo 'int i;' > conftest.$ac_ext
+@@ -1326,7 +1326,10 @@
+ 	  x86_64-*linux*)
+ 	    LD="${LD-ld} -m elf_i386"
+ 	    ;;
+-	  ppc64-*linux*|powerpc64-*linux*)
++	  powerpc64le-*linux*)
++	    LD="${LD-ld} -m elf32lppclinux"
++	    ;;
++	  powerpc64-*linux*)
+ 	    LD="${LD-ld} -m elf32ppclinux"
+ 	    ;;
+ 	  s390x-*linux*)
+@@ -1345,7 +1347,10 @@
+ 	  x86_64-*linux*)
+ 	    LD="${LD-ld} -m elf_x86_64"
+ 	    ;;
+-	  ppc*-*linux*|powerpc*-*linux*)
++	  powerpcle-*linux*)
++	    LD="${LD-ld} -m elf64lppc"
++	    ;;
++	  powerpc-*linux*)
+ 	    LD="${LD-ld} -m elf64ppc"
+ 	    ;;
+ 	  s390*-*linux*|s390*-*tpf*)

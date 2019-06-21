@@ -1,3 +1,7 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_without tests
+
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %if ( "0%{?dist}" == "0.amzn2" )
@@ -6,7 +10,7 @@
 
 Name:           python-markupsafe
 Version:        1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Implements a XML/HTML/XHTML Markup safe string for Python
 License:        BSD
 URL:            https://pypi.org/project/MarkupSafe/
@@ -19,6 +23,7 @@ BuildRequires:  gcc
 A library for safe markup escaping.
 
 
+%if %{with python2}
 %package -n python2-markupsafe
 Summary:        Implements a XML/HTML/XHTML Markup safe string for Python 2
 %if 0%{?with_amzn2}
@@ -32,8 +37,10 @@ BuildRequires:  python2-setuptools
 
 %description -n python2-markupsafe
 A library for safe markup escaping. Python 2 version.
+%endif
 
 
+%if %{with python3}
 %package -n python%{python3_pkgversion}-markupsafe
 Summary:        Implements a XML/HTML/XHTML Markup safe string for Python 3
 %if 0%{?with_amzn2}
@@ -45,6 +52,7 @@ BuildRequires:  python%{python3_pkgversion}-setuptools
 
 %description -n python%{python3_pkgversion}-markupsafe
 A library for safe markup escaping. Python 3 version.
+%endif
 
 
 %prep
@@ -52,40 +60,66 @@ A library for safe markup escaping. Python 3 version.
 
 
 %build
+%if %{with python2}
 %py2_build
-%py3_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
+%endif
 
 
 %install
+%if %{with python2}
 %py2_install
 # C code errantly gets installed
 rm %{buildroot}%{python2_sitearch}/markupsafe/*.c
+%endif
 
-%py3_install
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 # C code errantly gets installed
 rm %{buildroot}%{python3_sitearch}/markupsafe/*.c
+%endif
 
 
+%if %{with tests}
 %check
+%if %{with python2}
 %{__python2} setup.py test
+%endif
+%if %{with python3}
 %{__python3} setup.py test
+%endif
+%endif
 
 
+%if %{with python2}
 %files -n python2-markupsafe
 %license LICENSE
 %doc AUTHORS CHANGES README.rst
 %{python2_sitearch}/MarkupSafe-%{version}-py%{python2_version}.egg-info/
 %{python2_sitearch}/markupsafe/
+%endif
 
 
+%if %{with python3}
 %files -n python%{python3_pkgversion}-markupsafe
 %license LICENSE
 %doc AUTHORS CHANGES README.rst
 %{python3_sitearch}/MarkupSafe-%{version}-py%{python3_version}.egg-info/
 %{python3_sitearch}/markupsafe/
+%endif
 
 
 %changelog
+* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-3
+- Made support for Python 2 optional
+
 * Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0-2
 - Support for Python 3 on Amazon Linux 2
 
