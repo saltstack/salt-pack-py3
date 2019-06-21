@@ -1,7 +1,7 @@
 %if ( "0%{?dist}" == "0.amzn2" )
 %global with_amzn2 1
 %bcond_without python3
-%bcond_without python2
+%bcond_with python2
 %bcond_with tests
 %else
 %bcond_without tests
@@ -147,8 +147,8 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 %endif
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 
-%if %{with python3}
 %if %{with tests}
+%if %{with python3}
 %check
 export PYTHONPATH=%{buildroot}%{python3_sitearch}
 export PYCURL_SSL_LIBRARY=openssl
@@ -177,8 +177,8 @@ rm -fv tests/fake-curl/libcurl/*.so
 %endif
 
 %changelog
-* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 7.43.0.2-5
-- Support for Python 3 on Amazon Linux 2,compensate for macro failure 
+* Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 7.43.0.2-5
+- Support for Python 3 on Amazon Linux 2 compensate for py3_build macro failure
 
 * Thu Oct 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 7.43.0.2-4
 - Support for Python 3 on Amazon Linux 2

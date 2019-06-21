@@ -242,6 +242,10 @@ pkgbuild_registry:
         - python3-timelib
     python-tornado4:
       version: 4.5.2-3
+      build_deps:
+        - python-backports_abc
+        - python-pycurl
+        - python-singledispatch
       results:
         - python3-tornado4
     python-typing:
@@ -445,7 +449,7 @@ pkgbuild_registry:
         - libtommath
         - libtommath-devel
     mock:
-      version: 1.4.15-2
+      version: 1.4.15-3
       noarch: True
       build_deps:
         - mock-core-configs
@@ -501,7 +505,7 @@ pkgbuild_registry:
       results:
         - python3-bottle
     python-chardet:
-      version: 3.0.4-9
+      version: 3.0.4-10
       noarch: True
       results:
         - python3-chardet
@@ -627,9 +631,9 @@ pkgbuild_registry:
       version: 1.3.7-23
       noarch: True
       build_deps:
-        - python-coverage
-        - python-mock
         - python-setuptools
+        - python-mock
+        - python-coverage
         - python-six
       results:
         - python3-nose
@@ -649,6 +653,7 @@ pkgbuild_registry:
       version: 5.4.3-8
       build_deps:
         - python-mock
+        - python-six
       results:
         - python3-psutil
     python-py:
@@ -667,19 +672,17 @@ pkgbuild_registry:
       results:
         - python3-pycryptodomex
     python-pycurl:
-      version: 7.43.0.2-4
+      version: 7.43.0.2-5
       build_deps:
         - python-bottle
         - python-nose
         - python-pyflakes
       results:
-        - python2-pycurl
         - python3-pycurl
     python-pyflakes:
       version: 2.0.0-8
       noarch: True
       results:
-        - python2-pyflakes
         - python3-pyflakes
     python-pyroute2:
       version: 0.5.3-4
@@ -795,6 +798,14 @@ pkgbuild_registry:
         - python-singledispatch
       results:
         - python3-tornado
+    python-tornado4:
+      version: 4.5.2-4
+      build_deps:
+        - python-backports_abc
+        - python-pycurl
+        - python-singledispatch
+      results:
+        - python3-tornado4
     python-typing:
       version: 3.5.2.2-5
       noarch: True
@@ -854,7 +865,7 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
-        - python-tornado
+        - python-tornado4
         - python-futures
         - python-libcloud
         - python-mock

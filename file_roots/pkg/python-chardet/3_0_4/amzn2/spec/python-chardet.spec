@@ -8,117 +8,122 @@
 %global with_amzn2 1
 %endif
 
+%global pypi_name chardet
+Name:           python-%{pypi_name}
+Version:        3.0.4
+Release:        10%{?dist}
+Summary:        Character encoding auto-detection in Python
+License:        LGPLv2
+URL:            https://github.com/%{pypi_name}/%{pypi_name}
+Source0:        https://files.pythonhosted.org/packages/source/c/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+##Source0:        %%pypi_source
+
+BuildArch:      noarch
+
+
 %global _description\
 Character encoding auto-detection in Python. As\
 smart as your browser. Open source.
 
-%global pypi_name chardet
-
-Name:           python-%{pypi_name}
-Version:        3.0.4
-Release:        9%{?dist}
-Summary:        Character encoding auto-detection in Python
-
-Group:          Development/Languages
-License:        LGPLv2
-URL:            https://github.com/%{pypi_name}/%{pypi_name}
-Source0:        https://files.pythonhosted.org/packages/source/c/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
-
-BuildArch:      noarch
-
 %description %_description
-
-%if %{with python2}
-BuildRequires:  python2-devel, python2-setuptools
-%if 0%{?with_amzn2}
-BuildRequires:  python2-rpm-macros
-%endif
-%endif
-
-%if %{with python3}
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-setuptools
-%if 0%{?with_amzn2}
-BuildRequires:  python3-rpm-macros
-%endif
-%endif # with_python3
 
 %if %{with python2}
 %package -n python2-%{pypi_name}
 Summary: %summary
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+%if %{with tests}
+BuildRequires:  python2-pytest
+%endif
 %{?python_provide:%python_provide python2-%{pypi_name}}
 
-%description -n python2-%{pypi_name} %{_description}
-Supports Python 2 version.
+%description -n python2-%{pypi_name} %_description
 %endif
 
 %if %{with python3}
 %package -n python%{python3_pkgversion}-%{pypi_name}
 Summary:        Character encoding auto-detection in Python 3
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-setuptools
+%if %{with tests}
+BuildRequires:  python%{python3_pkgversion}-pytest
+%endif
+%{?python_provide:%python_provide python3-%{pypi_name}}
 
-%description -n python%{python3_pkgversion}-%{pypi_name} %{_description}
+%description -n python%{python3_pkgversion}-%{pypi_name}
+Character encoding auto-detection in Python. As 
+smart as your browser. Open source.
+
 Python 3 version.
-%endif # with_python3
+%endif
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
 sed -ie '1d' %{pypi_name}/cli/chardetect.py
 
-%if %{with python3}
-rm -rf %{py3dir}
-cp -a . %{py3dir}
-%endif # with_python3
-
 %build
 %if %{with python2}
-%{__python2} setup.py build
+%py2_build
+%endif
+%if %{with python3}
+## %%py3_build
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+sleep 1
 %endif
 
-%if %{with python3}
-pushd %{py3dir}
-%{__python3} setup.py build
-popd
-%endif # with_python3
-
-
 %install
-# Do Python 3 first not to overwrite the entrypoint
-%if %{with python3}
-pushd %{py3dir}
-%{__python3} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
-mv $RPM_BUILD_ROOT%{_bindir}/{,python3-}chardetect
-popd
-%endif # with_python3
-
 %if %{with python2}
-%{__python2} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%py2_install
+%endif
+
+## rm %%{buildroot}%%{_bindir}/*
+
+%if %{with python3}
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+%endif
+
+%if %{with tests}
+%check
+%{__python2} -m pytest -v
+%{__python3} -m pytest -v
 %endif
 
 %if %{with python2}
 %files -n python2-%{pypi_name}
-%{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/*
-%{_bindir}/chardetect
+%{python2_sitelib}/%{pypi_name}/
+%{python2_sitelib}/%{pypi_name}-%{version}-py%{python2_version}.egg-info/
 %endif
 
 %if %{with python3}
 %files -n python%{python3_pkgversion}-%{pypi_name}
-%{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README.rst
-%{python3_sitelib}/*
-%{_bindir}/python%{python3_pkgversion}-chardetect
-%endif # with_python3
+%{python3_sitelib}/%{pypi_name}/
+%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info/
+%{_bindir}/chardetect
+%endif
 
 
 %changelog
-* Tue Jun 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-9
-- Made support for Python 2 optional
+* Wed Jun 19 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-10
+- Added support for Amazon Linux 2 Python 3
 
-* Tue Oct 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-8
-- Ported to support Python 3 on Amazon Linux 2
+* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 3.0.4-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Fri Aug 17 2018 Miro Hrončok <mhroncok@redhat.com> - 3.0.4-8
+- Only have one /usr/bin/chardetect
 
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 3.0.4-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild

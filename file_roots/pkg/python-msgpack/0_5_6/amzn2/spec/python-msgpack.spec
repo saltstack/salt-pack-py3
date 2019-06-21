@@ -95,8 +95,8 @@ sleep 1
 %endif
 
 %install
-%py2_install
 %if %{with python2}
+%py2_install
 %endif
 %if %{with python3}
 ## %%py3_install
@@ -128,7 +128,7 @@ py.test-%{python3_version} -v test
 
 %endif
 %changelog
-* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-7
+* Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-7
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 0.5.6-6

@@ -35,6 +35,7 @@
     - sources:
       - salt://{{slspath}}/sources/{{src_name}}-{{version}}.tar.bz2
       - salt://{{slspath}}/sources/libsymlink.attr
+      - salt://{{slspath}}/sources/rpm
       - salt://{{slspath}}/sources/rpm-4.10.0-dwz-debuginfo.patch
       - salt://{{slspath}}/sources/rpm-4.10.90-rpmlib-filesystem-check.patch
       - salt://{{slspath}}/sources/rpm-4.10.0-minidebuginfo.patch

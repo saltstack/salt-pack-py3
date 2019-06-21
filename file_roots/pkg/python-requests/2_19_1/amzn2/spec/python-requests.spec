@@ -140,7 +140,7 @@ rm -rf requests/cacert.pem
 sed -i '/#!\/usr\/.*python/d' requests/certs.py
 
 %build
-%if %{with python3}
+%if %{with python2}
 %py2_build
 %endif
 %if %{with python3}
@@ -191,7 +191,7 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
 
 
 %changelog
-* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-5
+* Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-5
 - Made support for Python 2 optional
 
 * Wed Sep 26 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.19.1-4

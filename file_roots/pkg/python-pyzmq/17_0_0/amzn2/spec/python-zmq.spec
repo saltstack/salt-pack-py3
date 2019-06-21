@@ -53,7 +53,7 @@ multiple transport protocols and more.
 This package contains the python bindings.
 
 %if %{with python2}
-%package -n python2-zmq
+%package -n python2-%{modname}
 Summary:        Software library for fast, message-based applications
 %if 0%{?with_amzn2}
 BuildRequires:  python2-rpm-macros
@@ -63,15 +63,15 @@ BuildRequires:  python2-devel
 %endif
 
 BuildRequires:  python2-setuptools
-BuildRequires:  zeromq-devel
 BuildRequires:  python2-Cython
+BuildRequires:  zeromq-devel
 %if %{with tests}
 BuildRequires:  python2-pytest
 BuildRequires:  python2-tornado
 %endif
 %{?python_provide:%python_provide python2-%{modname}}
 
-%description -n python2-zmq
+%description -n python2-%{modname}
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
 specialized messaging middle-ware products. 0MQ sockets provide an
@@ -82,13 +82,13 @@ multiple transport protocols and more.
 This package contains the python bindings.
 
 
-%package -n python2-zmq-tests
+%package -n python2-%{modname}-tests
 Summary:        Software library for fast, message-based applications
 Group:          Development/Libraries
 License:        LGPLv3+
-Requires:       python2-zmq = %{version}-%{release}
+Requires:       python2-%{modname} = %{version}-%{release}
 %{?python_provide:%python_provide python2-%{modname}-tests}
-%description -n python2-zmq-tests
+%description -n python2-%{modname}-tests
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
 specialized messaging middle-ware products. 0MQ sockets provide an
@@ -102,7 +102,7 @@ This package contains the testsuite for the python bindings.
 
 
 %if %{with python3}
-%package -n python%{python3_pkgversion}-zmq
+%package -n python%{python3_pkgversion}-%{modname}
 Summary:        Software library for fast, message-based applications
 Group:          Development/Libraries
 License:        LGPLv3+
@@ -115,13 +115,14 @@ BuildRequires:  python2-tools
 %endif
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  zeromq-devel
 %if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-pytest
 BuildRequires:  python%{python3_pkgversion}-tornado
 %endif
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}}
 
-%description -n python%{python3_pkgversion}-zmq
+%description -n python%{python3_pkgversion}-%{modname}
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
 specialized messaging middle-ware products. 0MQ sockets provide an
@@ -132,13 +133,13 @@ multiple transport protocols and more.
 This package contains the python bindings.
 
 
-%package -n python%{python3_pkgversion}-zmq-tests
+%package -n python%{python3_pkgversion}-%{modname}-tests
 Summary:        Software library for fast, message-based applications
 Group:          Development/Libraries
 License:        LGPLv3+
-Requires:       python%{python3_pkgversion}-zmq = %{version}-%{release}
+Requires:       python%{python3_pkgversion}-%{modname} = %{version}-%{release}
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}-tests}
-%description -n python%{python3_pkgversion}-zmq-tests
+%description -n python%{python3_pkgversion}-%{modname}-tests
 The 0MQ lightweight messaging kernel is a library which extends the
 standard socket interfaces with features traditionally provided by
 specialized messaging middle-ware products. 0MQ sockets provide an
@@ -182,15 +183,13 @@ chmod -x examples/pubsub/topics_sub.py
 CFLAGS="%{optflags}" %{__python2} setup.py build_ext --inplace
 %py2_build
 %endif
-
 %if %{with python3}
 CFLAGS="%{optflags}" %{__python3} setup.py build_ext --inplace
 ## %%py3_build
 ## amzn2 has issue with %{py_setup} expansion
-## CFLAGS="%%{optflags}" %%{__python3} setup.py %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
 sleep 1
 %endif # with_python3
-
 
 
 %install
@@ -198,6 +197,7 @@ sleep 1
 # Must do the python3 install first because the scripts in /usr/bin are
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
+
 %if %{with python3}
 ## %%py3_install
 ## amzn2 has issue with %{py_setup} expansion
@@ -205,28 +205,31 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 pathfix.py -pn -i %{__python3} %{buildroot}%{python3_sitearch}
 %endif # with_python3
 
-
 %if %{with python2}
 %py2_install
 pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 %endif
 
 
-%check
 %if %{with tests}
+%check
+%if %{with python3}
     # Make sure we import from the install directory
     #rm zmq/__*.py
     PYTHONPATH=%{buildroot}%{python3_sitearch} \
         %{__python3} setup.py test
-
+%endif
+%if %{with python2}
     # Remove Python 3 only tests
     #rm  zmq/asyncio.py zmq/auth/asyncio.py \
     #    zmq/tests/*test_asyncio.py zmq/tests/test_future.py
     PYTHONPATH=%{buildroot}%{python2_sitearch} \
         %{__python2} setup.py test
 %endif
+%endif
 
 
+%if %{with python2}
 %files -n python2-%{modname}
 %license COPYING.*
 %doc README.md examples/
@@ -236,9 +239,10 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 
 %files -n python2-%{modname}-tests
 %{python2_sitearch}/zmq/tests
+%endif
 
 %if %{with python3}
-%files -n python%{python3_pkgversion}-zmq
+%files -n python%{python3_pkgversion}-%{modname}
 %license COPYING.*
 %doc README.md
 # examples/
@@ -246,13 +250,13 @@ pathfix.py -pn -i %{__python2} %{buildroot}%{python2_sitearch}
 %{python3_sitearch}/zmq
 %exclude %{python3_sitearch}/zmq/tests
 
-%files -n python%{python3_pkgversion}-zmq-tests
+%files -n python%{python3_pkgversion}-%{modname}-tests
 %{python3_sitearch}/zmq/tests
 %endif
 
 
 %changelog
-* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-5
+* Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-5
 - Made support for Python 2 optional, added conditional for tests
 
 * Wed Feb 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 17.0.0-4

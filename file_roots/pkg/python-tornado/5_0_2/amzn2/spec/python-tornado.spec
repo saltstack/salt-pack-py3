@@ -53,11 +53,13 @@ BuildRequires:  python2-backports_abc
 BuildRequires:  python2-futures
 %{?python_provide:%python_provide python2-%{srcname}}
 
-Requires:       python2-pycurl
-Requires:       python2-backports_abc
 %if 0%{?with_amzn2}
+Requires:       python-pycurl
+Requires:       python-backports_abc
 Requires:       python-singledispatch
 %else
+Requires:       python2-pycurl
+Requires:       python2-backports_abc
 Requires:       python2-singledispatch
 %endif
 Requires:       python2-futures

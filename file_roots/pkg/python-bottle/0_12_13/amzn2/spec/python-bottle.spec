@@ -13,7 +13,8 @@
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
-%global _description Bottle is a fast and simple micro-framework for small web-applications.\
+%global _description \
+Bottle is a fast and simple micro-framework for small web-applications.\
 It offers request dispatching (Routes) with URL parameter support, Templates,\
 a built-in HTTP Server and adapters for many third party WSGI/HTTP-server and\
 template engines. All in a single file and with no dependencies other than the\
