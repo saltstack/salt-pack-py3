@@ -13,13 +13,14 @@
 
 
 # Release Candidate
-%define __rc_ver %{nil}
+%define __rc_ver tobereplaced_date
+## %%define __rc_ver %{nil}
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
-Release: 2%{?dist}
+Release: 0%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -66,14 +67,6 @@ Requires: dnf-utils
 %else
 Requires: yum-utils
 %endif
-
-%description
-Salt is a distributed remote execution system used to execute commands and
-query data. It was developed in order to bring the best solutions found in
-the world of remote execution together and make them better, faster and more
-malleable. Salt accomplishes this via its ability to handle larger loads of
-information, and not just dozens, but hundreds or even thousands of individual
-servers, handle them quickly and through a simple and manageable interface.
 
 
 ## Python 3 support
@@ -171,6 +164,14 @@ Requires(postun): systemd-units
 BuildRequires: systemd-units
 Requires:      systemd-python
 
+
+%description
+Salt is a distributed remote execution system used to execute commands and
+query data. It was developed in order to bring the best solutions found in
+the world of remote execution together and make them better, faster and more
+malleable. Salt accomplishes this via its ability to handle larger loads of
+information, and not just dozens, but hundreds or even thousands of individual
+servers, handle them quickly and through a simple and manageable interface.
 
 ## Python 3 Support
 ## build either Python 3 or Python 2, but not both since code expects salt
@@ -323,7 +324,7 @@ Supports Python 2.
 
 %prep
 ## %%autosetup
-%setup -c
+%setup -q -c
 cd %{name}-%{version}
 ## %%if 0%%{?rhel} > 7
 ## %%patch0 -p1
@@ -334,6 +335,7 @@ cd %{name}-%{version}
 
 %build
 %if %{with python3}
+cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 ## %%py3_build
 ## amzn2 has issue with %{py_setup} expansion
 CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
@@ -350,12 +352,11 @@ rm -rf %{buildroot}
 cd $RPM_BUILD_DIR/%{name}-%{version}
 
 %if %{with python3}
-pushd %{py3dir}
-
 ## Python 3
 ## rm -rf %%{buildroot}
 ## %%py3_install
 ## amzn2 has issue with %{py_setup} expansion
+cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 
 # Add some directories
@@ -479,8 +480,6 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
-popd
-
 %endif  ## %if %{with python2}
 
 
@@ -494,7 +493,7 @@ PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
 
 
 %clean
-rm -rf %%{buildroot}
+rm -rf %{buildroot}
 
 
 %if %{with python3}
@@ -507,10 +506,10 @@ rm -rf %%{buildroot}
 %{_var}/cache/salt
 %{_var}/log/salt
 
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
-%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
-%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
+%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
+%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
+## %%doc $RPM_BUILD_DIR/python3-%%{name}-%%{version}-%%{release}/LICENSE
+## %%doc $RPM_BUILD_DIR/python3-%%{name}-%%{version}-%%{release}/README.fedora
 
 /%{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
@@ -585,8 +584,8 @@ rm -rf %%{buildroot}
 %if %{with python2}
 %files
 %defattr(-,root,root,-)
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-%doc $RPM_BUILD_DIR/%{name}-%{version}/LICENSE
+%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
+## %%doc $RPM_BUILD_DIR/%{name}-%{version}/LICENSE
 
 %{python2_sitelib}/%{name}/*
 #%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
@@ -595,7 +594,7 @@ rm -rf %%{buildroot}
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
 %doc $RPM_BUILD_DIR/%{name}-%{version}/README.fedora
 %{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
@@ -796,7 +795,7 @@ rm -rf %%{buildroot}
 
 
 %changelog
-* Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-2
+* Fri Jun 21 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-2
 - Made support for Python 2 on Amazon Linux 2 optional
 
 * Mon Mar 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1
