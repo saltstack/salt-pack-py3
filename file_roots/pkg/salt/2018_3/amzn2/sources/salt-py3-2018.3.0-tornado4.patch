@@ -166,7 +166,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
              self._creds = creds
              self._crypticle = Crypticle(self.opts, creds['aes'])
 -            self._authenticate_future = tornado.concurrent.Future()
-+            self._authenticate_future = Future()
++            self._authenticate_future = TornadoFuture()
              self._authenticate_future.set_result(True)
          else:
              self.authenticate()
@@ -175,7 +175,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
              future = self._authenticate_future
          else:
 -            future = tornado.concurrent.Future()
-+            future = Future()
++            future = TornadoFuture()
              self._authenticate_future = future
              self.io_loop.add_callback(self._authenticate)
  
