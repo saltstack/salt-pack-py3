@@ -7,6 +7,7 @@ build_pkgs:
       - rpmdevtools
       - mock
       - gnupg2
+      - wget
 
 
 ensure_build_dest_dir:
