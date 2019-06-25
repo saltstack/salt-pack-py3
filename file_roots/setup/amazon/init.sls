@@ -11,6 +11,7 @@ build_pkgs:
       - rpm-sign
       - gnupg2
       - python3-gnupg
+      - wget
 
 
 {{build_cfg.build_runas}}:
