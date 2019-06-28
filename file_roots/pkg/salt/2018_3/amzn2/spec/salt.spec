@@ -48,9 +48,9 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-Patch0:  salt-py3-%{version}-rpmsign.patch
-Patch1:  salt-py3-%{version}-tornado4.patch
-Patch2:  salt-py3-%{version}-gpg-strbytes.patch
+Patch0:  salt-py3-2018.3.0-rpmsign.patch
+Patch1:  salt-py3-2018.3.0-tornado4.patch
+Patch2:  salt-py3-2018.3.0-gpg-strbytes.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -795,7 +795,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Mon Jun 28 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-2
+* Fri Jun 28 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-2
 - Made support for Python 2 on Amazon Linux 2 optional
 - Support for Python 3 only on Amazon Linux 2
 
