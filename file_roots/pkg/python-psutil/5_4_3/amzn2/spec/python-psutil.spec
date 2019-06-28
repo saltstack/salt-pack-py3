@@ -110,12 +110,11 @@ sleep 1
 %install
 %if %{with python2}
 %py2_install
-%if %{with python3}
 %endif
+%if %{with python3}
 ## %%py3_install
 ## amzn2 has issue with %{py_setup} expansion
 CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
-
 %endif
 
 %if %{with tests}
@@ -126,6 +125,7 @@ make test-memleaks PYTHON=%%{__python2}
 %endif
 %if %{with python3}
 make test-memleaks PYTHON=%%{__python3}
+%endif
 %endif
 
 
@@ -148,7 +148,7 @@ make test-memleaks PYTHON=%%{__python3}
 
 
 %changelog
-* Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-8
+* Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-8
 - Made support for Python 2 optional
 
 * Thu Oct 04 2018 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-7

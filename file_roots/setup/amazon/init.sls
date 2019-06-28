@@ -4,6 +4,7 @@
 
 build_pkgs:
   pkg.installed:
+    - allow_updates: True
     - pkgs:
       - createrepo
       - mock
@@ -12,6 +13,7 @@ build_pkgs:
       - gnupg2
       - python3-gnupg
       - wget
+      - rpm: latest
 
 
 {{build_cfg.build_runas}}:

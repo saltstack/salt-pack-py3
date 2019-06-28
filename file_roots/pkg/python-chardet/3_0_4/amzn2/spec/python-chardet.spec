@@ -11,7 +11,7 @@
 %global pypi_name chardet
 Name:           python-%{pypi_name}
 Version:        3.0.4
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Character encoding auto-detection in Python
 License:        LGPLv2
 URL:            https://github.com/%{pypi_name}/%{pypi_name}
@@ -111,11 +111,14 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 %doc README.rst
 %{python3_sitelib}/%{pypi_name}/
 %{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info/
-%{_bindir}/chardetect
+%exclude %{_bindir}/chardetect
 %endif
 
 
 %changelog
+* Fri Jun 29 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-11
+- Exclude chardetect for now,as python-chardet is installed by default and conflicts
+
 * Wed Jun 19 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-10
 - Added support for Amazon Linux 2 Python 3
 
