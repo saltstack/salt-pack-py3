@@ -47,9 +47,6 @@
       - salt://{{slspath}}/sources/{{pkg_name}}-syndic.service
       - salt://{{slspath}}/sources/{{pkg_name}}.bash
       - salt://{{slspath}}/sources/{{pkg_name}}-proxy@.service
-      - salt://{{slspath}}/sources/{{pkg_name}}-py3-2018.3.0-tornado4.patch
-      - salt://{{slspath}}/sources/{{pkg_name}}-py3-2018.3.0-gpg-strbytes.patch
-      - salt://{{slspath}}/sources/{{pkg_name}}-py3-2018.3.0-rpmsign.patch
       - salt://{{slspath}}/sources/fish-completions/{{pkg_name}}.fish
       - salt://{{slspath}}/sources/fish-completions/{{pkg_name}}_common.fish
       - salt://{{slspath}}/sources/fish-completions/{{pkg_name}}-call.fish

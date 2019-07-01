@@ -1,11 +1,11 @@
-%if 0%{?fedora} || 0%{?rhel} > 7
-%bcond_with python3
-%endif
-
 %bcond_with python2
 %bcond_without python3
 
 %bcond_with tests
+
+%if ( "0%{?dist}" == "0.amzn2" )
+%global with_amzn2 1
+%endif
 
 %global srcname tornado
 
@@ -21,16 +21,6 @@ Source0:        https://files.pythonhosted.org/packages/source/t/tornado/tornado
 # Patch to use system CA certs instead of certifi
 Patch0:         python-tornado-cert.patch
 
-%if %{with python2}
-BuildRequires:  python2-devel
-BuildRequires:  python2-backports_abc
-BuildRequires:  python2-singledispatch
-%endif
-%if %{with python3}
-BuildRequires:  python%{python3_pkgversion}-setuptools
-BuildRequires:  python%{python3_pkgversion}-devel
-%endif
-
 %description
 Tornado is an open source version of the scalable, non-blocking web
 server and tools.
@@ -44,6 +34,13 @@ ideal for real-time web services.
 %if %{with python2}
 %package -n python2-%{srcname}
 Summary:        Scalable, non-blocking web server and tools
+%if 0%{?with_amzn2}
+BuildRequires:  python2-rpm-macros
+%endif
+BuildRequires:  python2-devel
+BuildRequires:  python2-backports_abc
+BuildRequires:  python2-singledispatch
+
 %{?python_provide:%python_provide python2-%{srcname}}
 
 Requires:       python-pycurl
@@ -60,13 +57,13 @@ reasonably fast. Because it is non-blocking and uses epoll, it can
 handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
 
-%package doc
+%package -n python2-doc
 Summary:        Examples for python-tornado
 Group:          Documentation
-Obsoletes:      python%{python3_pkgversion}-%{srcname}-doc < 4.2.1-3
-Provides:       python%{python3_pkgversion}-%{srcname}-doc = %{version}-%{release}
+Obsoletes:      python2-%{srcname}-doc < 4.2.1-3
+Provides:       python2-%{srcname}-doc = %{version}-%{release}
 
-%description doc
+%description -n python2-doc
 Tornado is an open source version of the scalable, non-blocking web
 server and and tools. This package contains some example applications.
 %endif
@@ -74,7 +71,13 @@ server and and tools. This package contains some example applications.
 %if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        Scalable, non-blocking web server and tools
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}
+%if 0%{?with_amzn2}
+BuildRequires:  python3-rpm-macros
+%endif
+BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-devel
+
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 Requires:       python%{python3_pkgversion}-pycurl
 
 %description -n python%{python3_pkgversion}-%{srcname}
@@ -86,11 +89,21 @@ The framework is distinct from most mainstream web server frameworks
 reasonably fast. Because it is non-blocking and uses epoll, it can
 handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
-Supports Python %{python3_version}.
-%endif # with_python3
 
-%prep 
-%setup -n %{srcname}-%{version}
+%package -n python%{python3_pkgversion}-doc
+Summary:        Examples for python-tornado
+Group:          Documentation
+Obsoletes:      python%{python3_pkgversion}-%{srcname}-doc < 4.2.1-3
+Provides:       python%{python3_pkgversion}-%{srcname}-doc = %{version}-%{release}
+
+%description -n python%{python3_pkgversion}-doc
+Tornado is an open source version of the scalable, non-blocking web
+server and and tools. This package contains some example applications.
+
+%endif # with python3
+
+%prep
+%setup -q -n %{srcname}-%{version}
 %patch0 -p1 -b .cert
 # remove shebang from files
 %{__sed} -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
@@ -98,7 +111,7 @@ Supports Python %{python3_version}.
 %build
 %if %{with python3}
 %py3_build
-%endif # with_python3
+%endif # with python3
 %if %{with python2}
 %py2_build
 %endif
@@ -107,7 +120,7 @@ Supports Python %{python3_version}.
 %install
 %if %{with python3}
 %py3_install
-%endif # with_python3
+%endif # with python3
 %if %{with python2}
 %py2_install
 %endif
@@ -117,12 +130,11 @@ Supports Python %{python3_version}.
 %check
 %if %{with python3}
 %{__python3} -m tornado.test.runtests --verbose
-%endif # with_python3
+%endif # with python3
 %if %{with python2}
 %{__python2} -m tornado.test.runtests --verbose
 %endif
 %endif
-
 
 %if %{with python2}
 %files -n python2-%{srcname}
@@ -130,7 +142,7 @@ Supports Python %{python3_version}.
 %{python2_sitearch}/%{srcname}/
 %{python2_sitearch}/%{srcname}-%{version}-*.egg-info
 
-%files doc
+%files -n python2-doc
 %doc demos
 %endif
 
@@ -139,12 +151,15 @@ Supports Python %{python3_version}.
 %doc README.rst
 %{python3_sitearch}/%{srcname}/
 %{python3_sitearch}/%{srcname}-%{version}-*.egg-info
+
+%files -n python%{python3_pkgversion}-doc
+%doc demos
 %endif
 
 
 %changelog
-* Thu May 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-3
-- Added support for Redhat 8, and support for Python 2 packages optional
+* Mon Jul 01 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-3
+- Added support for Amazon Linux 2 Python 3, Python 2 support optional
 
 * Tue Nov 07 2017 Charalampos Stratakis <cstratak@redhat.com> - 4.5.2-2
 - Fix dist tag and bump release for rebuild

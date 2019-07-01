@@ -1,0 +1,41 @@
+diff -up tornado-4.5b2/setup.py.cert tornado-4.5b2/setup.py
+--- tornado-4.5b2/setup.py.cert	2017-04-10 20:42:50.000000000 -0600
++++ tornado-4.5b2/setup.py	2017-04-11 13:30:36.653766615 -0600
+@@ -133,10 +133,6 @@ if setuptools is not None:
+         install_requires.append('backports.ssl_match_hostname')
+     if sys.version_info < (3, 4):
+         install_requires.append('singledispatch')
+-        # Certifi is also optional on 2.7.9+, although making our dependencies
+-        # conditional on micro version numbers seems like a bad idea
+-        # until we have more declarative metadata.
+-        install_requires.append('certifi')
+     if sys.version_info < (3, 5):
+         install_requires.append('backports_abc>=0.4')
+     kwargs['install_requires'] = install_requires
+diff -up tornado-4.5b2/tornado/simple_httpclient.py.cert tornado-4.5b2/tornado/simple_httpclient.py
+--- tornado-4.5b2/tornado/simple_httpclient.py.cert	2017-04-09 21:05:09.000000000 -0600
++++ tornado-4.5b2/tornado/simple_httpclient.py	2017-04-11 13:31:06.580629181 -0600
+@@ -1,4 +1,3 @@
+-#!/usr/bin/env python
+ from __future__ import absolute_import, division, print_function
+ 
+ from tornado.escape import utf8, _unicode
+@@ -34,17 +33,8 @@ except ImportError:
+     # ssl is not available on Google App Engine.
+     ssl = None
+ 
+-try:
+-    import certifi
+-except ImportError:
+-    certifi = None
+-
+-
+ def _default_ca_certs():
+-    if certifi is None:
+-        raise Exception("The 'certifi' package is required to use https "
+-                        "in simple_httpclient")
+-    return certifi.where()
++    return '/etc/pki/tls/cert.pem'
+ 
+ 
+ class SimpleAsyncHTTPClient(AsyncHTTPClient):

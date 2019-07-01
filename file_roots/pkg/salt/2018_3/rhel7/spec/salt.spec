@@ -20,7 +20,7 @@
 
 Name:    salt
 Version: 2018.3.0%{?__rc_ver}
-Release: 3%{?dist}
+Release: 0%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -47,12 +47,6 @@ Source18: salt-master.fish
 Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
-
-%if 0%{?rhel} > 7
-Patch0:  salt-py3-2018.3.0-tornado4.patch
-%endif
-Patch1:  salt-py3-2018.3.0-gpg-strbytes.patch
-Patch2:  salt-py3-2018.3.0-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -207,14 +201,7 @@ Supports Python 3.
 
 
 %prep
-## %%autosetup 
-%setup -c
-cd %{name}-%{version}
-%if 0%{?rhel} > 7
-%patch0 -p1
-%endif
-%patch1 -p1
-%patch2 -p1
+%autosetup
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -506,8 +493,8 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Fri Jun 28 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-3
-- Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
+* Mon Jul 01 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-4
+- Removed need for patches tornado < 5, gpg updated on branch, no rpmsign
 
 * Thu May 23 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-7
 - Patching in support for gpg-agent and passphrase preset
@@ -711,7 +698,7 @@ rm -rf %{buildroot}
 * Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-2
 - Fix changelog
 
-* Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-1
+ Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-1
 - Update to feature release 2014.7.0
 
 * Fri Oct 17 2014 Erik Johnson <erik@saltstack.com> - 2014.1.13-1
