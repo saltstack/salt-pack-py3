@@ -58,7 +58,8 @@ include:
     - pkg.python-singledispatch.3_4_0_3.amzn2
     - pkg.python-six.1_11_0.amzn2
     - pkg.python-sure.1_4_11.amzn2
-    - pkg.python-tornado.4_4_2.amzn2
+    - pkg.python-tornado4.4_5_2.amzn2    ## build and use this till salt updated
+    - pkg.python-tornado.5_0_2.amzn2     ## latest 5.1.1
     - pkg.python-timelib.0_2_4.amzn2
     - pkg.python-typing.3_5_2_2.amzn2
     - pkg.python-unittest2.1_1_0.amzn2
