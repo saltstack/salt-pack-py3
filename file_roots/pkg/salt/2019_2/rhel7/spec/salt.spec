@@ -47,7 +47,6 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-Patch0:  salt-py3-2019.2.1-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -202,10 +201,7 @@ Supports Python 3.
 
 
 %prep
-## %%autosetup
-%setup -c
-cd %{name}-%{version}
-%patch0 -p1
+%autosetup
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -498,7 +494,7 @@ rm -rf %{buildroot}
 
 %changelog
 * Tue Jul 02 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-9
-- Support for point release, only rpmsign patch
+- Prep support for point release
 
 * Thu Jun 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-8
 - Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
