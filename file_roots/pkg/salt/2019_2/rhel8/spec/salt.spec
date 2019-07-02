@@ -48,10 +48,9 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 %if 0%{?rhel} > 7
-Patch0:  salt-py3-2019.2.0-tornado4.patch
+Patch0:  salt-py3-2019.2.1-tornado4.patch
 %endif
-Patch1:  salt-py3-2019.2.0-gpg-strbytes.patch
-Patch2:  salt-py3-2019.2.0-rpmsign.patch
+Patch1:  salt-py3-2019.2.1-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -206,14 +205,13 @@ Supports Python 3.
 
 
 %prep
-## %%autosetup 
+## %%autosetup
 %setup -c
 cd %{name}-%{version}
 %if 0%{?rhel} > 7
 %patch0 -p1
 %endif
 %patch1 -p1
-%patch2 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -505,7 +503,10 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Fri Jun 28 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-8
+* Tue Jul 02 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-9
+- Support for point release, only rpmsign and tornado4 patches
+
+* Thu Jun 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-8
 - Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
 
 * Thu May 23 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-7
