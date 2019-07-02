@@ -49,10 +49,10 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 %if 0%{?rhel} > 7
-Patch0:  salt-py3-%{version}-tornado4.patch
+Patch0:  salt-py3-2018.3.0-tornado4.patch
 %endif
-Patch1:  salt-py3-%{version}-gpg-strbytes.patch
-Patch2:  salt-py3-%{version}-rpmsign.patch
+Patch1:  salt-py3-2018.3.0-gpg-strbytes.patch
+Patch2:  salt-py3-2018.3.0-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -506,7 +506,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Thu Jun 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-3
+* Fri Jun 28 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-3
 - Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
 
 * Thu May 23 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-7

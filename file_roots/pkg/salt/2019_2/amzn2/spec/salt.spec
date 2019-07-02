@@ -13,10 +13,11 @@
 
 
 # Release Candidate
-%define __rc_ver tobereplaced_date
-## %%define __rc_ver %{nil}
+## %define __rc_ver nb201906271929454099573
+%%define __rc_ver %{nil}
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
+
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
@@ -48,9 +49,9 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-## Patch0:  salt-py3-%%{version}-rpmsign.patch
-Patch1:  salt-py3-%{version}-tornado4.patch
-Patch2:  salt-py3-%{version}-gpg-strbytes.patch
+Patch0:  salt-py3-2019.2.0-rpmsign.patch
+Patch1:  salt-py3-2019.2.0-tornado4.patch
+Patch2:  salt-py3-2019.2.0-gpg-strbytes.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -326,9 +327,7 @@ Supports Python 2.
 ## %%autosetup
 %setup -q -c
 cd %{name}-%{version}
-## %%if 0%%{?rhel} > 7
-## %%patch0 -p1
-## %%endif
+%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 
@@ -795,7 +794,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Fri Jun 21 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-2
+* Fri Jun 28 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-2
 - Made support for Python 2 on Amazon Linux 2 optional
 
 * Mon Mar 11 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1

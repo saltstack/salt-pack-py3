@@ -505,7 +505,7 @@ pkgbuild_registry:
       results:
         - python3-bottle
     python-chardet:
-      version: 3.0.4-10
+      version: 3.0.4-11
       noarch: True
       results:
         - python3-chardet
