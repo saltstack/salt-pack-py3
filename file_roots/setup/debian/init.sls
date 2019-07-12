@@ -15,12 +15,12 @@ build_pkgs:
       - debhelper
       - gnupg
       - gnupg-agent
-      - python-setuptools
-      - python-gnupg
       - pkg-config
       - ccache
       - nfs-common
       - bash-completion
+##      - python-setuptools
+##      - python-gnupg
 
 
 {{build_cfg.build_runas}}:
