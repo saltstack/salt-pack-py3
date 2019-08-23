@@ -4,6 +4,7 @@ include:
 {% if buildcfg.build_release == 'ubuntu1804' %}
 
     - pkg.python-ioflo.1_7_4.ubuntu1804
+    - pkg.python-m2crypto.0_31_0.ubuntu1804
     - pkg.python-raet.0_6_8.ubuntu1804
     - pkg.python-timelib.0_2_4.ubuntu1804
     - pkg.salt.2019_2.ubuntu1804
@@ -14,6 +15,7 @@ include:
     - pkg.python-ioflo.1_7_4.ubuntu1604
     - pkg.python-libcloud.1_5_0.ubuntu1604
     - pkg.python-libnacl.4_1.ubuntu1604
+    - pkg.python-m2crypto.0_31_0.ubuntu1604
     - pkg.python-raet.0_6_8.ubuntu1604
     - pkg.python-timelib.0_2_4.ubuntu1604
 ##    - pkg.python-tornado.4_2_1.ubuntu1604 ## xenial 4.2.1-1ubuntu3
