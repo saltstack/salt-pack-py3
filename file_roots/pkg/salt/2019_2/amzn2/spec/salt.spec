@@ -79,6 +79,7 @@ BuildRequires: python%{python3_pkgversion}-libcloud
 BuildRequires: python%{python3_pkgversion}-six
 %if 0%{?with_amzn2}
 BuildRequires: python%{python3_pkgversion}-pyyaml
+BuildRequires: python%{python3_pkgversion}-distro
 %else
 BuildRequires: python%{python3_pkgversion}-PyYAML
 %endif
@@ -103,6 +104,7 @@ Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 %if 0%{?with_amzn2}
 Requires: python%{python3_pkgversion}-pyyaml
+Requires: python%{python3_pkgversion}-distro
 %else
 Requires: python%{python3_pkgversion}-PyYAML
 %endif
@@ -789,6 +791,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Sep 10 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
+- Support for point release, added distro as a requirement
+
 * Tue Jul 02 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-3
 - Support for point release, only tornado4 patches
 
