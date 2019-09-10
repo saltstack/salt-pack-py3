@@ -88,6 +88,7 @@ BuildRequires: python%{python3_pkgversion}-six
 BuildRequires: python%{python3_pkgversion}-PyYAML
 %else
 BuildRequires: python%{python3_pkgversion}-pyyaml
+BuildRequires: python%{python3_pkgversion}-distro
 %endif
 BuildRequires: git
 
@@ -113,6 +114,7 @@ Requires: python%{python3_pkgversion}-psutil
 Requires: python%{python3_pkgversion}-PyYAML
 %else
 Requires: python%{python3_pkgversion}-pyyaml
+Requires: python%{python3_pkgversion}-distro
 %endif
 %endif
 
@@ -503,6 +505,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Sep 10 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-10
+- Support for point release, added distro as a requirement
+
 * Tue Jul 02 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-9
 - Support for point release, only rpmsign and tornado4 patches
 

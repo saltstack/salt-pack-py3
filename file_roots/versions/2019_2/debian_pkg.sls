@@ -1,7 +1,11 @@
 {% import "setup/debian/map.jinja" as buildcfg %}
 
 include:
-{% if buildcfg.build_release == 'debian9' %}
+{% if buildcfg.build_release == 'debian10' %}
+
+    - pkg.salt.2019_2.debian10
+
+{% elif buildcfg.build_release == 'debian9' %}
 
     - pkg.python-ioflo.1_7_4.debian9        ## need update to latest, was 1.3.8
     - pkg.python-jinja2.2_9_4.debian9
