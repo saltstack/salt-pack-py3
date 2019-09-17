@@ -88,7 +88,7 @@ BuildRequires: python%{python3_pkgversion}-six
 BuildRequires: python%{python3_pkgversion}-PyYAML
 %else
 BuildRequires: python%{python3_pkgversion}-pyyaml
-BuildRequires: python%{python3_pkgversion}-distro
+## BuildRequires: python%%{python3_pkgversion}-distro
 %endif
 BuildRequires: git
 

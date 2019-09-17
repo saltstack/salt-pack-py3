@@ -3,6 +3,7 @@
 include:
 {% if buildcfg.build_release == 'debian10' %}
 
+    - pkg.python-m2crypto.0_31_0.debian10
     - pkg.salt.2019_2.debian10
 
 {% elif buildcfg.build_release == 'debian9' %}

@@ -19,8 +19,8 @@ build_pkgs:
       - ccache
       - nfs-common
       - bash-completion
-##      - python-setuptools
-##      - python-gnupg
+      - python-setuptools
+      - python-gnupg
 
 
 {{build_cfg.build_runas}}:
