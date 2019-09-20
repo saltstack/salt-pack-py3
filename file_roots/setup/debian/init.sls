@@ -14,7 +14,7 @@ build_pkgs:
       - git
       - debhelper
       - gnupg
-      - gnupg-agent
+      - gpg-agent
       - pkg-config
       - ccache
       - nfs-common

@@ -284,7 +284,7 @@ pkgbuild_registry:
 
   rhel7:
     libsodium:
-      version: 1.0.17-1
+      version: 1.0.18-2
       results:
         - libsodium
         - libsodium-devel
@@ -303,110 +303,197 @@ pkgbuild_registry:
       results:
         - openpgm
         - openpgm-devel
+    python36:
+      version: 3.6.8-1
+      results:
+        - python36
+        - python36-debug
+        - python36-debuginfo
+        - python36-devel
+        - python36-idle
+        - python36-libs
+        - python36-test
+        - python36-tkinter
+        - python36-tools
     python-chardet:
-      version: 2.2.1-1
+      version: 3.0.4-11
       noarch: True
+      build_deps:
+        - python36
+      results:
+        - python3-chardet
     python-cherrypy:
       version: 5.6.0-6
       noarch: True
       build_deps:
+        - python36
         - python-mock
       results:
         - python36-cherrypy
     python-crypto:
-      version: 2.6.1-2
+      version: 2.6.1-26
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
+        - python36
       results:
         - python36-crypto
     python-gnupg:
       version: 0.4.4-2
       noarch: True
+      build_deps:
+        - python36
       results:
         - python36-gnupg
     python-ioflo:
       version: 1.3.8-5
       noarch: True
+      build_deps:
+        - python36
       results:
         - python36-ioflo
     python-libcloud:
       version: 2.0.0-4
       noarch: True
+      build_deps:
+        - python36
       results:
         - python36-libcloud
     python-libnacl:
       version: 1.6.1-3
       noarch: True
+      build_deps:
+        - python36
       results:
         - python36-libnacl
     python-m2crypto:
       version: 0.33.0-1
+      build_deps:
+        - python36
       results:
         - python36-m2crypto
     python-msgpack:
-      version: 0.4.6-3
+      version: 0.5.6-6
+      build_deps:
+        - python36
       results:
         - python36-msgpack
     python-mock:
-      version: 1.0.1-13
+      version: 2.0.0-2
       noarch: True
+      build_deps:
+        - python36
+        - python-pbr
+        - python-six
       results:
         - python36-mock
+    python-pbr:
+      version: 4.2.0-4
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-pbr
     python-psutil:
-      version: 2.2.1-2
+      version: 2.2.1-3
+      build_deps:
+        - python36
       results:
         - python36-psutil
-    python-pycryptodome:
-      version: 3.6.1-3
+    python-pycryptodomex:
+      version: 3.7.3-3
+      build_deps:
+        - python36
       results:
         - python36-pycryptodomex
+    python-pysocks:
+      version: 1.6.8-6
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-pysocks
     python-pyzmq:
       name: python-zmq
       version: 15.3.0-6
       build_deps:
+        - python36
         - zeromq
       results:
         - python36-zmq
     python-raet:
       version: 0.6.6-7
       noarch: True
+      build_deps:
+        - python36
       results:
         - python36-raet
       build_deps:
         - python-ioflo
         - python-libnacl
     python-simplejson:
-      version: 3.3.3-3
+      version: 3.10.0-3
+      build_deps:
+        - python36
       results:
         - python36-simplejson
+    python-six:
+      version: 1.11.0-3
+      build_deps:
+        - python36
+      results:
+        - python36-six
     python-timelib:
       version: 0.2.4-5
       noarch: True
+      build_deps:
+        - python36
       results:
         - python36-timelib
     python-tornado:
-      version: 4.2.1-3
+      version: 4.4.2-3
+      build_deps:
+        - python36
       results:
         - python36-tornado
     python-typing:
       version: 3.5.2.2-4
       noarch: True
+      build_deps:
+        - python36
       results:
         - python36-typing
     python-urllib3:
-      version: 1.10.4-3
+      version: 1.19.1-6
       noarch: True
+      build_deps:
+        - python36
+        - python-pysocks
       results:
         - python36-urllib3
     python-yaml:
       name: PyYAML
-      version: 3.11-2
+      version: 3.11-3
+      build_deps:
+        - python36
       results:
         - python36-yaml
     salt:
       version: 2019.2.1-1
       noarch: True
       build_deps:
+        - python36
+        - python-pycryptodome
+        - python-msgpack
+        - python-yaml
+        - python-requests
         - python-pyzmq
+        - python-markupsafe
+        - python-tornado
         - python-libcloud
+        - python-mock
+        - python-six
       results:
         - salt
         - salt-master

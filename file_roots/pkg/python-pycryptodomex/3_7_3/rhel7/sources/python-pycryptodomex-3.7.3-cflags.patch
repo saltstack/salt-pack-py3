@@ -1,0 +1,11 @@
+diff -up ./compiler_opt.py.bak ./compiler_opt.py
+--- ./compiler_opt.py.bak	2019-01-19 22:52:55.000000000 +0100
++++ ./compiler_opt.py	2019-02-15 16:40:42.739281229 +0100
+@@ -334,7 +334,6 @@ def set_compiler_options(package_root, e
+ 
+     # Options specific to GCC and CLANG
+     if clang or gcc:
+-        extra_cc_options.append('-O3')
+         if compiler_supports_sse2_with_x86intrin_h():
+             extra_cc_options.append('-msse2')
+             extra_macros.append(("HAVE_X86INTRIN_H", None))

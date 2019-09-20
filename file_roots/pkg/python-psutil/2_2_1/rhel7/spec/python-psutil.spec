@@ -1,5 +1,6 @@
-
-%global with_python3 1
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
 %global short_name psutil
 
@@ -19,9 +20,9 @@ ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
 %filter_setup
 }
 
-Name:           python-psutil
+Name:           python-%{short_name}
 Version:        2.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A process and system utilities module for Python
 
 Group:          Development/Languages
@@ -29,31 +30,28 @@ License:        BSD
 URL:            http://psutil.googlecode.com/
 Source0:        https://pypi.python.org/packages/source/p/%{short_name}/%{short_name}-%{version}.tar.gz
 
-BuildRequires:  python2-devel
-
-%if 0%{?with_python3}
-BuildRequires:  python%{python3_pkgversion}-devel
-%endif
-
-
 %description    %{_description}
 
+
+%if %{with python2}
 %package    -n  python2-psutil
 Summary:        %{summary}
 Group:          %{group}
+BuildRequires:  python2-devel
 %{?python_provide:%python_provide python-%{short_name}}
 %{?python_provide:%python_provide python2-%{short_name}}
 
 %description -n python2-psutil %{_description}
 Supports Python 2.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package    -n  python%{python3_pkgversion}-psutil
 Summary:        %{summary}
 Group:          %{group}
-## %{?python_provide:%python_provide python%{python3_pkgversion}-%{short_name}}
-Provides:       python%{python3_pkgversion}-%{short_name}
+BuildRequires:  python%{python3_pkgversion}-devel
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{short_name}}
 
 %description -n python%{python3_pkgversion}-psutil %{_description}
 Supports Python 3.
@@ -70,29 +68,31 @@ for file in psutil/*.py; do
   rm $file.orig
 done
 
-%if 0%{?with_python3}
+%if %{with python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
 %endif
 
 
 %build
+%if %{with python2}
 CFLAGS=$RPM_OPT_FLAGS %py2_build
-
-%if 0%{?with_python3}
-
+%endif
+%if %{with python3}
 CFLAGS=$RPM_OPT_FLAGS %py3_build
 %endif
 
 
 %install
+%if %{with python2}
 %py2_install
-
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_install
 %endif
 
 
+%if %{with python2}
 %files -n python2-psutil
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
@@ -100,9 +100,10 @@ CFLAGS=$RPM_OPT_FLAGS %py3_build
 %{python_sitearch}/%{short_name}/
 %{python_sitearch}/*.egg-info
 %{python_sitearch}/*.so
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-psutil
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
@@ -114,9 +115,11 @@ CFLAGS=$RPM_OPT_FLAGS %py3_build
 
 
 %changelog
+* Fri Sep 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.2.1-3
+- Made support for Python 2 optional
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.2.1-2
 - Add support for Python 3
-
 
 * Wed Dec 09 2015 Ralph Bean <rbean@redhat.com> - 2.2.1-1
 - Update to 2.2.1 for https://bugzilla.redhat.com/1288221
