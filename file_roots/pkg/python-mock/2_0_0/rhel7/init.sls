@@ -33,6 +33,6 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/spec/{{pypi_name}}-{{version}}.tar.gz
+      - salt://{{slspath}}/sources/{{pypi_name}}-{{version}}.tar.gz
 ##      - {{ macros.pypi_source(pypi_name, version) }}
 {% endif %}

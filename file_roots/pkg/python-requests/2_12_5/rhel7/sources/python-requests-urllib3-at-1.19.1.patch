@@ -1,0 +1,12 @@
+diff -up requests-2.12.5/setup.py.orig requests-2.12.5/setup.py
+--- requests-2.12.5/setup.py.orig	2018-04-05 09:51:52.038547006 -0600
++++ requests-2.12.5/setup.py	2018-04-05 09:52:43.847287528 -0600
+@@ -46,7 +46,7 @@ packages = [
+     'requests.packages.urllib3.packages.backports',
+ ]
+ 
+-requires = []
++requires = ['urllib3>=1.19.1']
+ test_requirements = ['pytest>=2.8.0', 'pytest-httpbin==0.0.7', 'pytest-cov', 'pytest-mock']
+ 
+ with open('requests/__init__.py', 'r') as fd:

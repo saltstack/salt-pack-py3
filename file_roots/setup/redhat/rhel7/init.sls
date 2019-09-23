@@ -36,10 +36,43 @@ build_additional_py3_pkgs:
   pkg.installed:
     - pkgs:
       - epel-release
-      - python36
-      - python36-devel
-      - python36-setuptools
+      - python3
+      - python3-devel
+      - python3-setuptools
       - createrepo
       - rpm-sign
       - nfs-utils
+      - autoconf 
+      - bluez-libs-devel 
+      - bzip2 
+      - bzip2-devel 
+      - expat-devel 
+      - findutils 
+      - gcc-c++ 
+      - gdb 
+      - glibc-devel 
+      - gmp-devel 
+      - libffi-devel 
+      - mesa-libGL-devel 
+      - libX11-devel 
+      - ncurses-devel 
+      - net-tools 
+      - openssl-devel 
+      - pkgconfig 
+      - python-rpm-macros 
+      - readline-devel 
+      - sqlite-devel 
+      - tar 
+      - tcl-devel 
+      - tix-devel 
+      - tk-devel 
+      - valgrind-devel 
+      - vsftpd
+      - xz-devel 
+      - zlib-devel 
+      - curl
+      - libcurl
+      - libcurl-devel
 
+##  - desktop-file-utils
+##  - libappstream-glib

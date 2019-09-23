@@ -2,10 +2,11 @@
 # Some people may have not fixed their imports
 
 %global mod_name mock
+%global python3_pkgversion 36
 
 Name:           python3-mock
 Version:        2.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Python Mocking and Patching Library for Testing
 
 License:        BSD
@@ -102,7 +103,10 @@ find -name \*.py | xargs sed -i -e s/unittest2/unittest/g
 %endif
 
 %changelog
-* Thu Mar 07 2019 Troy Dawson <tdawson@redhat.com>
+* Sun Sep 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-3
+- Support Redhat 7 Python 3.6 without EPEL
+
+* Thu Mar 07 2019 Troy Dawson <tdawson@redhat.com>- 2.0.0-2
 - Rebuilt to change main python from 3.4 to 3.6
 
 * Mon Nov 5 2018 Orion Poplawski <orion@nwra.com> - 2.0.0-1

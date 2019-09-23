@@ -1,4 +1,4 @@
-{% import "setup/amazon/map.jinja" as buildcfg %}
+{% import "setup/redhat/map.jinja" as buildcfg %}
 {% import "setup/macros.jinja" as macros with context %}
 {% set pkg_data = salt["pillar.get"]("pkgbuild_registry:" ~ buildcfg.build_release, {}) %}
 {% set force = salt["pillar.get"]("pkgbuild_force.all", False) or salt["pillar.get"]("pkgbuild_force." ~ slspath, False) %}
@@ -33,6 +33,6 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/spec/{{pypi_name}}-{{version}}.tar.gz
+      - salt://{{slspath}}/sources/{{pypi_name}}-{{version}}.tar.gz
 ##      - {{ macros.pypi_source(pypi_name, version) }}
 {% endif %}

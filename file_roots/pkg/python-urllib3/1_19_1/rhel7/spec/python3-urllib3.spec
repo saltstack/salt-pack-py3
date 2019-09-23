@@ -7,6 +7,9 @@
 
 %global _description Python 3 HTTP module with connection pooling and file POST abilities.
 
+%global python3_pkgversion 36
+%global python3_other_pkgversion 0
+
 Name:           python3-%{pypi_name}
 Version:        1.19.1
 Release:        6%{?dist}
@@ -124,8 +127,8 @@ nosetests-%{python3_version}
 
 
 %changelog
-* Fri Sep 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.19.1-6
-- Made support for tests and docs optional
+* Sun Sep 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.19.1-6
+- Made support for tests and docs optional, support for Redhat 7 Python 3.6
 
 * Thu Mar 07 2019 Troy Dawson <tdawson@redhat.com> - 1.19.1-5
 - Rebuilt to change main python from 3.4 to 3.6

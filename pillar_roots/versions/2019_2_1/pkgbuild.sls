@@ -282,9 +282,10 @@ pkgbuild_registry:
         - zeromq
         - zeromq-devel
 
+
   rhel7:
     libsodium:
-      version: 1.0.18-2
+      version: 1.0.18-1
       results:
         - libsodium
         - libsodium-devel
@@ -304,7 +305,7 @@ pkgbuild_registry:
         - openpgm
         - openpgm-devel
     python36:
-      version: 3.6.8-1
+      version: 3.6.8-2
       results:
         - python36
         - python36-debug
@@ -314,14 +315,21 @@ pkgbuild_registry:
         - python36-libs
         - python36-test
         - python36-tkinter
-        - python36-tools
+    python-bottle:
+      version: 0.12.13-9
+      noarch: True
+      build_deps:
+        - python36
+        - python-setuptools
+      results:
+        - python36-bottle
     python-chardet:
       version: 3.0.4-11
       noarch: True
       build_deps:
         - python36
       results:
-        - python3-chardet
+        - python36-chardet
     python-cherrypy:
       version: 5.6.0-6
       noarch: True
@@ -346,6 +354,11 @@ pkgbuild_registry:
         - python36
       results:
         - python36-gnupg
+    python-idna:
+      version: 2.7-5
+      noarch: True
+      results:
+        - python36-idna
     python-ioflo:
       version: 1.3.8-5
       noarch: True
@@ -353,6 +366,15 @@ pkgbuild_registry:
         - python36
       results:
         - python36-ioflo
+    python-jinja2:
+      version: 2.8.1-3
+      noarch: True
+      build_deps:
+        - python36
+        - python-markupsafe
+        - python-setuptools
+      results:
+        - python36-jinja2
     python-libcloud:
       version: 2.0.0-4
       noarch: True
@@ -373,6 +395,13 @@ pkgbuild_registry:
         - python36
       results:
         - python36-m2crypto
+    python-markupsafe:
+      version: 0.23-4
+      build_deps:
+        - python36
+        - python-setuptools
+      results:
+        - python36-markupsafe
     python-msgpack:
       version: 0.5.6-6
       build_deps:
@@ -380,7 +409,7 @@ pkgbuild_registry:
       results:
         - python36-msgpack
     python-mock:
-      version: 2.0.0-2
+      version: 2.0.0-3
       noarch: True
       build_deps:
         - python36
@@ -404,9 +433,18 @@ pkgbuild_registry:
     python-pycryptodomex:
       version: 3.7.3-3
       build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
         - python36
       results:
         - python36-pycryptodomex
+    python-pycurl:
+      version: 7.43.0-8
+      build_deps:
+        - python-bottle
+      results:
+        - python36-pycurl
     python-pysocks:
       version: 1.6.8-6
       noarch: True
@@ -427,11 +465,27 @@ pkgbuild_registry:
       noarch: True
       build_deps:
         - python36
-      results:
-        - python36-raet
-      build_deps:
         - python-ioflo
         - python-libnacl
+      results:
+        - python36-raet
+    python-requests:
+      version: 2.12.5-4
+      noarch: True
+      build_deps:
+        - python36
+        - python-chardet
+        - python-urllib3
+        - python-idna
+      results:
+        - python36-requests
+    python-setuptools:
+      version: 39.2.0-4
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-setuptools
     python-simplejson:
       version: 3.10.0-3
       build_deps:
@@ -439,7 +493,8 @@ pkgbuild_registry:
       results:
         - python36-simplejson
     python-six:
-      version: 1.11.0-3
+      version: 1.11.0-4
+      noarch: True
       build_deps:
         - python36
       results:
@@ -452,9 +507,10 @@ pkgbuild_registry:
       results:
         - python36-timelib
     python-tornado:
-      version: 4.4.2-3
+      version: 4.4.2-4
       build_deps:
         - python36
+        - python-setuptools
       results:
         - python36-tornado
     python-typing:
@@ -470,6 +526,7 @@ pkgbuild_registry:
       build_deps:
         - python36
         - python-pysocks
+        - python-setuptools
       results:
         - python36-urllib3
     python-yaml:
@@ -477,14 +534,15 @@ pkgbuild_registry:
       version: 3.11-3
       build_deps:
         - python36
+        - python-setuptools
       results:
-        - python36-yaml
+        - python36-PyYAML
     salt:
       version: 2019.2.1-1
       noarch: True
       build_deps:
         - python36
-        - python-pycryptodome
+        - python-m2crypto
         - python-msgpack
         - python-yaml
         - python-requests

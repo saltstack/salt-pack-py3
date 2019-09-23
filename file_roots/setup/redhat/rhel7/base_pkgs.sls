@@ -12,8 +12,8 @@
 build_base_pkgs:
   pkg.installed:
     - pkgs:
-      - python36-gnupg
       - python36-mock
+      - python36-gnupg
 
 
 {{build_cfg.build_runas}}:

@@ -147,7 +147,8 @@ rm -rf %{buildroot}%{python2_sitelib}/pbr/tests
 %if %{with python3}
 %files -n python%{python3_pkgversion}-pbr
 %license LICENSE
-%doc html README.rst
+## %%doc html README.rst
+%doc README.rst
 %{_bindir}/pbr-%{python3_version}
 %{python3_sitelib}/*.egg-info
 %{python3_sitelib}/%{pypi_name}
@@ -155,7 +156,8 @@ rm -rf %{buildroot}%{python2_sitelib}/pbr/tests
 %if 0%{?python3_other_pkgversion}
 %files -n python%{python3_other_pkgversion}-pbr
 %license LICENSE
-%doc html README.rst
+## %%doc html README.rst
+%doc README.rst
 %{_bindir}/pbr-%{python3_other_version}
 %{python3_other_sitelib}/*.egg-info
 %{python3_other_sitelib}/%{pypi_name}
@@ -163,7 +165,7 @@ rm -rf %{buildroot}%{python2_sitelib}/pbr/tests
 %endif
 
 %changelog
-* Fri Sep 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.0-4
+* Sun Sep 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.2.0-4
 - Made support for Python 2 packages and tests and doc optional
 
 * Fri Mar 08 2019 Troy Dawson <tdawson@redhat.com> - 4.2.0-3

@@ -27,6 +27,7 @@ implemented as C extensions.\
 Note: all modules are installed under the Cryptodome package to avoid conflicts\
 with the PyCrypto library.
 
+
 %bcond_with python2
 %bcond_without python3
 %bcond_with tests
@@ -37,6 +38,7 @@ with the PyCrypto library.
 ## %%global python_sphinx_pkg %%{?rhel:python2}%%{?fedora:python%%{python3_pkgversion}}-sphinx
 ## %%global sphinx_build sphinx-build%%{?fedora:-%%{python3_version}}
 
+%global _with_python3_other 0 
 
 
 Name:           python-%{srcname}
@@ -67,7 +69,9 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 %endif
 
+
 %if %{with python3}
+
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 %if 0%{_with_python3_other}
@@ -81,6 +85,9 @@ BuildRequires:  %{python_sphinx_pkg}
 BuildRequires:  python-sphinxcontrib-napoleon
 %endif
 %endif
+
+%endif
+
 
 %if %{with python2}
 %package -n python2-%{srcname}
@@ -161,8 +168,10 @@ touch .separate_namespace
 %endif
 
 
+%if %{with docs}
 # Install man pages
 install -Dpm 0644 Doc/_build/man/pycryptodome.1 $RPM_BUILD_ROOT%{_mandir}/man1/pycryptodome.1
+%endif
 
 # Fix permissions
 %if %{with python2}
@@ -198,7 +207,9 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_other_sitearch}/Cryptodome/SelfTest/PublicKe
 %license LICENSE.rst
 %{python2_sitearch}/Cryptodome/
 %{python2_sitearch}/%{srcname}-*.egg-info/
+%if %{with docs}
 %{_mandir}/man1/pycryptodome.1.*
+%endif
 %endif
 
 
@@ -208,7 +219,9 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_other_sitearch}/Cryptodome/SelfTest/PublicKe
 %license LICENSE.rst
 %{python3_sitearch}/Cryptodome/
 %{python3_sitearch}/%{srcname}-*.egg-info/
+%if %{with docs}
 %{_mandir}/man1/pycryptodome.1.*
+%endif
 
 %if 0%{?_with_python3_other}
 %files -n python%{python3_other_pkgversion}-%{srcname}
@@ -216,13 +229,15 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_other_sitearch}/Cryptodome/SelfTest/PublicKe
 %license LICENSE.rst
 %{python3_other_sitearch}/Cryptodome/
 %{python3_other_sitearch}/%{srcname}-*.egg-info/
+%if %{with docs}
 %{_mandir}/man1/pycryptodome.1.*
+%endif
 %endif
 %endif
 
 
 %changelog
-* Fri Sep 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.7.3-3
+* Sun Sep 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.7.3-3
 - Made support for Python 2, test and docs optional
 
 * Fri Mar 08 2019 Troy Dawson <tdawson@redhat.com> - 3.7.3-2

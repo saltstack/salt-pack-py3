@@ -1,6 +1,12 @@
+
+%bcond_with tests
+%bcond_with python3_other
+
+%global python3_pkgversion 36
+
 Name:           python3-six
 Version:        1.11.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 
 License:        MIT
@@ -9,7 +15,6 @@ Source0:        https://pypi.python.org/packages/source/s/six/six-%{version}.tar
 
 BuildArch:      noarch
 
-%bcond_without python3_other
 
 %description
 python3-six provides simple utilities for wrapping over differences between
@@ -26,7 +31,7 @@ BuildRequires:  python%{python3_pkgversion}-tkinter
 python-six provides simple utilities for wrapping over differences between
 Python 2 and Python 3.
 
-This is the Python %{python3_pkgversion} build of the module.
+This is the Python %%{python3_pkgversion} build of the module.
 
 
 %if %{with python3_other}
@@ -62,10 +67,12 @@ This is the Python %{python3_other_pkgversion} build of the module.
 %py3_other_install
 %endif
 
+%if %{with tests}
 %check
 %{__python3} -m pytest -rfsxX test_six.py
 %if %{with python3_other}
 %{__python3_other} -m pytest -rfsxX test_six.py
+%endif
 %endif
 
 
@@ -85,6 +92,9 @@ This is the Python %{python3_other_pkgversion} build of the module.
 
 
 %changelog
+* Sun Sep 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.11.0-4
+- Disable python3_other tests
+
 * Wed Mar 13 2019 Orion Poplawski <orion@nwra.com> - 1.11.0-3
 - Enable python3_other tests, resolve egg-info issue (bug #1688502)
 
