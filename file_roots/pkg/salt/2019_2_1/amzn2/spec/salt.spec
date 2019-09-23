@@ -79,7 +79,7 @@ BuildRequires: python%{python3_pkgversion}-libcloud
 BuildRequires: python%{python3_pkgversion}-six
 %if 0%{?with_amzn2}
 BuildRequires: python%{python3_pkgversion}-pyyaml
-BuildRequires: python%{python3_pkgversion}-distro
+## BuildRequires: python%%{python3_pkgversion}-distro
 %else
 BuildRequires: python%{python3_pkgversion}-PyYAML
 %endif

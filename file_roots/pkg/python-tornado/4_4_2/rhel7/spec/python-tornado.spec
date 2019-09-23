@@ -3,10 +3,11 @@
 %endif
 
 %global srcname tornado
+%global python3_pkgversion 36
 
 Name:           python3-%{srcname}
 Version:        4.4.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -106,6 +107,9 @@ sed -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
 
 
 %changelog
+* Sun Sep 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.4.2-4
+- Updated for support Redhat 7 with Python 3.6
+
 * Mon Jul 01 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.4.2-3
 - Updated for support Amazon Linux 2 Python 3 only
 

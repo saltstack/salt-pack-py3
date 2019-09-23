@@ -33,8 +33,12 @@
 {{ macros.requires(sls_name, pkg_data) }}
 
     - sources:
-      - salt://{{slspath}}/sources/{{pkg_name}}-2.4-fix-pubkey-size-divisions.patch
-      - salt://{{slspath}}/sources/{{pkg_name}}-2.4-optflags.patch
-      - salt://{{slspath}}/sources/CVE-2013-7459.patch
-      - {{ macros.pypi_source(pypi_name, version) }}
+      - salt://{{slspath}}/sources/pycrypto-2.6.1-CVE-2013-7459.patch
+      - salt://{{slspath}}/sources/pycrypto-2.6.1-CVE-2018-6594.patch
+      - salt://{{slspath}}/sources/pycrypto-2.6.1.tar.gz
+      - salt://{{slspath}}/sources/pycrypto-2.6.1-unbundle-libtomcrypt.patch
+      - salt://{{slspath}}/sources/python-crypto-2.4-fix-pubkey-size-divisions.patch
+      - salt://{{slspath}}/sources/python-crypto-2.4-optflags.patch
+      - salt://{{slspath}}/sources/python-crypto-2.6.1-link.patch
+##      - {{ macros.pypi_source(pypi_name, version) }}
 {% endif %}
