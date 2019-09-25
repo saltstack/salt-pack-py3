@@ -99,7 +99,7 @@ stop() {
             RETVAL=1
         fi
     else
-        killproc -d 10 $PROCESS
+        killproc $PROCESS
         RETVAL=$?
         echo
         [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$SERVICE
@@ -139,7 +139,7 @@ case "$1" in
             RETVAL=$?
         fi
         ;;
-    condrestart)
+    condrestart|try-restart)
         [ -f $LOCKFILE ] && restart || :
         ;;
     reload)
@@ -147,7 +147,7 @@ case "$1" in
         RETVAL=1
         ;;
     *)
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}"
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload}"
         exit 1
         ;;
 esac
