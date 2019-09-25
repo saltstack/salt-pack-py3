@@ -79,7 +79,7 @@ BuildRequires: python%{python3_pkgversion}-libcloud
 BuildRequires: python%{python3_pkgversion}-six
 %if 0%{?with_amzn2}
 BuildRequires: python%{python3_pkgversion}-pyyaml
-BuildRequires: python%{python3_pkgversion}-distro
+## BuildRequires: python%%{python3_pkgversion}-distro
 %else
 BuildRequires: python%{python3_pkgversion}-PyYAML
 %endif
@@ -791,6 +791,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
+- Update to feature release 2019.2.1-1
+
 * Tue Sep 10 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
 - Support for point release, added distro as a requirement
 
