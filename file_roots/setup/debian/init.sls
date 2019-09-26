@@ -14,13 +14,17 @@ build_pkgs:
       - git
       - debhelper
       - gnupg
+{% if buildcfg.build_release == 'debian9' %}
+      - gnupg-agent
+{% else %}
       - gpg-agent
+{% endif%}
+      - python-setuptools
+      - python-gnupg
       - pkg-config
       - ccache
       - nfs-common
       - bash-completion
-      - python-setuptools
-      - python-gnupg
 
 
 {{build_cfg.build_runas}}:
@@ -63,5 +67,4 @@ ensure_build_dest_dir:
         - user
         - group
         - mode
-
 
