@@ -3,7 +3,7 @@
 
 {% set name = 'salt' %}
 {% set release_rc_ver = '' %}
-{% set version = '2019.2.1' ~ release_rc_ver %}
+{% set version = 'tobereplaced_ver' ~ release_rc_ver %}
 {% set release_nameadd = '+ds' %}
 {% set release_ver = '1' %}
 

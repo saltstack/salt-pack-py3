@@ -14,7 +14,7 @@ build_pkgs:
       - git
       - debhelper
       - gnupg
-{% if buildcfg.build_release == 'debian9' %}
+{% if build_cfg.build_release == 'debian9' %}
       - gnupg-agent
 {% else %}
       - gpg-agent

@@ -11,7 +11,7 @@
 %global pypi_name chardet
 Name:           python-%{pypi_name}
 Version:        3.0.4
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Character encoding auto-detection in Python
 License:        LGPLv2
 URL:            https://github.com/%{pypi_name}/%{pypi_name}
@@ -54,10 +54,10 @@ BuildRequires:  python%{python3_pkgversion}-setuptools
 %if %{with tests}
 BuildRequires:  python%{python3_pkgversion}-pytest
 %endif
-%{?python_provide:%python_provide python3-%{pypi_name}}
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{pypi_name}}
 
 %description -n python%{python3_pkgversion}-%{pypi_name}
-Character encoding auto-detection in Python. As 
+Character encoding auto-detection in Python. As
 smart as your browser. Open source.
 
 Python 3 version.
@@ -116,6 +116,9 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 
 
 %changelog
+* Mon Oct 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-12
+- Corrected python_provides for Python 3 versions
+
 * Fri Jun 29 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.0.4-11
 - Exclude chardetect for now,as python-chardet is installed by default and conflicts
 
