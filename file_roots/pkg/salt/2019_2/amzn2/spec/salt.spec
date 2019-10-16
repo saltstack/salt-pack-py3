@@ -48,7 +48,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-Patch0:  salt-py3-2019.2.1-tornado4.patch
+Patch0:  salt-py3-2019.2.2-tornado4.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
