@@ -48,7 +48,7 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 %if 0%{?rhel} > 7
-Patch0:  salt-py3-2019.2.1-tornado4.patch
+Patch0:  salt-py3-2019.2.2-tornado4.patch
 %endif
 Patch1:  salt-py3-2019.2.1-rpmsign.patch
 

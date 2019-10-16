@@ -493,7 +493,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Mon Oct 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.2-1
+* Wed Oct 16 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-1
 - Update to feature release 2019.2.2-1  for Python 3
 
 * Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
