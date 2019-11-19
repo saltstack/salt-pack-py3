@@ -324,7 +324,7 @@ pkgbuild_registry:
       results:
         - python36-bottle
     python-chardet:
-      version: 3.0.4-11
+      version: 3.0.4-12
       noarch: True
       build_deps:
         - python36
