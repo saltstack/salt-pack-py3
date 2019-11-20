@@ -936,7 +936,7 @@ pkgbuild_registry:
       results:
         - python3-timelib
     python-tornado:
-      version: 5.0.2-6
+      version: 4.5.2-3
       build_deps:
         - python-backports_abc
         - python-pycurl

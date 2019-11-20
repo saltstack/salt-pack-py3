@@ -48,7 +48,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-Patch0:  salt-py3-2019.2.2-tornado4.patch
+## Patch0:  salt-py3-2019.2.2-tornado4.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -95,7 +95,8 @@ Requires: python%{python3_pkgversion}-markupsafe
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1
 
 %if 0%{?with_amzn2}
-Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
+## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
 %else
 Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
 %endif
@@ -326,7 +327,7 @@ Supports Python 2.
 ## %%autosetup
 %setup -q -c
 cd %{name}-%{version}
-%patch0 -p1
+ ## %%patch0 -p1
 
 
 %build
@@ -791,6 +792,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Nov 20 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-2
+- Changed Tornado support back to regular tornado 4.5.2
+
+* Wed Oct 16 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-1
+- Update to feature release 2019.2.2-1
+
 * Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
 - Update to feature release 2019.2.1-1
 
