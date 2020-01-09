@@ -1,10 +1,8 @@
 # set version to build
-{% set build_version = '2019_2_2' %}
+{% set build_version = '2019_2_3' %}
 
 
-include:
 {% if build_version != '' %}
+include:
     - versions.{{build_version}}.pkgbuild
-{% else %}
-    - pkgbuild
 {% endif %}
