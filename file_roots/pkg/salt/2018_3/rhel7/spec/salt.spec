@@ -13,8 +13,7 @@
 %endif
 
 # Release Candidate
-## %%define __rc_ver tobereplaced_date
-%define __rc_ver %{nil}
+%define __rc_ver tobereplaced_date
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
@@ -47,6 +46,7 @@ Source18: salt-master.fish
 Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
+
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -493,8 +493,17 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Mon Jul 01 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-4
-- Removed need for patches tornado < 5, gpg updated on branch, no rpmsign
+* Fri Jan 10 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 2018.3.5-1
+- Update to feature release 2018.3.5-1  for Python 3
+
+* Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
+- Update to feature release 2019.2.1-1  for Python 3
+
+* Tue Jul 02 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-9
+- Prep support for point release
+
+* Thu Jun 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-8
+- Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
 
 * Thu May 23 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-7
 - Patching in support for gpg-agent and passphrase preset
@@ -698,7 +707,7 @@ rm -rf %{buildroot}
 * Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-2
 - Fix changelog
 
- Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-1
+* Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-1
 - Update to feature release 2014.7.0
 
 * Fri Oct 17 2014 Erik Johnson <erik@saltstack.com> - 2014.1.13-1
