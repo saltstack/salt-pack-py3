@@ -2,11 +2,14 @@
 %global with_amzn2 1
 %endif
 
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 %global srcname tornado
 
 Name:           python3-%{srcname}
 Version:        4.4.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -106,6 +109,9 @@ sed -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
 
 
 %changelog
+* Mon Jan 13 2020 SaltStack Packaging Team <packaging@saltstack.com> - 4.4.2-4
+- added definition for python3_pkgversion 3 if not exists
+
 * Mon Jul 01 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.4.2-3
 - Updated for support Amazon Linux 2 Python 3 only
 

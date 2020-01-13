@@ -7,11 +7,13 @@
 %global with_amzn2 1
 %endif
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
 %global srcname tornado
 
 Name:           python-%{srcname}
 Version:        4.5.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -158,6 +160,9 @@ server and and tools. This package contains some example applications.
 
 
 %changelog
+* Mon Jan 13 2020 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-4
+- added definition for python3_pkgversion 3 if not exists
+
 * Mon Jul 01 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-3
 - Added support for Amazon Linux 2 Python 3, Python 2 support optional
 
