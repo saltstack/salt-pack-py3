@@ -224,7 +224,11 @@ cp -a . %{py3dir}
 %build
 %if %{with python3}
 pushd %{py3dir}
-%py3_build
+## %%py3_build
+## py3_shbang_opts is '-s' and causing issues with pip install
+## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3}" %{?*}
+sleep 1
 popd
 %endif
 
@@ -505,6 +509,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+## - Updated spec file to not use py3_build  due to '-s' preventing pip installs
+
 * Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
 - Update to feature release 2019.2.1-1  for Python 3
 

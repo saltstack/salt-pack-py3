@@ -335,7 +335,12 @@ cd %{name}-%{version}
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 ## %%py3_build
 ## amzn2 has issue with %{py_setup} expansion
-CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+## CFLAGS="%%{optflags}" %%{__python3} setup.py %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
+## %%py3_build
+## py3_shbang_opts is '-s' and causing issues with pip install
+## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3}" %{?*}
+sleep 1
 sleep 1
 %endif
 
@@ -792,6 +797,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+## - Updated spec file to not use py3_build  due to '-s' preventing pip installs
+
 * Wed Nov 20 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-2
 - Changed Tornado support back to regular tornado 4.5.2
 
