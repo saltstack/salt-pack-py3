@@ -28,6 +28,8 @@ build_additional_pkgs:
       - dh-python
       - gnupg2
       - pinentry-tty
+      - python-setuptools
+      - python-gnupg
       - python-sphinx
       - python-setuptools-git
 

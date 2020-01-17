@@ -28,10 +28,6 @@ build_additional_pkgs:
       - dh-python
       - gnupg2
       - pinentry-tty
-##      - python-sphinx
-##      - python-setuptools-git
-##      - python-setuptools
-##      - python-gnupg
 
 
 {%- if build_cfg.build_py3 %}

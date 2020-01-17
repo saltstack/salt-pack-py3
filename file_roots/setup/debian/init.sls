@@ -19,8 +19,6 @@ build_pkgs:
 {% else %}
       - gpg-agent
 {% endif%}
-      - python-setuptools
-      - python-gnupg
       - pkg-config
       - ccache
       - nfs-common
