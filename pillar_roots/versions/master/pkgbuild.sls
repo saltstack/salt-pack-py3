@@ -903,7 +903,7 @@ pkgbuild_registry:
       results:
         - python3-sure
     python-tornado:
-      version: 4.5.2-4
+      version: 4.5.2-5
       build_deps:
         - python-backports_abc
         - python-pycurl
@@ -911,7 +911,7 @@ pkgbuild_registry:
       results:
         - python3-tornado
     python-tornado4:
-      version: 4.5.2-4
+      version: 4.5.2-5
       build_deps:
         - python-backports_abc
         - python-pycurl

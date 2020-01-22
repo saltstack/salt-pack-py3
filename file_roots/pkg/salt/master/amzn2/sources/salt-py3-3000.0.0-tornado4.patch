@@ -1,6 +1,6 @@
 diff -Naur a/doc/conf.py b/doc/conf.py
---- a/doc/conf.py	2019-10-08 13:03:31.939404416 +0000
-+++ b/doc/conf.py	2019-10-08 13:03:55.071227183 +0000
+--- a/doc/conf.py	2020-01-21 16:38:13.250103111 -0700
++++ b/doc/conf.py	2020-01-22 06:48:21.248706918 -0700
 @@ -137,7 +137,21 @@
      'tornado.web',
      'tornado.websocket',
@@ -33,9 +33,9 @@ diff -Naur a/doc/conf.py b/doc/conf.py
  sys.modules['msgpack'].version = (1, 0, 0)
  sys.modules['psutil'].version_info = (3, 0, 0)
 diff -Naur a/salt/client/__init__.py b/salt/client/__init__.py
---- a/salt/client/__init__.py	2019-10-08 13:03:31.957404278 +0000
-+++ b/salt/client/__init__.py	2019-10-08 13:03:55.072227176 +0000
-@@ -68,7 +68,10 @@
+--- a/salt/client/__init__.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/client/__init__.py	2020-01-22 06:48:21.248706918 -0700
+@@ -69,7 +69,10 @@
  # pylint: enable=import-error
  
  # Import tornado
@@ -47,7 +47,7 @@ diff -Naur a/salt/client/__init__.py b/salt/client/__init__.py
  
  log = logging.getLogger(__name__)
  
-@@ -354,7 +357,7 @@
+@@ -352,7 +355,7 @@
          _res = salt.utils.minions.CkMinions(self.opts).check_minions(tgt, tgt_type=expr_form)
          return _res['minions']
  
@@ -56,7 +56,7 @@ diff -Naur a/salt/client/__init__.py b/salt/client/__init__.py
      def run_job_async(
              self,
              tgt,
-@@ -409,7 +412,7 @@
+@@ -407,7 +410,7 @@
              # Convert to generic client error and pass along message
              raise SaltClientError(general_exception)
  
@@ -65,7 +65,7 @@ diff -Naur a/salt/client/__init__.py b/salt/client/__init__.py
  
      def cmd_async(
              self,
-@@ -1774,7 +1777,7 @@
+@@ -1776,7 +1779,7 @@
          return {'jid': payload['load']['jid'],
                  'minions': payload['load']['minions']}
  
@@ -74,33 +74,30 @@ diff -Naur a/salt/client/__init__.py b/salt/client/__init__.py
      def pub_async(self,
                    tgt,
                    fun,
-@@ -1856,7 +1859,7 @@
-             # and try again if the key has changed
-             key = self.__read_master_key()
-             if key == self.key:
+@@ -1858,7 +1861,7 @@
+                 # and try again if the key has changed
+                 key = self.__read_master_key()
+                 if key == self.key:
+-                    raise tornado.gen.Return(payload)
++                    raise tornado_gen.Return(payload)
+                 self.key = key
+                 payload_kwargs['key'] = self.key
+                 payload = yield channel.send(payload_kwargs)
+@@ -1876,9 +1879,9 @@
+                 raise PublishError(error)
+ 
+             if not payload:
 -                raise tornado.gen.Return(payload)
 +                raise tornado_gen.Return(payload)
-             self.key = key
-             payload_kwargs['key'] = self.key
-             payload = yield channel.send(payload_kwargs)
-@@ -1874,12 +1877,12 @@
-             raise PublishError(error)
- 
-         if not payload:
--            raise tornado.gen.Return(payload)
-+            raise tornado_gen.Return(payload)
- 
-         # We have the payload, let's get rid of the channel fast(GC'ed faster)
-         channel.close()
  
 -        raise tornado.gen.Return({'jid': payload['load']['jid'],
 +        raise tornado_gen.Return({'jid': payload['load']['jid'],
                                    'minions': payload['load']['minions']})
  
-     def __del__(self):
+     # pylint: disable=W1701
 diff -Naur a/salt/client/mixins.py b/salt/client/mixins.py
---- a/salt/client/mixins.py	2019-10-08 13:03:31.957404278 +0000
-+++ b/salt/client/mixins.py	2019-10-08 13:03:55.072227176 +0000
+--- a/salt/client/mixins.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/client/mixins.py	2020-01-22 06:48:21.248706918 -0700
 @@ -33,7 +33,11 @@
  from salt.ext import six
  
@@ -114,18 +111,18 @@ diff -Naur a/salt/client/mixins.py b/salt/client/mixins.py
  
  log = logging.getLogger(__name__)
  
-@@ -371,7 +375,7 @@
-             func_globals['__jid_event__'].fire_event(data, 'new')
+@@ -368,7 +372,7 @@
+                 func_globals['__jid_event__'].fire_event(data, 'new')
  
-             # Initialize a context for executing the method.
--            with tornado.stack_context.StackContext(self.functions.context_dict.clone):
-+            with StackContext(self.functions.context_dict.clone):
-                 func = self.functions[fun]
-                 try:
-                     data['return'] = func(*args, **kwargs)
+                 # Initialize a context for executing the method.
+-                with tornado.stack_context.StackContext(self.functions.context_dict.clone):
++                with StackContext(self.functions.context_dict.clone):
+                     func = self.functions[fun]
+                     try:
+                         data['return'] = func(*args, **kwargs)
 diff -Naur a/salt/crypt.py b/salt/crypt.py
---- a/salt/crypt.py	2019-10-08 13:03:32.058403504 +0000
-+++ b/salt/crypt.py	2019-10-08 13:03:55.072227176 +0000
+--- a/salt/crypt.py	2020-01-21 16:38:13.294102722 -0700
++++ b/salt/crypt.py	2020-01-22 06:48:21.252707222 -0700
 @@ -22,7 +22,15 @@
  import binascii
  import weakref
@@ -188,7 +185,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
      def _authenticate(self):
          '''
          Authenticate with the master, this method breaks the functional
-@@ -626,7 +634,7 @@
+@@ -625,7 +633,7 @@
                          log.info(
                              'Waiting %s seconds before retry.', acceptance_wait_time
                          )
@@ -197,16 +194,16 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
                      if acceptance_wait_time < acceptance_wait_time_max:
                          acceptance_wait_time += acceptance_wait_time
                          log.debug(
-@@ -660,7 +668,7 @@
-         finally:
-             channel.close()
+@@ -654,7 +662,7 @@
+                     with salt.utils.event.get_event(self.opts.get('__role'), opts=self.opts, listen=False) as event:
+                         event.fire_event({'key': key, 'creds': creds}, salt.utils.event.tagify(prefix='auth', suffix='creds'))
  
 -    @tornado.gen.coroutine
 +    @tornado_gen.coroutine
      def sign_in(self, timeout=60, safe=True, tries=1, channel=None):
          '''
          Send a sign in request to the master, sets the key information and
-@@ -710,9 +718,9 @@
+@@ -704,9 +712,9 @@
          except SaltReqTimeoutError as e:
              if safe:
                  log.warning('SaltReqTimeoutError: %s', e)
@@ -218,7 +215,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
              else:
                  raise SaltClientError('Attempt to authenticate with the salt master failed with timeout error')
          finally:
-@@ -721,7 +729,7 @@
+@@ -715,7 +723,7 @@
  
          if not isinstance(payload, dict):
              log.error('Sign-in attempt failed: %s', payload)
@@ -227,7 +224,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
          if 'load' in payload:
              if 'ret' in payload['load']:
                  if not payload['load']['ret']:
-@@ -732,7 +740,7 @@
+@@ -726,7 +734,7 @@
                              'for this minion on the Salt Master.\nThe Salt '
                              'Minion will attempt to to re-authenicate.'
                          )
@@ -236,7 +233,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
                      else:
                          log.critical(
                              'The Salt Master has rejected this minion\'s public '
-@@ -748,7 +756,7 @@
+@@ -742,7 +750,7 @@
                          sys.exit(salt.defaults.exitcodes.EX_NOPERM)
                  # has the master returned that its maxed out with minions?
                  elif payload['load']['ret'] == 'full':
@@ -245,7 +242,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
                  else:
                      log.error(
                          'The Salt Master has cached the public key for this '
-@@ -756,7 +764,7 @@
+@@ -750,7 +758,7 @@
                          'before attempting to re-authenticate',
                          self.opts['acceptance_wait_time']
                      )
@@ -254,7 +251,7 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
          auth['aes'] = self.verify_master(payload, master_pub='token' in sign_in_payload)
          if not auth['aes']:
              log.critical(
-@@ -779,7 +787,7 @@
+@@ -773,7 +781,7 @@
                  if salt.utils.crypt.pem_finger(m_pub_fn, sum_type=self.opts['hash_type']) != self.opts['master_finger']:
                      self._finger_fail(self.opts['master_finger'], m_pub_fn)
          auth['publish_port'] = payload['publish_port']
@@ -264,8 +261,8 @@ diff -Naur a/salt/crypt.py b/salt/crypt.py
      def get_keys(self):
          '''
 diff -Naur a/salt/engines/ircbot.py b/salt/engines/ircbot.py
---- a/salt/engines/ircbot.py	2019-10-08 13:03:31.965404216 +0000
-+++ b/salt/engines/ircbot.py	2019-10-08 13:03:55.073227168 +0000
+--- a/salt/engines/ircbot.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/engines/ircbot.py	2020-01-22 06:48:21.252707222 -0700
 @@ -64,8 +64,12 @@
  import ssl
  from collections import namedtuple
@@ -314,8 +311,8 @@ diff -Naur a/salt/engines/ircbot.py b/salt/engines/ircbot.py
  
      def join_channel(self, channel):
 diff -Naur a/salt/engines/webhook.py b/salt/engines/webhook.py
---- a/salt/engines/webhook.py	2019-10-08 13:03:31.966404209 +0000
-+++ b/salt/engines/webhook.py	2019-10-08 13:03:55.073227168 +0000
+--- a/salt/engines/webhook.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/engines/webhook.py	2020-01-22 06:48:21.252707222 -0700
 @@ -5,9 +5,14 @@
  from __future__ import absolute_import, print_function, unicode_literals
  
@@ -360,8 +357,8 @@ diff -Naur a/salt/engines/webhook.py b/salt/engines/webhook.py
      http_server.listen(port, address=address)
      io_loop.start()
 diff -Naur a/salt/fileclient.py b/salt/fileclient.py
---- a/salt/fileclient.py	2019-10-08 13:03:32.058403504 +0000
-+++ b/salt/fileclient.py	2019-10-08 13:03:55.073227168 +0000
+--- a/salt/fileclient.py	2020-01-21 16:38:13.294102722 -0700
++++ b/salt/fileclient.py	2020-01-22 06:48:21.252707222 -0700
 @@ -12,7 +12,10 @@
  import string
  import shutil
@@ -375,9 +372,9 @@ diff -Naur a/salt/fileclient.py b/salt/fileclient.py
  
  # Import salt libs
 diff -Naur a/salt/master.py b/salt/master.py
---- a/salt/master.py	2019-10-08 13:03:32.059403496 +0000
-+++ b/salt/master.py	2019-10-08 13:03:55.074227160 +0000
-@@ -28,7 +28,10 @@
+--- a/salt/master.py	2020-01-21 16:38:13.294102722 -0700
++++ b/salt/master.py	2020-01-22 06:48:21.252707222 -0700
+@@ -27,7 +27,10 @@
  from salt.utils.zeromq import zmq, ZMQDefaultLoop, install_zmq, ZMQ_VERSION_INFO
  # pylint: enable=import-error,no-name-in-module,redefined-builtin
  
@@ -389,7 +386,7 @@ diff -Naur a/salt/master.py b/salt/master.py
  
  # Import salt libs
  import salt.crypt
-@@ -91,7 +94,11 @@
+@@ -90,7 +93,11 @@
  except ImportError:
      HAS_HALITE = False
  
@@ -420,10 +417,49 @@ diff -Naur a/salt/master.py b/salt/master.py
  
      def _post_stats(self, start, cmd):
          '''
+diff -Naur a/salt/metaproxy/proxy.py b/salt/metaproxy/proxy.py
+--- a/salt/metaproxy/proxy.py	2020-01-21 16:38:13.302102651 -0700
++++ b/salt/metaproxy/proxy.py	2020-01-22 07:01:07.579264149 -0700
+@@ -61,9 +61,14 @@
+ from salt.utils.process import (default_signals,
+                                 SignalHandlingProcess)
+ 
+-
+-import tornado.gen  # pylint: disable=F0401
+-import tornado.ioloop  # pylint: disable=F0401
++try:
++    import tornado4.gen as tornado_gen              # pylint: disable=F0401
++    from tornado4.ioloop import IOLoop              # pylint: disable=F0401
++    from tornado4.stack_context import StackContext # pylint: disable=F0401
++except ImportError:
++    import tornado.gen as tornado_gen               # pylint: disable=F0401
++    from tornado.ioloop import IOLoop               # pylint: disable=F0401
++    from tornado.stack_context import StackContext  # pylint: disable=F0401
+ 
+ log = logging.getLogger(__name__)
+ 
+@@ -321,7 +326,7 @@
+                 salt.minion.get_proc_dir(opts['cachedir'], uid=uid)
+             )
+ 
+-    with tornado.stack_context.StackContext(minion_instance.ctx):
++    with StackContext(minion_instance.ctx):
+         if isinstance(data['fun'], tuple) or isinstance(data['fun'], list):
+             ProxyMinion._thread_multi_return(minion_instance, opts, data)
+         else:
+@@ -710,7 +715,7 @@
+         process_count = len(salt.utils.minion.running(self.opts))
+         while process_count >= process_count_max:
+             log.warning("Maximum number of processes reached while executing jid {0}, waiting...".format(data['jid']))
+-            yield tornado.gen.sleep(10)
++            yield tornado_gen.sleep(10)
+             process_count = len(salt.utils.minion.running(self.opts))
+ 
+     # We stash an instance references to allow for the socket
 diff -Naur a/salt/minion.py b/salt/minion.py
---- a/salt/minion.py	2019-10-08 13:03:32.059403496 +0000
-+++ b/salt/minion.py	2019-10-08 13:03:55.075227153 +0000
-@@ -34,7 +34,10 @@
+--- a/salt/minion.py	2020-01-21 16:38:13.294102722 -0700
++++ b/salt/minion.py	2020-01-22 06:48:21.252707222 -0700
+@@ -35,7 +35,10 @@
  from salt.utils.ctx import RequestContext
  
  # pylint: enable=no-name-in-module,redefined-builtin
@@ -435,7 +471,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
  
  HAS_PSUTIL = False
  try:
-@@ -114,9 +117,14 @@
+@@ -109,9 +112,14 @@
      SaltMasterUnresolvableError
  )
  
@@ -471,7 +507,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
  
          # Run masters discovery over SSDP. This may modify the whole configuration,
          # depending of the networking and sets of masters.
-@@ -649,7 +657,7 @@
+@@ -650,7 +658,7 @@
                  if attempts != 0:
                      # Give up a little time between connection attempts
                      # to allow the IOLoop to run any other scheduled tasks.
@@ -480,7 +516,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                  attempts += 1
                  if tries > 0:
                      log.debug(
-@@ -707,7 +715,7 @@
+@@ -712,7 +720,7 @@
                  else:
                      self.tok = pub_channel.auth.gen_token(b'salt')
                      self.connected = True
@@ -489,7 +525,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
  
          # single master sign in
          else:
-@@ -717,7 +725,7 @@
+@@ -723,7 +731,7 @@
                  if attempts != 0:
                      # Give up a little time between connection attempts
                      # to allow the IOLoop to run any other scheduled tasks.
@@ -498,16 +534,16 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                  attempts += 1
                  if tries > 0:
                      log.debug(
-@@ -749,7 +757,7 @@
+@@ -755,7 +763,7 @@
                          yield pub_channel.connect()
                      self.tok = pub_channel.auth.gen_token(b'salt')
                      self.connected = True
 -                    raise tornado.gen.Return((opts['master'], pub_channel))
 +                    raise tornado_gen.Return((opts['master'], pub_channel))
-                 except SaltClientError as exc:
+                 except SaltClientError:
                      if attempts == tries:
                          # Exhausted all attempts. Return exception.
-@@ -957,7 +965,7 @@
+@@ -967,7 +975,7 @@
          self.event.subscribe('')
          self.event.set_event_handler(self.handle_event)
  
@@ -516,7 +552,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def handle_event(self, package):
          for minion in self.minions:
              minion.handle_event(package)
-@@ -1009,7 +1017,7 @@
+@@ -1019,7 +1027,7 @@
              self.io_loop.spawn_callback(self._connect_minion, minion)
          self.io_loop.call_later(timeout, self._check_minions)
  
@@ -525,7 +561,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def _connect_minion(self, minion):
          '''
          Create a minion, and asynchronously connect it to a master
-@@ -1036,7 +1044,7 @@
+@@ -1046,7 +1054,7 @@
                  last = time.time()
                  if auth_wait < self.max_auth_wait:
                      auth_wait += self.auth_wait
@@ -534,7 +570,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
              except SaltMasterUnresolvableError:
                  err = 'Master address: \'{0}\' could not be resolved. Invalid or unresolveable address. ' \
                        'Set \'master\' value in minion config.'.format(minion.opts['master'])
-@@ -1216,7 +1224,7 @@
+@@ -1226,7 +1234,7 @@
          if timeout and self._sync_connect_master_success is False:
              raise SaltDaemonNotRunning('Failed to connect to the salt-master')
  
@@ -543,7 +579,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def connect_master(self, failed=False):
          '''
          Return a future which will complete when you are connected to a master
-@@ -1225,7 +1233,7 @@
+@@ -1235,7 +1243,7 @@
          yield self._post_master_init(master)
  
      # TODO: better name...
@@ -552,25 +588,25 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def _post_master_init(self, master):
          '''
          Function to finish init after connecting to a master
-@@ -1411,7 +1419,7 @@
-         finally:
-             channel.close()
+@@ -1418,7 +1426,7 @@
+         with salt.transport.client.ReqChannel.factory(self.opts) as channel:
+             return channel.send(load, timeout=timeout)
  
 -    @tornado.gen.coroutine
 +    @tornado_gen.coroutine
      def _send_req_async(self, load, timeout):
  
          if self.opts['minion_sign_messages']:
-@@ -1423,7 +1431,7 @@
-         channel = salt.transport.client.AsyncReqChannel.factory(self.opts)
-         try:
+@@ -1429,7 +1437,7 @@
+ 
+         with salt.transport.client.AsyncReqChannel.factory(self.opts) as channel:
              ret = yield channel.send(load, timeout=timeout)
 -            raise tornado.gen.Return(ret)
 +            raise tornado_gen.Return(ret)
-         finally:
-             channel.close()
  
-@@ -1462,11 +1470,11 @@
+     def _fire_master(self, data=None, tag=None, events=None, pretag=None, timeout=60, sync=True, timeout_handler=None):
+         '''
+@@ -1471,11 +1479,11 @@
                      return True
                  timeout_handler = handle_timeout
  
@@ -584,7 +620,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def _handle_decoded_payload(self, data):
          '''
          Override this method if you wish to handle the decoded data
-@@ -1508,7 +1516,7 @@
+@@ -1517,7 +1525,7 @@
              process_count = len(salt.utils.minion.running(self.opts))
              while process_count >= process_count_max:
                  log.warning("Maximum number of processes reached while executing jid %s, waiting...", data['jid'])
@@ -593,7 +629,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                  process_count = len(salt.utils.minion.running(self.opts))
  
          # We stash an instance references to allow for the socket
-@@ -1587,9 +1595,9 @@
+@@ -1599,9 +1607,9 @@
              else:
                  return Minion._thread_return(minion_instance, opts, data)
  
@@ -605,7 +641,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                  run_func(minion_instance, opts, data)
  
      @classmethod
-@@ -1998,7 +2006,7 @@
+@@ -2010,7 +2018,7 @@
                  timeout_handler()
                  return ''
          else:
@@ -614,7 +650,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                  ret_val = self._send_req_async(load, timeout=timeout, callback=lambda f: None)  # pylint: disable=unexpected-keyword-arg
  
          log.trace('ret_val = %s', ret_val)  # pylint: disable=no-member
-@@ -2084,7 +2092,7 @@
+@@ -2096,7 +2104,7 @@
                  timeout_handler()
                  return ''
          else:
@@ -623,7 +659,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                  ret_val = self._send_req_async(load, timeout=timeout, callback=lambda f: None)  # pylint: disable=unexpected-keyword-arg
  
          log.trace('ret_val = %s', ret_val)  # pylint: disable=no-member
-@@ -2180,7 +2188,7 @@
+@@ -2192,7 +2200,7 @@
          self.matchers = salt.loader.matchers(self.opts)
  
      # TODO: only allow one future in flight at a time?
@@ -632,9 +668,9 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def pillar_refresh(self, force_refresh=False):
          '''
          Refresh the pillar
-@@ -2344,13 +2352,13 @@
-         finally:
-             channel.close()
+@@ -2358,13 +2366,13 @@
+                 log.warning('Unable to send mine data to master.')
+                 return None
  
 -    @tornado.gen.coroutine
 +    @tornado_gen.coroutine
@@ -648,7 +684,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
          tag, data = salt.utils.event.SaltEvent.unpack(package)
          log.debug(
              'Minion of \'%s\' is handling event tag \'%s\'',
-@@ -2390,7 +2398,7 @@
+@@ -2404,7 +2412,7 @@
              # if the master disconnect event is for a different master, raise an exception
              if tag.startswith(master_event(type='disconnected')) and data['master'] != self.opts['master']:
                  # not mine master, ignore
@@ -657,7 +693,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
              if tag.startswith(master_event(type='failback')):
                  # if the master failback event is not for the top master, raise an exception
                  if data['master'] != self.opts['master_list'][0]:
-@@ -2654,7 +2662,7 @@
+@@ -2668,7 +2676,7 @@
          '''
          if name in self.periodic_callbacks:
              return False
@@ -666,7 +702,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
              method, interval * 1000,
          )
          self.periodic_callbacks[name].start()
-@@ -2862,7 +2870,7 @@
+@@ -2878,7 +2886,7 @@
              log.warning('Unable to forward pub data: %s', args[1])
              return True
  
@@ -675,7 +711,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
              self.local.pub_async(data['tgt'],
                                   data['fun'],
                                   data['arg'],
-@@ -2917,7 +2925,7 @@
+@@ -2933,7 +2941,7 @@
          # In the future, we could add support for some clearfuncs, but
          # the syndic currently has no need.
  
@@ -684,7 +720,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def reconnect(self):
          if hasattr(self, 'pub_channel'):
              self.pub_channel.on_recv(None)
-@@ -2934,7 +2942,7 @@
+@@ -2950,7 +2958,7 @@
              self.pub_channel.on_recv(self._process_cmd_socket)
              log.info('Minion is ready to receive requests!')
  
@@ -693,7 +729,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
  
      def destroy(self):
          '''
-@@ -3017,7 +3025,7 @@
+@@ -3033,7 +3041,7 @@
              s_opts['master'] = master
              self._syndics[master] = self._connect_syndic(s_opts)
  
@@ -702,16 +738,16 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def _connect_syndic(self, opts):
          '''
          Create a syndic, and asynchronously connect it to a master
-@@ -3057,7 +3065,7 @@
+@@ -3073,7 +3081,7 @@
                  last = time.time()
                  if auth_wait < self.max_auth_wait:
                      auth_wait += self.auth_wait
 -                yield tornado.gen.sleep(auth_wait)  # TODO: log?
 +                yield tornado_gen.sleep(auth_wait)  # TODO: log?
-             except (KeyboardInterrupt, SystemExit):
+             except (KeyboardInterrupt, SystemExit):  # pylint: disable=try-except-raise
                  raise
-             except Exception:
-@@ -3067,7 +3075,7 @@
+             except Exception:  # pylint: disable=broad-except
+@@ -3083,7 +3091,7 @@
                      opts['master'], exc_info=True
                  )
  
@@ -720,7 +756,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
  
      def _mark_master_dead(self, master):
          '''
-@@ -3201,7 +3209,7 @@
+@@ -3217,7 +3225,7 @@
          self.io_loop.add_future(future, self.reconnect_event_bus)
  
          # forward events every syndic_event_forward_timeout
@@ -729,7 +765,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
                                                                self.opts['syndic_event_forward_timeout'] * 1000,
                                                                )
          self.forward_events.start()
-@@ -3325,7 +3333,7 @@
+@@ -3341,7 +3349,7 @@
      '''
  
      # TODO: better name...
@@ -738,7 +774,7 @@ diff -Naur a/salt/minion.py b/salt/minion.py
      def _post_master_init(self, master):
          '''
          Function to finish init after connecting to a master
-@@ -3354,7 +3362,7 @@
+@@ -3370,7 +3378,7 @@
          mp_call = _metaproxy_call(self.opts, 'handle_payload')
          return mp_call(self, payload)
  
@@ -748,8 +784,8 @@ diff -Naur a/salt/minion.py b/salt/minion.py
          mp_call = _metaproxy_call(self.opts, 'handle_decoded_payload')
          return mp_call(self, data)
 diff -Naur a/salt/netapi/rest_tornado/__init__.py b/salt/netapi/rest_tornado/__init__.py
---- a/salt/netapi/rest_tornado/__init__.py	2019-10-08 13:03:32.007403895 +0000
-+++ b/salt/netapi/rest_tornado/__init__.py	2019-10-08 13:03:55.075227153 +0000
+--- a/salt/netapi/rest_tornado/__init__.py	2020-01-21 16:38:13.334102367 -0700
++++ b/salt/netapi/rest_tornado/__init__.py	2020-01-22 06:48:21.256707526 -0700
 @@ -18,11 +18,20 @@
  min_tornado_version = '4.0'
  has_tornado = False
@@ -805,8 +841,8 @@ diff -Naur a/salt/netapi/rest_tornado/__init__.py b/salt/netapi/rest_tornado/__i
      except KeyboardInterrupt:
          raise SystemExit(0)
 diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/saltnado.py
---- a/salt/netapi/rest_tornado/saltnado.py	2019-10-08 13:03:32.007403895 +0000
-+++ b/salt/netapi/rest_tornado/saltnado.py	2019-10-08 13:03:55.076227145 +0000
+--- a/salt/netapi/rest_tornado/saltnado.py	2020-01-21 16:38:13.334102367 -0700
++++ b/salt/netapi/rest_tornado/saltnado.py	2020-01-22 06:48:21.256707526 -0700
 @@ -195,12 +195,21 @@
  
  # pylint: disable=import-error
@@ -893,16 +929,16 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
          except KeyError:
              self.send_error(406)
          except ValueError:
-@@ -825,7 +834,7 @@
+@@ -826,7 +835,7 @@
                 "return": "Welcome"}
          self.write(self.serialize(ret))
  
 -    @tornado.web.asynchronous
 +    @asynchronous
-     def post(self):
+     def post(self):  # pylint: disable=arguments-differ
          '''
          Send one or more Salt commands (lowstates) in the request body
-@@ -903,7 +912,7 @@
+@@ -904,7 +913,7 @@
  
          self.disbatch()
  
@@ -911,7 +947,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def disbatch(self):
          '''
          Disbatch all lowstates to the appropriate clients
-@@ -939,7 +948,7 @@
+@@ -940,7 +949,7 @@
          self.write(self.serialize({'return': ret}))
          self.finish()
  
@@ -920,16 +956,16 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def _disbatch_local(self, chunk):
          '''
          Dispatch local client commands
-@@ -978,7 +987,7 @@
+@@ -979,7 +988,7 @@
                      future.set_result(None)
-                 except Exception:
+                 except Exception:  # pylint: disable=broad-except
                      pass
 -            raise tornado.gen.Return('No minions matched the target. No command was sent, no jid was assigned.')
 +            raise tornado_gen.Return('No minions matched the target. No command was sent, no jid was assigned.')
  
          # get_event for missing minion
          for minion in list(set(pub_data['minions']) - set(minions)):
-@@ -996,18 +1005,18 @@
+@@ -997,14 +1006,14 @@
  
          # wait syndic a while to avoid missing published events
          if self.application.opts['order_masters']:
@@ -943,19 +979,11 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
          # ping until the job is not running, while doing so, if we see new minions returning
          # that they are running the job, add them to the list
 -        tornado.ioloop.IOLoop.current().spawn_callback(self.job_not_running, pub_data['jid'],
--                                                      chunk['tgt'],
--                                                      f_call['kwargs']['tgt_type'],
--                                                      minions,
--                                                      is_finished)
 +        IOLoop.current().spawn_callback(self.job_not_running, pub_data['jid'],
-+                                        chunk['tgt'],
-+                                        f_call['kwargs']['tgt_type'],
-+                                        minions,
-+                                        is_finished)
- 
-         def more_todo():
-             '''
-@@ -1034,11 +1043,11 @@
+                                                       chunk['tgt'],
+                                                       f_call['kwargs']['tgt_type'],
+                                                       minions,
+@@ -1035,11 +1044,11 @@
                  # When finished entire routine, cleanup other futures and return result
                  if f is is_finished:
                      cancel_inflight_futures()
@@ -969,7 +997,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
                      continue
  
                  f_result = f.result()
-@@ -1056,12 +1065,12 @@
+@@ -1057,12 +1066,12 @@
                      # if there are no more minions to wait for, then we are done
                      if not more_todo() and min_wait_time.done():
                          cancel_inflight_futures()
@@ -984,7 +1012,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def job_not_running(self, jid, tgt, tgt_type, minions, is_finished):
          '''
          Return a future which will complete once jid (passed in) is no longer
-@@ -1084,11 +1093,11 @@
+@@ -1085,11 +1094,11 @@
                  if f is is_finished:
                      if not event.done():
                          event.set_result(None)
@@ -998,7 +1026,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
                  else:
                      ping_pub_data = yield self.saltclients['local'](tgt,
                                                                      'saltutil.find_job',
-@@ -1105,7 +1114,7 @@
+@@ -1106,7 +1115,7 @@
                  minions[event['data']['id']] = False
              minion_running = True
  
@@ -1007,7 +1035,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def _disbatch_local_async(self, chunk):
          '''
          Disbatch local client_async commands
-@@ -1114,9 +1123,9 @@
+@@ -1115,9 +1124,9 @@
          # fire a job off
          pub_data = yield self.saltclients['local_async'](*f_call.get('args', ()), **f_call.get('kwargs', {}))
  
@@ -1019,7 +1047,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def _disbatch_runner(self, chunk):
          '''
          Disbatch runner client commands
-@@ -1129,26 +1138,26 @@
+@@ -1130,26 +1139,26 @@
  
              # only return the return data
              ret = event if full_return else event['data']['return']
@@ -1052,7 +1080,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
          return f_call
  
  
-@@ -1156,7 +1165,7 @@
+@@ -1157,7 +1166,7 @@
      '''
      A convenience endpoint for minion related functions
      '''
@@ -1061,7 +1089,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def get(self, mid=None):  # pylint: disable=W0221
          '''
          A convenience URL for getting lists of minions or getting minion
-@@ -1208,7 +1217,7 @@
+@@ -1209,7 +1218,7 @@
          }]
          self.disbatch()
  
@@ -1070,7 +1098,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def post(self):
          '''
          Start an execution command and immediately return the job id
-@@ -1285,7 +1294,7 @@
+@@ -1286,7 +1295,7 @@
      '''
      A convenience endpoint for job cache data
      '''
@@ -1079,7 +1107,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def get(self, jid=None):  # pylint: disable=W0221
          '''
          A convenience URL for getting lists of previously run jobs or getting
-@@ -1391,7 +1400,7 @@
+@@ -1392,7 +1401,7 @@
      '''
      Endpoint to run commands without normal session handling
      '''
@@ -1088,7 +1116,7 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
      def post(self):
          '''
          Run commands bypassing the :ref:`normal session handling
-@@ -1462,7 +1471,7 @@
+@@ -1463,7 +1472,7 @@
  
      .. seealso:: :ref:`events`
      '''
@@ -1098,8 +1126,8 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado.py b/salt/netapi/rest_tornado/sal
          r'''
          An HTTP stream of the Salt master event bus
 diff -Naur a/salt/netapi/rest_tornado/saltnado_websockets.py b/salt/netapi/rest_tornado/saltnado_websockets.py
---- a/salt/netapi/rest_tornado/saltnado_websockets.py	2019-10-08 13:03:32.007403895 +0000
-+++ b/salt/netapi/rest_tornado/saltnado_websockets.py	2019-10-08 13:03:55.076227145 +0000
+--- a/salt/netapi/rest_tornado/saltnado_websockets.py	2020-01-21 16:38:13.334102367 -0700
++++ b/salt/netapi/rest_tornado/saltnado_websockets.py	2020-01-22 06:48:21.256707526 -0700
 @@ -290,12 +290,15 @@
  =====
  '''
@@ -1147,8 +1175,8 @@ diff -Naur a/salt/netapi/rest_tornado/saltnado_websockets.py b/salt/netapi/rest_
          """Listens for a "websocket client ready" message.
          Once that message is received an asynchronous job
 diff -Naur a/salt/pillar/__init__.py b/salt/pillar/__init__.py
---- a/salt/pillar/__init__.py	2019-10-08 13:03:32.009403879 +0000
-+++ b/salt/pillar/__init__.py	2019-10-08 13:03:55.076227145 +0000
+--- a/salt/pillar/__init__.py	2020-01-21 16:38:13.298102686 -0700
++++ b/salt/pillar/__init__.py	2020-01-22 06:48:21.256707526 -0700
 @@ -10,7 +10,10 @@
  import os
  import collections
@@ -1179,7 +1207,7 @@ diff -Naur a/salt/pillar/__init__.py b/salt/pillar/__init__.py
  
      def destroy(self):
          if self._closing:
-@@ -1129,7 +1132,7 @@
+@@ -1135,7 +1138,7 @@
  # TODO: actually migrate from Pillar to AsyncPillar to allow for futures in
  # ext_pillar etc.
  class AsyncPillar(Pillar):
@@ -1190,9 +1218,9 @@ diff -Naur a/salt/pillar/__init__.py b/salt/pillar/__init__.py
 -        raise tornado.gen.Return(ret)
 +        raise tornado_gen.Return(ret)
 diff -Naur a/salt/transport/client.py b/salt/transport/client.py
---- a/salt/transport/client.py	2019-10-08 13:03:32.046403596 +0000
-+++ b/salt/transport/client.py	2019-10-08 13:03:55.077227138 +0000
-@@ -79,9 +79,14 @@
+--- a/salt/transport/client.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/transport/client.py	2020-01-22 06:48:21.256707526 -0700
+@@ -91,9 +91,14 @@
  
      @classmethod
      def _config_resolver(cls, num_threads=10):
@@ -1210,10 +1238,10 @@ diff -Naur a/salt/transport/client.py b/salt/transport/client.py
          cls._resolver_configured = True
  
 diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
---- a/salt/transport/ipc.py	2019-10-08 13:03:32.046403596 +0000
-+++ b/salt/transport/ipc.py	2019-10-08 13:03:55.078227130 +0000
-@@ -14,13 +14,23 @@
- import msgpack
+--- a/salt/transport/ipc.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/transport/ipc.py	2020-01-22 06:48:21.256707526 -0700
+@@ -12,13 +12,23 @@
+ import time
  
  # Import Tornado libs
 -import tornado
@@ -1241,9 +1269,9 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
 +    from tornado.iostream import IOStream, StreamClosedError
 +
  # Import Salt libs
+ import salt.utils.msgpack
  import salt.transport.client
- import salt.transport.frame
-@@ -38,7 +48,7 @@
+@@ -37,7 +47,7 @@
          future._future_with_timeout._done_callback(future)
  
  
@@ -1252,7 +1280,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
      def __init__(self, io_loop, future, timeout):
          super(FutureWithTimeout, self).__init__()
          self.io_loop = io_loop
-@@ -128,16 +138,16 @@
+@@ -127,16 +137,16 @@
              # Based on default used in tornado.netutil.bind_sockets()
              self.sock.listen(128)
          else:
@@ -1272,7 +1300,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
      def handle_stream(self, stream):
          '''
          Override this to handle the streams as they arrive
-@@ -147,13 +157,13 @@
+@@ -146,13 +156,13 @@
          See https://tornado.readthedocs.io/en/latest/iostream.html#tornado.iostream.IOStream
          for additional details.
          '''
@@ -1289,7 +1317,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
                  def return_message(msg):
                      pack = salt.transport.frame.frame_msg_ipc(
                          msg,
-@@ -255,7 +265,7 @@
+@@ -256,7 +266,7 @@
          to the server.
  
          '''
@@ -1298,7 +1326,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
          self.socket_path = socket_path
          self._closing = False
          self.stream = None
-@@ -283,7 +293,7 @@
+@@ -284,7 +294,7 @@
              if hasattr(self, '_connecting_future'):
                  # read previous future result to prevent the "unhandled future exception" error
                  self._connecting_future.exception()  # pylint: disable=E0203
@@ -1307,7 +1335,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
              self._connecting_future = future
              self._connect(timeout=timeout)
  
-@@ -295,7 +305,7 @@
+@@ -296,7 +306,7 @@
  
          return future
  
@@ -1316,16 +1344,16 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
      def _connect(self, timeout=None):
          '''
          Connect to a running IPCServer
-@@ -336,7 +346,7 @@
+@@ -337,7 +347,7 @@
                      self._connecting_future.set_exception(e)
                      break
  
 -                yield tornado.gen.sleep(1)
 +                yield tornado_gen.sleep(1)
  
+     # pylint: disable=W1701
      def __del__(self):
-         try:
-@@ -379,13 +389,13 @@
+@@ -383,13 +393,13 @@
      IMPORTANT: The below example also assumes a running IOLoop process.
  
      # Import Tornado libs
@@ -1341,7 +1369,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
      ipc_server_socket_path = '/var/run/ipc_server.ipc'
  
-@@ -399,7 +409,7 @@
+@@ -403,7 +413,7 @@
      '''
      # FIXME timeout unimplemented
      # FIXME tries unimplemented
@@ -1350,7 +1378,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
      def send(self, msg, timeout=None, tries=None):
          '''
          Send a message to an IPC socket
-@@ -426,7 +436,7 @@
+@@ -430,12 +440,12 @@
      a console:
  
          # Import Tornado libs
@@ -1359,16 +1387,13 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
          # Import Salt libs
          import salt.transport.ipc
-@@ -434,7 +444,7 @@
- 
-         opts = salt.config.master_opts()
  
 -        io_loop = tornado.ioloop.IOLoop.current()
 +        io_loop = IOLoop.current()
          ipc_server_socket_path = '/var/run/ipc_server.ipc'
-         ipc_server = salt.transport.ipc.IPCMessageServer(opts, io_loop=io_loop
-                                                          stream_handler=print_to_console)
-@@ -497,16 +507,16 @@
+         ipc_server = salt.transport.ipc.IPCMessageServer(ipc_server_socket_path, io_loop=io_loop,
+                                                          payload_handler=print_to_console)
+@@ -498,16 +508,16 @@
              # Based on default used in tornado.netutil.bind_sockets()
              self.sock.listen(128)
          else:
@@ -1388,7 +1413,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
      def _write(self, stream, pack):
          try:
              yield stream.write(pack)
-@@ -588,7 +598,7 @@
+@@ -591,7 +601,7 @@
      IMPORTANT: The below example also assumes the IOLoop is NOT running.
  
      # Import Tornado libs
@@ -1397,7 +1422,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
      # Import Salt libs
      import salt.config
-@@ -596,7 +606,7 @@
+@@ -599,7 +609,7 @@
  
      # Create a new IO Loop.
      # We know that this new IO Loop is not currently running.
@@ -1406,7 +1431,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
      ipc_publisher_socket_path = '/var/run/ipc_publisher.ipc'
  
-@@ -616,12 +626,12 @@
+@@ -619,12 +629,12 @@
          self._saved_data = []
          self._read_in_progress = Lock()
  
@@ -1422,7 +1447,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
          exc_to_raise = None
          ret = None
-@@ -673,7 +683,7 @@
+@@ -676,7 +686,7 @@
  
          if exc_to_raise is not None:
              raise exc_to_raise  # pylint: disable=E0702
@@ -1431,7 +1456,7 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
      def read_sync(self, timeout=None):
          '''
-@@ -689,7 +699,7 @@
+@@ -692,7 +702,7 @@
              return self._saved_data.pop(0)
          return self.io_loop.run_sync(lambda: self._read(timeout))
  
@@ -1440,13 +1465,13 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
      def read_async(self, callback):
          '''
          Asynchronously read messages and invoke a callback when they are ready.
-@@ -701,10 +711,10 @@
+@@ -704,10 +714,10 @@
                  yield self.connect(timeout=5)
              except StreamClosedError:
                  log.trace('Subscriber closed stream on IPC %s before connect', self.socket_path)
 -                yield tornado.gen.sleep(1)
 +                yield tornado_gen.sleep(1)
-             except Exception as exc:
+             except Exception as exc:  # pylint: disable=broad-except
                  log.error('Exception occurred while Subscriber connecting: %s', exc)
 -                yield tornado.gen.sleep(1)
 +                yield tornado_gen.sleep(1)
@@ -1454,8 +1479,8 @@ diff -Naur a/salt/transport/ipc.py b/salt/transport/ipc.py
  
      def close(self):
 diff -Naur a/salt/transport/mixins/auth.py b/salt/transport/mixins/auth.py
---- a/salt/transport/mixins/auth.py	2019-10-08 13:03:32.046403596 +0000
-+++ b/salt/transport/mixins/auth.py	2019-10-08 13:03:55.078227130 +0000
+--- a/salt/transport/mixins/auth.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/transport/mixins/auth.py	2020-01-22 06:48:21.256707526 -0700
 @@ -24,7 +24,10 @@
  
  # Import Third Party Libs
@@ -1487,9 +1512,9 @@ diff -Naur a/salt/transport/mixins/auth.py b/salt/transport/mixins/auth.py
  
  # TODO: rename?
 diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
---- a/salt/transport/tcp.py	2019-10-08 13:03:32.047403588 +0000
-+++ b/salt/transport/tcp.py	2019-10-08 13:03:55.079227122 +0000
-@@ -38,13 +38,25 @@
+--- a/salt/transport/tcp.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/transport/tcp.py	2020-01-22 06:48:21.256707526 -0700
+@@ -40,13 +40,25 @@
  from salt.transport import iter_transport_opts
  
  # Import Tornado Libs
@@ -1522,19 +1547,20 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
  # pylint: disable=import-error,no-name-in-module
  if six.PY2:
-@@ -73,7 +85,10 @@
+@@ -74,8 +86,11 @@
  if USE_LOAD_BALANCER:
      import threading
      import multiprocessing
 -    import tornado.util
-+    try:
-+        from tornado4.util import errno_from_exception
-+    except ImportError:
-+        from tornado.util import errno_from_exception
-     from salt.utils.process import SignalHandlingMultiprocessingProcess
+     from salt.utils.process import SignalHandlingProcess
++try:
++    from tornado4.util import errno_from_exception
++except ImportError:
++    from tornado.util import errno_from_exception
  
  log = logging.getLogger(__name__)
-@@ -207,7 +222,7 @@
+ 
+@@ -209,7 +224,7 @@
                      # ECONNABORTED indicates that there was a connection
                      # but it was closed while still in the accept queue.
                      # (observed on FreeBSD).
@@ -1543,7 +1569,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                          continue
                      raise
  
-@@ -228,7 +243,7 @@
+@@ -230,7 +245,7 @@
          Only create one instance of channel per __key()
          '''
          # do we have any mapping for this io_loop
@@ -1552,7 +1578,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          if io_loop not in cls.instance_map:
              cls.instance_map[io_loop] = weakref.WeakValueDictionary()
          loop_instance_map = cls.instance_map[io_loop]
-@@ -275,7 +290,7 @@
+@@ -277,7 +292,7 @@
          # crypt defaults to 'aes'
          self.crypt = kwargs.get('crypt', 'aes')
  
@@ -1561,7 +1587,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
          if self.crypt != 'clear':
              self.auth = salt.crypt.AsyncAuth(self.opts, io_loop=self.io_loop)
-@@ -339,7 +354,7 @@
+@@ -343,7 +358,7 @@
              'load': load,
          }
  
@@ -1570,7 +1596,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def crypted_transfer_decode_dictentry(self, load, dictkey=None, tries=3, timeout=60):
          if not self.auth.authenticated:
              yield self.auth.authenticate()
-@@ -354,9 +369,9 @@
+@@ -358,9 +373,9 @@
          data = pcrypt.loads(ret[dictkey])
          if six.PY3:
              data = salt.transport.frame.decode_embedded_strs(data)
@@ -1582,7 +1608,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def _crypted_transfer(self, load, tries=3, timeout=60):
          '''
          In case of authentication errors, try to renegotiate authentication
-@@ -364,7 +379,7 @@
+@@ -368,7 +383,7 @@
          Indeed, we can fail too early in case of a master restart during a
          minion state execution call
          '''
@@ -1591,7 +1617,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          def _do_transfer():
              data = yield self.message_client.send(self._package_load(self.auth.crypticle.dumps(load)),
                                                    timeout=timeout,
-@@ -377,24 +392,24 @@
+@@ -381,24 +396,24 @@
                  data = self.auth.crypticle.loads(data)
                  if six.PY3:
                      data = salt.transport.frame.decode_embedded_strs(data)
@@ -1622,7 +1648,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def send(self, load, tries=3, timeout=60, raw=False):
          '''
          Send a request, return a future which will complete when we send the message
-@@ -404,11 +419,11 @@
+@@ -408,11 +423,11 @@
                  ret = yield self._uncrypted_transfer(load, tries=tries, timeout=timeout)
              else:
                  ret = yield self._crypted_transfer(load, tries=tries, timeout=timeout)
@@ -1636,7 +1662,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
  
  class AsyncTCPPubChannel(salt.transport.mixins.auth.AESPubClientMixin, salt.transport.client.AsyncPubChannel):
-@@ -420,7 +435,7 @@
+@@ -424,7 +439,7 @@
          self.serial = salt.payload.Serial(self.opts)
  
          self.crypt = kwargs.get('crypt', 'aes')
@@ -1645,7 +1671,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          self.connected = False
          self._closing = False
          self._reconnected = False
-@@ -446,7 +461,7 @@
+@@ -452,7 +467,7 @@
              'load': load,
          }
  
@@ -1654,7 +1680,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def send_id(self, tok, force_auth):
          '''
          Send the minion id to the master so that the master may better
-@@ -456,12 +471,12 @@
+@@ -462,12 +477,12 @@
          '''
          load = {'id': self.opts['id'], 'tok': tok}
  
@@ -1669,7 +1695,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
          if force_auth or not self.auth.authenticated:
              count = 0
-@@ -474,13 +489,13 @@
+@@ -480,13 +495,13 @@
                      count += 1
          try:
              ret = yield _do_transfer()
@@ -1686,7 +1712,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def connect_callback(self, result):
          if self._closing:
              return
-@@ -543,7 +558,7 @@
+@@ -549,7 +564,7 @@
              '__master_disconnected'
          )
  
@@ -1695,7 +1721,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def connect(self):
          try:
              self.auth = salt.crypt.AsyncAuth(self.opts, io_loop=self.io_loop)
-@@ -575,7 +590,7 @@
+@@ -588,7 +603,7 @@
          if callback is None:
              return self.message_client.on_recv(callback)
  
@@ -1704,7 +1730,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          def wrap_callback(body):
              if not isinstance(body, dict):
                  # TODO: For some reason we need to decode here for things
-@@ -675,7 +690,7 @@
+@@ -690,7 +705,7 @@
                  self._socket.listen(self.backlog)
          salt.transport.mixins.auth.AESReqServerMixin.post_fork(self, payload_handler, io_loop)
  
@@ -1713,9 +1739,9 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def handle_message(self, stream, header, payload):
          '''
          Handle incoming messages from underylying tcp streams
-@@ -685,31 +700,31 @@
+@@ -700,31 +715,31 @@
                  payload = self._decode_payload(payload)
-             except Exception:
+             except Exception:  # pylint: disable=broad-except
                  stream.write(salt.transport.frame.frame_msg('bad load', header=header))
 -                raise tornado.gen.Return()
 +                raise tornado_gen.Return()
@@ -1750,7 +1776,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
              # TODO: test
              try:
-@@ -719,7 +734,7 @@
+@@ -734,7 +749,7 @@
                  stream.write('Some exception handling minion payload')
                  log.error('Some exception handling a payload from minion', exc_info=True)
                  stream.close()
@@ -1759,7 +1785,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
              req_fun = req_opts.get('fun', 'send')
              if req_fun == 'send_clear':
-@@ -736,9 +751,9 @@
+@@ -751,9 +766,9 @@
                  # always attempt to return an error to the minion
                  stream.write('Server-side exception handling payload')
                  stream.close()
@@ -1771,7 +1797,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
              # Stream was closed. This could happen if the remote side
              # closed the connection on its end (eg in a timeout or shutdown
              # situation).
-@@ -747,23 +762,23 @@
+@@ -762,23 +777,23 @@
              # Absorb any other exceptions
              log.error('Unexpected exception occurred: %s', exc, exc_info=True)
  
@@ -1799,7 +1825,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def handle_stream(self, stream, address):
          '''
          Handle incoming streams and add messages to the incoming queue
-@@ -783,7 +798,7 @@
+@@ -798,7 +813,7 @@
                      header = framed_msg['head']
                      self.io_loop.spawn_callback(self.message_handler, stream, header, framed_msg['body'])
  
@@ -1807,8 +1833,8 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
 +        except StreamClosedError:
              log.trace('req client disconnected %s', address)
              self.remove_client((stream, address))
-         except Exception as e:
-@@ -845,7 +860,7 @@
+         except Exception as e:  # pylint: disable=broad-except
+@@ -860,7 +875,7 @@
                              break
                          continue
                      # 'self.io_loop' initialized in super class
@@ -1817,7 +1843,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                      # 'self._handle_connection' defined in same super class.
                      self.io_loop.spawn_callback(
                          self._handle_connection, client_socket, address)
-@@ -853,7 +868,7 @@
+@@ -868,7 +883,7 @@
                  pass
  
  
@@ -1826,7 +1852,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      '''
      Override _create_stream() in TCPClient to enable keep alive support.
      '''
-@@ -873,10 +888,10 @@
+@@ -888,10 +903,10 @@
          # after one connection has completed.
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
          _set_tcp_keepalive(sock, self.opts)
@@ -1839,7 +1865,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
              return stream.connect(addr)
          return stream, stream.connect(addr)
  
-@@ -896,14 +911,14 @@
+@@ -913,14 +928,14 @@
              message_client.close()
          self.message_clients = []
  
@@ -1856,7 +1882,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
      def on_recv(self, *args, **kwargs):
          for message_client in self.message_clients:
-@@ -936,7 +951,7 @@
+@@ -953,7 +968,7 @@
          self.connect_callback = connect_callback
          self.disconnect_callback = disconnect_callback
  
@@ -1865,7 +1891,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
  
          with salt.utils.asynchronous.current_ioloop(self.io_loop):
              self._tcp_client = TCPClientKeepAlive(opts, resolver=resolver)
-@@ -953,7 +968,7 @@
+@@ -970,7 +985,7 @@
          self._on_recv = None
          self._closing = False
          self._connecting_future = self.connect()
@@ -1874,7 +1900,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          self.io_loop.spawn_callback(self._stream_return)
  
      def _stop_io_loop(self):
-@@ -972,7 +987,7 @@
+@@ -989,7 +1004,7 @@
              # _stream_return() completes by restarting the IO Loop.
              # This will prevent potential errors on shutdown.
              try:
@@ -1883,7 +1909,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                  self.io_loop.make_current()
                  self._stream.close()
                  if self._read_until_future is not None:
-@@ -984,7 +999,7 @@
+@@ -1001,7 +1016,7 @@
                      # 'StreamClosedError' when the stream is closed.
                      if self._read_until_future.done():
                          self._read_until_future.exception()
@@ -1892,7 +1918,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                              or not self._stream_return_future.done()):
                          self.io_loop.add_future(
                              self._stream_return_future,
-@@ -1013,7 +1028,7 @@
+@@ -1032,7 +1047,7 @@
          if hasattr(self, '_connecting_future') and not self._connecting_future.done():
              future = self._connecting_future
          else:
@@ -1901,7 +1927,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
              self._connecting_future = future
              self.io_loop.add_callback(self._connect)
  
-@@ -1027,7 +1042,7 @@
+@@ -1046,7 +1061,7 @@
          return future
  
      # TODO: tcp backoff opts
@@ -1910,7 +1936,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def _connect(self):
          '''
          Try to connect for the rest of time!
-@@ -1038,7 +1053,7 @@
+@@ -1057,7 +1072,7 @@
              try:
                  kwargs = {}
                  if self.source_ip or self.source_port:
@@ -1919,9 +1945,9 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                          ### source_ip and source_port are supported only in Tornado >= 4.5
                          # See http://www.tornadoweb.org/en/stable/releases/v4.5.0.html
                          # Otherwise will just ignore these args
-@@ -1055,10 +1070,10 @@
+@@ -1074,10 +1089,10 @@
                  break
-             except Exception as exc:
+             except Exception as exc:  # pylint: disable=broad-except
                  log.warn('TCP Message Client encountered an exception %r', exc)
 -                yield tornado.gen.sleep(1)  # TODO: backoff
 +                yield tornado_gen.sleep(1)  # TODO: backoff
@@ -1932,7 +1958,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def _stream_return(self):
          try:
              while not self._closing and (
-@@ -1088,7 +1103,7 @@
+@@ -1107,7 +1122,7 @@
                                  self.io_loop.spawn_callback(self._on_recv, header, body)
                              else:
                                  log.error('Got response for message_id %s that we are not tracking', message_id)
@@ -1941,7 +1967,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                      log.debug('tcp stream to %s:%s closed, unable to recv', self.host, self.port)
                      for future in six.itervalues(self.send_future_map):
                          future.set_exception(e)
-@@ -1124,7 +1139,7 @@
+@@ -1143,7 +1158,7 @@
          finally:
              self._stream_return_future.set_result(True)
  
@@ -1950,7 +1976,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def _stream_send(self):
          while not self._connecting_future.done() or self._connecting_future.result() is not True:
              yield self._connecting_future
-@@ -1135,7 +1150,7 @@
+@@ -1154,7 +1169,7 @@
                  del self.send_queue[0]
              # if the connection is dead, lets fail this send, and make sure we
              # attempt to reconnect
@@ -1959,7 +1985,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                  if message_id in self.send_future_map:
                      self.send_future_map.pop(message_id).set_exception(e)
                  self.remove_message_timeout(message_id)
-@@ -1196,7 +1211,7 @@
+@@ -1215,7 +1230,7 @@
          message_id = self._message_id()
          header = {'mid': message_id}
  
@@ -1968,8 +1994,8 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          if callback is not None:
              def handle_future(future):
                  response = future.result()
-@@ -1249,7 +1264,7 @@
-         self.close()
+@@ -1270,7 +1285,7 @@
+     # pylint: enable=W1701
  
  
 -class PubServer(tornado.tcpserver.TCPServer, object):
@@ -1977,16 +2003,16 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      '''
      TCP publisher
      '''
-@@ -1339,7 +1354,7 @@
+@@ -1362,7 +1377,7 @@
                      salt.utils.event.tagify('present', 'presence')
                  )
  
 -    @tornado.gen.coroutine
 +    @tornado_gen.coroutine
      def _stream_read(self, client):
-         unpacker = msgpack.Unpacker()
+         unpacker = salt.utils.msgpack.Unpacker()
          while not self._closing:
-@@ -1364,7 +1379,7 @@
+@@ -1387,7 +1402,7 @@
                          continue
                      client.id_ = load['id']
                      self._add_client_present(client)
@@ -1995,7 +2021,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                  log.debug('tcp stream to %s closed, unable to recv', client.address)
                  client.close()
                  self._remove_client_present(client)
-@@ -1381,7 +1396,7 @@
+@@ -1404,7 +1419,7 @@
          self.io_loop.spawn_callback(self._stream_read, client)
  
      # TODO: ACK the publish through IPC
@@ -2004,7 +2030,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
      def publish_payload(self, package, _):
          log.debug('TCP PubServer sending payload: %s', package)
          payload = salt.transport.frame.frame_msg(package['payload'])
-@@ -1401,7 +1416,7 @@
+@@ -1424,7 +1439,7 @@
                              # Write the packed str
                              f = client.stream.write(payload)
                              self.io_loop.add_future(f, lambda f: True)
@@ -2013,7 +2039,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                              to_remove.append(client)
                  else:
                      log.debug('Publish target %s not connected', topic)
-@@ -1411,7 +1426,7 @@
+@@ -1434,7 +1449,7 @@
                      # Write the packed str
                      f = client.stream.write(payload)
                      self.io_loop.add_future(f, lambda f: True)
@@ -2022,7 +2048,7 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
                      to_remove.append(client)
          for client in to_remove:
              log.debug('Subscriber at %s has disconnected from publisher', client.address)
-@@ -1456,7 +1471,7 @@
+@@ -1479,7 +1494,7 @@
  
          # Check if io_loop was set outside
          if self.io_loop is None:
@@ -2032,8 +2058,8 @@ diff -Naur a/salt/transport/tcp.py b/salt/transport/tcp.py
          # Spin up the publisher
          pub_server = PubServer(self.opts, io_loop=self.io_loop)
 diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
---- a/salt/transport/zeromq.py	2019-10-08 13:03:32.047403588 +0000
-+++ b/salt/transport/zeromq.py	2019-10-08 13:03:55.080227115 +0000
+--- a/salt/transport/zeromq.py	2020-01-21 16:38:13.314102544 -0700
++++ b/salt/transport/zeromq.py	2020-01-22 06:48:21.256707526 -0700
 @@ -49,9 +49,14 @@
      HAS_ZMQ_MONITOR = False
  
@@ -2052,7 +2078,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
  
  # Import third party libs
  try:
-@@ -279,7 +284,7 @@
+@@ -281,7 +286,7 @@
              'load': load,
          }
  
@@ -2061,7 +2087,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def crypted_transfer_decode_dictentry(self, load, dictkey=None, tries=3, timeout=60):
          if not self.auth.authenticated:
              # Return control back to the caller, continue when authentication succeeds
-@@ -309,9 +314,9 @@
+@@ -311,9 +316,9 @@
          data = pcrypt.loads(ret[dictkey])
          if six.PY3:
              data = salt.transport.frame.decode_embedded_strs(data)
@@ -2073,7 +2099,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def _crypted_transfer(self, load, tries=3, timeout=60, raw=False):
          '''
          Send a load across the wire, with encryption
-@@ -326,7 +331,7 @@
+@@ -328,7 +333,7 @@
          :param int tries: The number of times to make before failure
          :param int timeout: The number of seconds on a response before failing
          '''
@@ -2082,7 +2108,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
          def _do_transfer():
              # Yield control to the caller. When send() completes, resume by populating data with the Future.result
              data = yield self.message_client.send(
-@@ -342,7 +347,7 @@
+@@ -344,7 +349,7 @@
                  data = self.auth.crypticle.loads(data, raw)
              if six.PY3 and not raw:
                  data = salt.transport.frame.decode_embedded_strs(data)
@@ -2091,7 +2117,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
          if not self.auth.authenticated:
              # Return control back to the caller, resume when authentication succeeds
              yield self.auth.authenticate()
-@@ -353,9 +358,9 @@
+@@ -355,9 +360,9 @@
              # If auth error, return control back to the caller, continue when authentication succeeds
              yield self.auth.authenticate()
              ret = yield _do_transfer()
@@ -2103,7 +2129,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def _uncrypted_transfer(self, load, tries=3, timeout=60):
          '''
          Send a load across the wire in cleartext
-@@ -370,9 +375,9 @@
+@@ -372,9 +377,9 @@
              tries=tries,
          )
  
@@ -2115,7 +2141,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def send(self, load, tries=3, timeout=60, raw=False):
          '''
          Send a request, return a future which will complete when we send the message
-@@ -381,7 +386,7 @@
+@@ -383,7 +388,7 @@
              ret = yield self._uncrypted_transfer(load, tries=tries, timeout=timeout)
          else:
              ret = yield self._crypted_transfer(load, tries=tries, timeout=timeout, raw=raw)
@@ -2124,8 +2150,8 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
  
  
  class AsyncZeroMQPubChannel(salt.transport.mixins.auth.AESPubClientMixin, salt.transport.client.AsyncPubChannel):
-@@ -501,7 +506,7 @@
-         self.close()
+@@ -505,7 +510,7 @@
+     # pylint: enable=W1701
  
      # TODO: this is the time to see if we are connected, maybe use the req channel to guess?
 -    @tornado.gen.coroutine
@@ -2133,7 +2159,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def connect(self):
          if not self.auth.authenticated:
              yield self.auth.authenticate()
-@@ -519,7 +524,7 @@
+@@ -530,7 +535,7 @@
                                 source_ip=self.opts.get('source_ip'),
                                 source_port=self.opts.get('source_publish_port'))
  
@@ -2142,7 +2168,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def _decode_messages(self, messages):
          '''
          Take the zmq messages, decrypt/decode them into a payload
-@@ -536,7 +541,7 @@
+@@ -547,7 +552,7 @@
              if (self.opts.get('__role') != 'syndic' and message_target not in ('broadcast', self.hexid)) or \
                  (self.opts.get('__role') == 'syndic' and message_target not in ('broadcast', 'syndic')):
                  log.debug('Publish received for not this minion: %s', message_target)
@@ -2151,7 +2177,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
              payload = self.serial.loads(messages[1])
          else:
              raise Exception(('Invalid number of messages ({0}) in zeromq pub'
-@@ -544,7 +549,7 @@
+@@ -555,7 +560,7 @@
          # Yield control back to the caller. When the payload has been decoded, assign
          # the decoded payload to 'ret' and resume operation
          ret = yield self._decode_payload(payload)
@@ -2160,7 +2186,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
  
      @property
      def stream(self):
-@@ -564,7 +569,7 @@
+@@ -575,7 +580,7 @@
          if callback is None:
              return self.stream.on_recv(None)
  
@@ -2169,7 +2195,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
          def wrap_callback(messages):
              payload = yield self._decode_messages(messages)
              if payload is not None:
-@@ -704,7 +709,7 @@
+@@ -715,7 +720,7 @@
          self.stream = zmq.eventloop.zmqstream.ZMQStream(self._socket, io_loop=self.io_loop)
          self.stream.on_recv_stream(self.handle_message)
  
@@ -2178,7 +2204,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def handle_message(self, stream, payload):
          '''
          Handle incoming messages from underlying TCP streams
-@@ -729,30 +734,30 @@
+@@ -740,30 +745,30 @@
              else:
                  log.error('Bad load from minion: %s: %s', exc_type, exc)
              stream.send(self.serial.dumps('bad load'))
@@ -2214,7 +2240,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
  
          # TODO: test
          try:
-@@ -763,7 +768,7 @@
+@@ -774,7 +779,7 @@
              # always attempt to return an error to the minion
              stream.send('Some exception handling minion payload')
              log.error('Some exception handling a payload from minion', exc_info=True)
@@ -2223,7 +2249,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
  
          req_fun = req_opts.get('fun', 'send')
          if req_fun == 'send_clear':
-@@ -779,7 +784,7 @@
+@@ -790,7 +795,7 @@
              log.error('Unknown req_fun %s', req_fun)
              # always attempt to return an error to the minion
              stream.send('Server-side exception handling payload')
@@ -2232,7 +2258,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
  
      def __setup_signals(self):
          signal.signal(signal.SIGINT, self._handle_signals)
-@@ -842,7 +847,7 @@
+@@ -853,7 +858,7 @@
          self.ckminions = salt.utils.minions.CkMinions(self.opts)
  
      def connect(self):
@@ -2241,7 +2267,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
  
      def _publish_daemon(self, log_queue=None):
          '''
-@@ -1190,7 +1195,7 @@
+@@ -1205,7 +1210,7 @@
          self.socket.connect(self.addr)
          self.stream = zmq.eventloop.zmqstream.ZMQStream(self.socket, io_loop=self.io_loop)
  
@@ -2250,7 +2276,7 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
      def _internal_send_recv(self):
          while len(self.send_queue) > 0:
              message = self.send_queue[0]
-@@ -1257,7 +1262,7 @@
+@@ -1272,7 +1277,7 @@
          Return a future which will be completed when the message has a response
          '''
          if future is None:
@@ -2260,11 +2286,11 @@ diff -Naur a/salt/transport/zeromq.py b/salt/transport/zeromq.py
              future.attempts = 0
              future.timeout = timeout
 diff -Naur a/salt/utils/asynchronous.py b/salt/utils/asynchronous.py
---- a/salt/utils/asynchronous.py	2019-10-08 13:03:32.049403573 +0000
-+++ b/salt/utils/asynchronous.py	2019-10-08 13:03:55.080227115 +0000
-@@ -5,8 +5,13 @@
+--- a/salt/utils/asynchronous.py	2020-01-21 16:38:13.330102402 -0700
++++ b/salt/utils/asynchronous.py	2020-01-22 06:48:21.256707526 -0700
+@@ -7,8 +7,13 @@
  
- from __future__ import absolute_import, print_function, unicode_literals
+ import sys
  
 -import tornado.ioloop
 -import tornado.concurrent
@@ -2276,9 +2302,9 @@ diff -Naur a/salt/utils/asynchronous.py b/salt/utils/asynchronous.py
 +    from tornado.concurrent import Future as TornadoFuture
 +
  import contextlib
+ from salt.ext import six
  from salt.utils import zeromq
- 
-@@ -16,7 +21,7 @@
+@@ -19,7 +24,7 @@
      '''
      A context manager that will set the current ioloop to io_loop for the context
      '''
@@ -2287,7 +2313,7 @@ diff -Naur a/salt/utils/asynchronous.py b/salt/utils/asynchronous.py
      io_loop.make_current()
      try:
          yield
-@@ -60,7 +65,7 @@
+@@ -63,7 +68,7 @@
                  # Overload the ioloop for the func call-- since it might call .current()
                  with current_ioloop(self.io_loop):
                      ret = attr(*args, **kwargs)
@@ -2297,8 +2323,8 @@ diff -Naur a/salt/utils/asynchronous.py b/salt/utils/asynchronous.py
                      return ret
              return wrap
 diff -Naur a/salt/utils/event.py b/salt/utils/event.py
---- a/salt/utils/event.py	2019-10-08 13:03:32.050403565 +0000
-+++ b/salt/utils/event.py	2019-10-08 13:03:55.080227115 +0000
+--- a/salt/utils/event.py	2020-01-21 16:38:13.330102402 -0700
++++ b/salt/utils/event.py	2020-01-22 06:48:21.256707526 -0700
 @@ -70,8 +70,12 @@
  
  # Import third party libs
@@ -2314,7 +2340,7 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
  
  # Import salt libs
  import salt.config
-@@ -238,7 +242,7 @@
+@@ -226,7 +230,7 @@
              self.io_loop = io_loop
              self._run_io_loop_sync = False
          else:
@@ -2323,7 +2349,7 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
              self._run_io_loop_sync = True
          self.cpub = False
          self.cpush = False
-@@ -538,7 +542,7 @@
+@@ -537,7 +541,7 @@
                  # Trigger that at least a single iteration has gone through
                  run_once = True
              try:
@@ -2332,7 +2358,7 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
                  # IPCMessageSubscriber.read_sync() uses this type of timeout.
                  if not self.cpub and not self.connect_pub(timeout=wait):
                      break
-@@ -549,7 +553,7 @@
+@@ -548,7 +552,7 @@
                  ret = {'data': data, 'tag': mtag}
              except KeyboardInterrupt:
                  return {'tag': 'salt/event/exit', 'data': {}}
@@ -2341,7 +2367,7 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
                  if self.raise_errors:
                      raise
                  else:
-@@ -638,7 +642,7 @@
+@@ -637,7 +641,7 @@
                          try:
                              ret = self._get_event(wait, tag, match_func, no_block)
                              break
@@ -2350,7 +2376,7 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
                              self.close_pub()
                              self.connect_pub(timeout=wait)
                              continue
-@@ -950,7 +954,7 @@
+@@ -966,7 +970,7 @@
          default_minion_sock_dir = self.opts['sock_dir']
          self.opts.update(opts)
  
@@ -2359,7 +2385,7 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
          self._closing = False
  
          hash_type = getattr(hashlib, self.opts['hash_type'])
-@@ -1081,7 +1085,7 @@
+@@ -1098,7 +1102,7 @@
          Bind the pub and pull sockets for events
          '''
          salt.utils.process.appendproctitle(self.__class__.__name__)
@@ -2369,11 +2395,11 @@ diff -Naur a/salt/utils/event.py b/salt/utils/event.py
              if self.opts['ipc_mode'] == 'tcp':
                  epub_uri = int(self.opts['tcp_master_pub_port'])
 diff -Naur a/salt/utils/gitfs.py b/salt/utils/gitfs.py
---- a/salt/utils/gitfs.py	2019-10-08 13:03:32.051403558 +0000
-+++ b/salt/utils/gitfs.py	2019-10-08 13:03:55.081227107 +0000
-@@ -18,7 +18,11 @@
- import stat
+--- a/salt/utils/gitfs.py	2020-01-21 16:38:13.330102402 -0700
++++ b/salt/utils/gitfs.py	2020-01-22 06:48:21.260707830 -0700
+@@ -19,7 +19,11 @@
  import subprocess
+ import sys
  import time
 -import tornado.ioloop
 +try:
@@ -2384,7 +2410,7 @@ diff -Naur a/salt/utils/gitfs.py b/salt/utils/gitfs.py
  import weakref
  from datetime import datetime
  
-@@ -2689,7 +2693,7 @@
+@@ -2676,7 +2680,7 @@
          exited.
          '''
          # No need to get the ioloop reference if we're not initializing remotes
@@ -2394,9 +2420,9 @@ diff -Naur a/salt/utils/gitfs.py b/salt/utils/gitfs.py
              # We only evaluate the second condition in this if statement if
              # we're initializing remotes, so we won't get here unless io_loop
 diff -Naur a/salt/utils/http.py b/salt/utils/http.py
---- a/salt/utils/http.py	2019-10-08 13:03:32.051403558 +0000
-+++ b/salt/utils/http.py	2019-10-08 13:03:55.081227107 +0000
-@@ -66,15 +66,24 @@
+--- a/salt/utils/http.py	2020-01-21 16:38:13.330102402 -0700
++++ b/salt/utils/http.py	2020-01-22 06:48:21.260707830 -0700
+@@ -70,15 +70,24 @@
  # pylint: enable=import-error,no-name-in-module
  
  # Don't need a try/except block, since Salt depends on tornado
@@ -2437,7 +2463,7 @@ diff -Naur a/salt/utils/http.py b/salt/utils/http.py
  
      if ca_bundle is None:
          ca_bundle = get_ca_bundle(opts)
-@@ -525,12 +534,12 @@
+@@ -538,12 +547,12 @@
                  log.error(ret['error'])
                  return ret
  
@@ -2453,7 +2479,7 @@ diff -Naur a/salt/utils/http.py b/salt/utils/http.py
  
          supports_max_body_size = 'max_body_size' in client_argspec.args
  
-@@ -564,7 +573,7 @@
+@@ -577,7 +586,7 @@
                  if supports_max_body_size \
                  else HTTPClient()
              result = download_client.fetch(url_full, **req_kwargs)
@@ -2463,9 +2489,9 @@ diff -Naur a/salt/utils/http.py b/salt/utils/http.py
              ret['error'] = six.text_type(exc)
              return ret
 diff -Naur a/salt/utils/process.py b/salt/utils/process.py
---- a/salt/utils/process.py	2019-10-08 13:03:32.054403535 +0000
-+++ b/salt/utils/process.py	2019-10-08 13:03:55.082227099 +0000
-@@ -34,7 +34,10 @@
+--- a/salt/utils/process.py	2020-01-21 16:38:13.330102402 -0700
++++ b/salt/utils/process.py	2020-01-22 06:48:21.260707830 -0700
+@@ -35,7 +35,10 @@
  # Import 3rd-party libs
  from salt.ext import six
  from salt.ext.six.moves import queue, range  # pylint: disable=import-error,redefined-builtin
@@ -2478,8 +2504,8 @@ diff -Naur a/salt/utils/process.py b/salt/utils/process.py
  log = logging.getLogger(__name__)
  
 diff -Naur a/salt/utils/thin.py b/salt/utils/thin.py
---- a/salt/utils/thin.py	2019-10-08 13:03:32.055403527 +0000
-+++ b/salt/utils/thin.py	2019-10-08 13:03:55.082227099 +0000
+--- a/salt/utils/thin.py	2020-01-21 16:38:13.330102402 -0700
++++ b/salt/utils/thin.py	2020-01-22 06:48:21.260707830 -0700
 @@ -21,7 +21,10 @@
  import yaml
  import msgpack
@@ -2493,8 +2519,8 @@ diff -Naur a/salt/utils/thin.py b/salt/utils/thin.py
  try:
      import zlib
 diff -Naur a/salt/utils/zeromq.py b/salt/utils/zeromq.py
---- a/salt/utils/zeromq.py	2019-10-08 13:03:32.058403504 +0000
-+++ b/salt/utils/zeromq.py	2019-10-08 13:03:55.082227099 +0000
+--- a/salt/utils/zeromq.py	2020-01-21 16:38:13.330102402 -0700
++++ b/salt/utils/zeromq.py	2020-01-22 06:48:21.260707830 -0700
 @@ -6,7 +6,13 @@
  from __future__ import absolute_import, print_function, unicode_literals
  
@@ -2516,7 +2542,7 @@ diff -Naur a/salt/utils/zeromq.py b/salt/utils/zeromq.py
          if ZMQ_VERSION_INFO[0] > 16:  # 17.0.x+ deprecates zmq's ioloops
 -            ZMQDefaultLoop = tornado.ioloop.IOLoop
 +            ZMQDefaultLoop = IOLoop
- except Exception:
+ except Exception:  # pylint: disable=broad-except
      log.exception('Error while getting LibZMQ/PyZMQ library version')
  
 @@ -37,12 +43,12 @@
@@ -2544,10 +2570,10 @@ diff -Naur a/salt/utils/zeromq.py b/salt/utils/zeromq.py
  
  
 diff -Naur a/salt/version.py b/salt/version.py
---- a/salt/version.py	2019-10-08 13:03:32.059403496 +0000
-+++ b/salt/version.py	2019-10-08 13:03:55.083227092 +0000
-@@ -590,7 +590,7 @@
-         ('RAET', 'raet', '__version__'),
+--- a/salt/version.py	2020-01-21 16:38:13.294102722 -0700
++++ b/salt/version.py	2020-01-22 06:48:21.260707830 -0700
+@@ -587,7 +587,7 @@
+         ('PyZMQ', 'zmq', '__version__'),
          ('ZMQ', 'zmq', 'zmq_version'),
          ('Mako', 'mako', '__version__'),
 -        ('Tornado', 'tornado', 'version'),
@@ -2555,7 +2581,7 @@ diff -Naur a/salt/version.py b/salt/version.py
          ('timelib', 'timelib', 'version'),
          ('dateutil', 'dateutil', '__version__'),
          ('pygit2', 'pygit2', '__version__'),
-@@ -616,7 +616,13 @@
+@@ -613,7 +613,13 @@
              yield name, attr
              continue
          try:
@@ -2571,9 +2597,9 @@ diff -Naur a/salt/version.py b/salt/version.py
              if callable(version):
                  version = version()
 diff -Naur a/tests/integration/files/engines/runtests_engine.py b/tests/integration/files/engines/runtests_engine.py
---- a/tests/integration/files/engines/runtests_engine.py	2019-10-08 13:03:32.065403450 +0000
-+++ b/tests/integration/files/engines/runtests_engine.py	2019-10-08 13:03:55.083227092 +0000
-@@ -24,10 +24,10 @@
+--- a/tests/integration/files/engines/runtests_engine.py	2020-01-21 16:38:13.222103359 -0700
++++ b/tests/integration/files/engines/runtests_engine.py	2020-01-22 06:48:21.260707830 -0700
+@@ -25,10 +25,10 @@
  import salt.utils.asynchronous
  
  # Import 3rd-party libs
@@ -2588,27 +2614,9 @@ diff -Naur a/tests/integration/files/engines/runtests_engine.py b/tests/integrat
  
  log = logging.getLogger(__name__)
  
-diff -Naur a/tests/integration/__init__.py b/tests/integration/__init__.py
---- a/tests/integration/__init__.py	2019-10-08 13:03:32.108403121 +0000
-+++ b/tests/integration/__init__.py	2019-10-08 13:03:55.083227092 +0000
-@@ -77,8 +77,12 @@
- except ImportError:
-     import socketserver
- 
--from tornado import gen
--from tornado import ioloop
-+try:
-+    from tornado4 import gen
-+    from tornado4 import ioloop
-+except:
-+    from tornado import gen
-+    from tornado import ioloop
- 
- # Import salt tests support libs
- from tests.support.processes import SaltMaster, SaltMinion, SaltSyndic
 diff -Naur a/tests/integration/modules/test_gem.py b/tests/integration/modules/test_gem.py
---- a/tests/integration/modules/test_gem.py	2019-10-08 13:03:32.096403213 +0000
-+++ b/tests/integration/modules/test_gem.py	2019-10-08 13:03:55.083227092 +0000
+--- a/tests/integration/modules/test_gem.py	2020-01-21 16:38:13.222103359 -0700
++++ b/tests/integration/modules/test_gem.py	2020-01-22 06:48:21.260707830 -0700
 @@ -15,7 +15,10 @@
  import salt.utils.path
  
@@ -2619,11 +2627,11 @@ diff -Naur a/tests/integration/modules/test_gem.py b/tests/integration/modules/t
 +except:
 +    from tornado.httpclient import HTTPClient
  
- GEM = 'tidy'
- GEM_VER = '1.1.2'
+ 
+ def check_status():
 diff -Naur a/tests/integration/modules/test_ssh.py b/tests/integration/modules/test_ssh.py
---- a/tests/integration/modules/test_ssh.py	2019-10-08 13:03:32.099403190 +0000
-+++ b/tests/integration/modules/test_ssh.py	2019-10-08 13:03:55.084227084 +0000
+--- a/tests/integration/modules/test_ssh.py	2020-01-21 16:38:13.222103359 -0700
++++ b/tests/integration/modules/test_ssh.py	2020-01-22 06:48:21.260707830 -0700
 @@ -18,7 +18,10 @@
  import salt.utils.platform
  
@@ -2634,11 +2642,11 @@ diff -Naur a/tests/integration/modules/test_ssh.py b/tests/integration/modules/t
 +except:
 +    from tornado.httpclient import HTTPClient
  
- SUBSALT_DIR = os.path.join(TMP, 'subsalt')
- AUTHORIZED_KEYS = os.path.join(SUBSALT_DIR, 'authorized_keys')
+ GITHUB_FINGERPRINT = '9d:38:5b:83:a9:17:52:92:56:1a:5e:c4:d4:81:8e:0a:ca:51:a2:64:f1:74:20:11:2e:f8:8a:c3:a1:39:49:8f'
+ 
 diff -Naur a/tests/support/helpers.py b/tests/support/helpers.py
---- a/tests/support/helpers.py	2019-10-08 13:03:32.114403075 +0000
-+++ b/tests/support/helpers.py	2019-10-08 13:03:55.084227084 +0000
+--- a/tests/support/helpers.py	2020-01-21 16:38:13.246103146 -0700
++++ b/tests/support/helpers.py	2020-01-22 06:48:21.260707830 -0700
 @@ -30,8 +30,14 @@
  import textwrap
  import threading
@@ -2656,7 +2664,7 @@ diff -Naur a/tests/support/helpers.py b/tests/support/helpers.py
  import types
  
  # Import 3rd-party libs
-@@ -1424,7 +1430,7 @@
+@@ -1335,7 +1341,7 @@
      .. code-block:: python
  
          @http_basic_auth(lambda u, p: u == 'foo' and p == 'bar')
@@ -2665,7 +2673,7 @@ diff -Naur a/tests/support/helpers.py b/tests/support/helpers.py
              pass
      '''
      def wrapper(handler_class):
-@@ -1538,16 +1544,16 @@
+@@ -1449,20 +1455,20 @@
          self.wait = wait
          self.handler = handler \
              if handler is not None \
@@ -2680,15 +2688,39 @@ diff -Naur a/tests/support/helpers.py b/tests/support/helpers.py
 -        self.ioloop = tornado.ioloop.IOLoop()
 +        self.ioloop = IOLoop()
          self.ioloop.make_current()
--        self.application = tornado.web.Application(
-+        self.application = Application(
-             [(r'/(.*)', self.handler, {'path': self.root})])
+-        if self.handler == tornado.web.StaticFileHandler:
+-            self.application = tornado.web.Application(
++        if self.handler == StaticFileHandler:
++            self.application = Application(
+                 [(r'/(.*)', self.handler, {'path': self.root})])
+         else:
+-            self.application = tornado.web.Application(
++            self.application = Application(
+                 [(r'/(.*)', self.handler)])
          self.application.listen(self.port)
          self.ioloop.start()
+@@ -1526,7 +1532,7 @@
+         self.server_thread.join()
+ 
+ 
+-class SaveRequestsPostHandler(tornado.web.RequestHandler):
++class SaveRequestsPostHandler(RequestHandler):
+     '''
+     Save all requests sent to the server.
+     '''
+@@ -1545,7 +1551,7 @@
+         raise NotImplementedError()
+ 
+ 
+-class MirrorPostHandler(tornado.web.RequestHandler):
++class MirrorPostHandler(RequestHandler):
+     '''
+     Mirror a POST body back to the client
+     '''
 diff -Naur a/tests/unit/fileserver/test_gitfs.py b/tests/unit/fileserver/test_gitfs.py
---- a/tests/unit/fileserver/test_gitfs.py	2019-10-08 13:03:32.119403037 +0000
-+++ b/tests/unit/fileserver/test_gitfs.py	2019-10-08 13:03:55.084227084 +0000
-@@ -11,7 +11,6 @@
+--- a/tests/unit/fileserver/test_gitfs.py	2020-01-21 16:38:13.234103253 -0700
++++ b/tests/unit/fileserver/test_gitfs.py	2020-01-22 06:48:21.260707830 -0700
+@@ -10,7 +10,6 @@
  import shutil
  import tempfile
  import textwrap
@@ -2696,7 +2728,7 @@ diff -Naur a/tests/unit/fileserver/test_gitfs.py b/tests/unit/fileserver/test_gi
  import logging
  import stat
  try:
-@@ -19,6 +18,11 @@
+@@ -18,6 +17,11 @@
  except ImportError:
      pass
  
@@ -2706,9 +2738,9 @@ diff -Naur a/tests/unit/fileserver/test_gitfs.py b/tests/unit/fileserver/test_gi
 +    from tornado.ioloop import IOLoop
 +
  # Import Salt Testing Libs
+ from tests.support.runtests import RUNTIME_VARS
  from tests.support.mixins import LoaderModuleMockMixin
- from tests.support.unit import TestCase, skipIf
-@@ -111,7 +115,7 @@
+@@ -73,7 +77,7 @@
  
  def _clear_instance_map():
      try:
@@ -2718,8 +2750,8 @@ diff -Naur a/tests/unit/fileserver/test_gitfs.py b/tests/unit/fileserver/test_gi
          pass
  
 diff -Naur a/tests/unit/modules/test_random_org.py b/tests/unit/modules/test_random_org.py
---- a/tests/unit/modules/test_random_org.py	2019-10-08 13:03:32.134402922 +0000
-+++ b/tests/unit/modules/test_random_org.py	2019-10-08 13:03:55.085227077 +0000
+--- a/tests/unit/modules/test_random_org.py	2020-01-21 16:38:13.238103217 -0700
++++ b/tests/unit/modules/test_random_org.py	2020-01-22 06:48:21.260707830 -0700
 @@ -15,7 +15,10 @@
  import salt.modules.random_org as random_org
  
@@ -2733,9 +2765,9 @@ diff -Naur a/tests/unit/modules/test_random_org.py b/tests/unit/modules/test_ran
  
  def check_status():
 diff -Naur a/tests/unit/netapi/test_rest_tornado.py b/tests/unit/netapi/test_rest_tornado.py
---- a/tests/unit/netapi/test_rest_tornado.py	2019-10-08 13:03:32.140402876 +0000
-+++ b/tests/unit/netapi/test_rest_tornado.py	2019-10-08 13:03:55.085227077 +0000
-@@ -25,12 +25,20 @@
+--- a/tests/unit/netapi/test_rest_tornado.py	2020-01-21 16:38:13.246103146 -0700
++++ b/tests/unit/netapi/test_rest_tornado.py	2020-01-22 06:48:21.260707830 -0700
+@@ -28,12 +28,20 @@
  # Import 3rd-party libs
  # pylint: disable=import-error
  try:
@@ -2780,7 +2812,7 @@ diff -Naur a/tests/unit/netapi/test_rest_tornado.py b/tests/unit/netapi/test_res
          return response
  
      def fetch(self, path, **kwargs):
-@@ -772,7 +780,7 @@
+@@ -779,7 +787,7 @@
          # create a few futures
          futures = []
          for x in range(0, 3):
@@ -2790,8 +2822,8 @@ diff -Naur a/tests/unit/netapi/test_rest_tornado.py b/tests/unit/netapi/test_res
              futures.append(future)
  
 diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
---- a/tests/unit/test_minion.py	2019-10-08 13:03:32.163402699 +0000
-+++ b/tests/unit/test_minion.py	2019-10-08 13:03:55.085227077 +0000
+--- a/tests/unit/test_minion.py	2020-01-21 16:38:13.226103324 -0700
++++ b/tests/unit/test_minion.py	2020-01-22 06:48:21.260707830 -0700
 @@ -18,8 +18,19 @@
  import salt.utils.event as event
  from salt.exceptions import SaltSystemExit, SaltMasterUnresolvableError
@@ -2801,20 +2833,20 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
 +try:
 +    from tornado4.concurrent import Future as TornadoFuture
 +    from tornado4.ioloop import IOLoop
-+    from tornado4 import gen
++    from tornado4 import gen as tornado_gen
 +    from tornado4.testing import AsyncTestCase
 +    TORNADO_MODULE_NAME = "tornado4"
 +except:
 +    from tornado.concurrent import Future as TornadoFuture
 +    from tornado.ioloop import IOLoop
-+    from tornado import gen
++    from tornado import gen as tornado_gen
 +    from tornado.testing import AsyncTestCase
 +    TORNADO_MODULE_NAME = "tornado"
 +
  from salt.ext.six.moves import range
- 
- 
-@@ -120,7 +131,7 @@
+ import salt.utils.crypt
+ import salt.utils.process
+@@ -123,7 +134,7 @@
          mock_data = {'fun': 'foo.bar',
                       'jid': 123}
          mock_jid_queue = [123]
@@ -2823,7 +2855,7 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
          try:
              ret = minion._handle_decoded_payload(mock_data).result()
              self.assertEqual(minion.jid_queue, mock_jid_queue)
-@@ -141,7 +152,7 @@
+@@ -144,7 +155,7 @@
              mock_data = {'fun': 'foo.bar',
                           'jid': mock_jid}
              mock_jid_queue = [123, 456]
@@ -2832,7 +2864,7 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
              try:
  
                  # Assert that the minion's jid_queue attribute matches the mock_jid_queue as a baseline
-@@ -170,7 +181,7 @@
+@@ -173,7 +184,7 @@
              mock_data = {'fun': 'foo.bar',
                           'jid': 789}
              mock_jid_queue = [123, 456]
@@ -2841,14 +2873,15 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
              try:
  
                  # Assert that the minion's jid_queue attribute matches the mock_jid_queue as a baseline
-@@ -194,13 +205,13 @@
-                 patch('salt.utils.process.SignalHandlingMultiprocessingProcess.start', MagicMock(return_value=True)), \
-                 patch('salt.utils.process.SignalHandlingMultiprocessingProcess.join', MagicMock(return_value=True)), \
+@@ -197,14 +208,14 @@
+                 patch('salt.utils.process.SignalHandlingProcess.start', MagicMock(return_value=True)), \
+                 patch('salt.utils.process.SignalHandlingProcess.join', MagicMock(return_value=True)), \
                  patch('salt.utils.minion.running', MagicMock(return_value=[])), \
 -                patch('tornado.gen.sleep', MagicMock(return_value=tornado.concurrent.Future())):
-+                patch(TORNADO_MODULE_NAME + '.gen.sleep', MagicMock(return_value=TornadoFuture())):
++                patch('tornado_gen.sleep', MagicMock(return_value=TornadoFuture())):
              process_count_max = 10
-             mock_opts = salt.config.DEFAULT_MINION_OPTS
+             mock_opts = salt.config.DEFAULT_MINION_OPTS.copy()
+             mock_opts['__role'] = 'minion'
              mock_opts['minion_jid_queue_hwm'] = 100
              mock_opts["process_count_max"] = process_count_max
  
@@ -2857,20 +2890,17 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
              minion = salt.minion.Minion(mock_opts, jid_queue=[], io_loop=io_loop)
              try:
  
-@@ -208,7 +219,10 @@
+@@ -212,7 +223,7 @@
                  class SleepCalledException(Exception):
                      """Thrown when sleep is called"""
-                     pass
+ 
 -                tornado.gen.sleep.return_value.set_exception(SleepCalledException())
-+                if TORNADO_MODULE_NAME == 'tornado4':
-+                    tornado4.gen.sleep.return_value.set_exception(SleepCalledException())
-+                else:
-+                    tornado.gen.sleep.return_value.set_exception(SleepCalledException())
++                tornado_gen.sleep.return_value.set_exception(SleepCalledException())
  
                  # up until process_count_max: gen.sleep does not get called, processes are started normally
                  for i in range(process_count_max):
-@@ -241,7 +255,7 @@
-                 patch('salt.utils.process.SignalHandlingMultiprocessingProcess.join', MagicMock(return_value=True)):
+@@ -245,7 +256,7 @@
+                 patch('salt.utils.process.SignalHandlingProcess.join', MagicMock(return_value=True)):
              mock_opts = self.get_config('minion', from_scratch=True)
              mock_opts['beacons_before_connect'] = True
 -            io_loop = tornado.ioloop.IOLoop()
@@ -2878,8 +2908,8 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
              io_loop.make_current()
              minion = salt.minion.Minion(mock_opts, io_loop=io_loop)
              try:
-@@ -267,7 +281,7 @@
-                 patch('salt.utils.process.SignalHandlingMultiprocessingProcess.join', MagicMock(return_value=True)):
+@@ -271,7 +282,7 @@
+                 patch('salt.utils.process.SignalHandlingProcess.join', MagicMock(return_value=True)):
              mock_opts = self.get_config('minion', from_scratch=True)
              mock_opts['scheduler_before_connect'] = True
 -            io_loop = tornado.ioloop.IOLoop()
@@ -2887,18 +2917,63 @@ diff -Naur a/tests/unit/test_minion.py b/tests/unit/test_minion.py
              io_loop.make_current()
              minion = salt.minion.Minion(mock_opts, io_loop=io_loop)
              try:
-@@ -339,7 +353,7 @@
+@@ -293,7 +304,7 @@
+                 patch('salt.utils.process.SignalHandlingProcess.join', MagicMock(return_value=True)):
+             mock_opts = self.get_config('minion', from_scratch=True)
+             mock_opts['ping_interval'] = 10
+-            io_loop = tornado.ioloop.IOLoop()
++            io_loop = IOLoop()
+             io_loop.make_current()
+             minion = salt.minion.Minion(mock_opts, io_loop=io_loop)
+             try:
+@@ -312,7 +323,7 @@
+     def test_when_passed_start_event_grains(self):
+         mock_opts = self.get_config('minion', from_scratch=True)
+         mock_opts['start_event_grains'] = ["os"]
+-        io_loop = tornado.ioloop.IOLoop()
++        io_loop = IOLoop()
+         io_loop.make_current()
+         minion = salt.minion.Minion(mock_opts, io_loop=io_loop)
+         try:
+@@ -328,7 +339,7 @@
+ 
+     def test_when_not_passed_start_event_grains(self):
+         mock_opts = self.get_config('minion', from_scratch=True)
+-        io_loop = tornado.ioloop.IOLoop()
++        io_loop = IOLoop()
+         io_loop.make_current()
+         minion = salt.minion.Minion(mock_opts, io_loop=io_loop)
+         try:
+@@ -357,7 +368,7 @@
+         Ensure gen_modules is called with the correct arguments #54429
+         '''
+         mock_opts = self.get_config('minion', from_scratch=True)
+-        io_loop = tornado.ioloop.IOLoop()
++        io_loop = IOLoop()
+         io_loop.make_current()
+         minion = salt.minion.Minion(mock_opts, io_loop=io_loop)
+ 
+@@ -381,7 +392,7 @@
+         mock_opts = self.get_config('minion', from_scratch=True)
+         mock_opts["multiprocessing"] = True
+ 
+-        io_loop = tornado.ioloop.IOLoop()
++        io_loop = IOLoop()
+         io_loop.make_current()
+         minion = salt.minion.Minion(mock_opts, io_loop=io_loop)
+ 
+@@ -394,7 +405,7 @@
+             io_loop.run_sync(lambda: minion._handle_decoded_payload(job_data))
  
  
- @skipIf(NO_MOCK, NO_MOCK_REASON)
 -class MinionAsyncTestCase(TestCase, AdaptedConfigurationTestCaseMixin, tornado.testing.AsyncTestCase):
 +class MinionAsyncTestCase(TestCase, AdaptedConfigurationTestCaseMixin, AsyncTestCase):
  
-     @skip_if_not_root
-     def test_sock_path_len(self):
+     def setUp(self):
+         super(MinionAsyncTestCase, self).setUp()
 diff -Naur a/tests/unit/test_proxy_minion.py b/tests/unit/test_proxy_minion.py
---- a/tests/unit/test_proxy_minion.py	2019-10-08 13:03:32.163402699 +0000
-+++ b/tests/unit/test_proxy_minion.py	2019-10-08 13:03:55.086227069 +0000
+--- a/tests/unit/test_proxy_minion.py	2020-01-21 16:38:13.226103324 -0700
++++ b/tests/unit/test_proxy_minion.py	2020-01-22 06:48:21.260707830 -0700
 @@ -8,8 +8,15 @@
  import copy
  
@@ -2916,17 +2991,17 @@ diff -Naur a/tests/unit/test_proxy_minion.py b/tests/unit/test_proxy_minion.py
 +    import tornado.testing
  
  # Import Salt Testing libs
- from tests.support.unit import TestCase, skipIf
-@@ -33,7 +40,7 @@
+ from tests.support.unit import TestCase
+@@ -31,7 +38,7 @@
          '''
-         mock_opts = salt.config.DEFAULT_MINION_OPTS
+         mock_opts = salt.config.DEFAULT_MINION_OPTS.copy()
          mock_jid_queue = [123]
 -        proxy_minion = salt.minion.ProxyMinion(mock_opts, jid_queue=copy.copy(mock_jid_queue), io_loop=tornado.ioloop.IOLoop())
 +        proxy_minion = salt.minion.ProxyMinion(mock_opts, jid_queue=copy.copy(mock_jid_queue), io_loop=IOLoop())
          try:
              ret = proxy_minion._post_master_init('dummy_master')
              self.assert_called_once(salt.minion._metaproxy_call)
-@@ -48,7 +55,7 @@
+@@ -46,7 +53,7 @@
          mock_data = {'fun': 'foo.bar',
                       'jid': 123}
          mock_jid_queue = [123]
@@ -2935,7 +3010,7 @@ diff -Naur a/tests/unit/test_proxy_minion.py b/tests/unit/test_proxy_minion.py
          try:
              ret = proxy_minion._handle_decoded_payload(mock_data).result()
              self.assertEqual(proxy_minion.jid_queue, mock_jid_queue)
-@@ -65,7 +72,7 @@
+@@ -63,7 +70,7 @@
          mock_data = {'fun': 'foo.bar',
                       'jid': 123}
          mock_jid_queue = [123]
@@ -2945,8 +3020,8 @@ diff -Naur a/tests/unit/test_proxy_minion.py b/tests/unit/test_proxy_minion.py
              ret = proxy_minion._handle_decoded_payload(mock_data).result()
              self.assertEqual(proxy_minion.jid_queue, mock_jid_queue)
 diff -Naur a/tests/unit/transport/mixins.py b/tests/unit/transport/mixins.py
---- a/tests/unit/transport/mixins.py	2019-10-08 13:03:32.156402753 +0000
-+++ b/tests/unit/transport/mixins.py	2019-10-08 13:03:55.087227061 +0000
+--- a/tests/unit/transport/mixins.py	2020-01-21 16:38:13.234103253 -0700
++++ b/tests/unit/transport/mixins.py	2020-01-22 06:48:21.260707830 -0700
 @@ -8,7 +8,11 @@
  
  # Import 3rd-party libs
@@ -2977,8 +3052,8 @@ diff -Naur a/tests/unit/transport/mixins.py b/tests/unit/transport/mixins.py
      try:
          loop.start()
 diff -Naur a/tests/unit/transport/test_ipc.py b/tests/unit/transport/test_ipc.py
---- a/tests/unit/transport/test_ipc.py	2019-10-08 13:03:32.156402753 +0000
-+++ b/tests/unit/transport/test_ipc.py	2019-10-08 13:03:55.087227061 +0000
+--- a/tests/unit/transport/test_ipc.py	2020-01-21 16:38:13.234103253 -0700
++++ b/tests/unit/transport/test_ipc.py	2020-01-22 06:48:21.260707830 -0700
 @@ -11,9 +11,14 @@
  import threading
  import logging
@@ -3025,8 +3100,8 @@ diff -Naur a/tests/unit/transport/test_ipc.py b/tests/unit/transport/test_ipc.py
      Test all of the clear msg stuff
      '''
 diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
---- a/tests/unit/transport/test_tcp.py	2019-10-08 13:03:32.156402753 +0000
-+++ b/tests/unit/transport/test_tcp.py	2019-10-08 13:03:55.087227061 +0000
+--- a/tests/unit/transport/test_tcp.py	2020-01-21 16:38:13.234103253 -0700
++++ b/tests/unit/transport/test_tcp.py	2020-01-22 06:48:21.260707830 -0700
 @@ -9,10 +9,16 @@
  import socket
  import logging
@@ -3072,7 +3147,7 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
  
  
  @skipIf(salt.utils.platform.is_darwin(), 'hanging test suite on MacOS')
-@@ -110,12 +116,12 @@
+@@ -111,12 +117,12 @@
          del self.channel
  
      @classmethod
@@ -3087,7 +3162,7 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
  
  
  @skipIf(salt.utils.platform.is_darwin(), 'hanging test suite on MacOS')
-@@ -127,12 +133,12 @@
+@@ -129,12 +135,12 @@
          del self.channel
  
      @classmethod
@@ -3102,7 +3177,7 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
  
      # TODO: make failed returns have a specific framing so we can raise the same exception
      # on encrypted channels
-@@ -188,7 +194,7 @@
+@@ -190,7 +196,7 @@
          # we also require req server for auth
          cls.req_server_channel = salt.transport.server.ReqServerChannel.factory(cls.master_config)
          cls.req_server_channel.pre_fork(cls.process_manager)
@@ -3111,7 +3186,7 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
          cls.stop = threading.Event()
          cls.req_server_channel.post_fork(cls._handle_payload, io_loop=cls.io_loop)
          cls.server_thread = threading.Thread(
-@@ -286,7 +292,7 @@
+@@ -308,7 +314,7 @@
              yield self.message_client_pool.connect()
  
          for message_client_mock in self.message_client_pool.message_clients:
@@ -3120,7 +3195,7 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
              future.set_result('foo')
              message_client_mock.connect.return_value = future
  
-@@ -298,12 +304,12 @@
+@@ -320,12 +326,12 @@
              yield self.message_client_pool.connect()
  
          for idx, message_client_mock in enumerate(self.message_client_pool.message_clients):
@@ -3135,7 +3210,7 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
              test_connect(self)
  
  
-@@ -325,7 +331,7 @@
+@@ -347,7 +353,7 @@
          '''
          test message client cleanup on close
          '''
@@ -3145,8 +3220,8 @@ diff -Naur a/tests/unit/transport/test_tcp.py b/tests/unit/transport/test_tcp.py
          opts = self.get_temp_config('master')
          client = SaltMessageClient(opts, self.listen_on, self.port)
 diff -Naur a/tests/unit/transport/test_zeromq.py b/tests/unit/transport/test_zeromq.py
---- a/tests/unit/transport/test_zeromq.py	2019-10-08 13:03:32.156402753 +0000
-+++ b/tests/unit/transport/test_zeromq.py	2019-10-08 13:03:55.088227054 +0000
+--- a/tests/unit/transport/test_zeromq.py	2020-01-21 16:38:13.234103253 -0700
++++ b/tests/unit/transport/test_zeromq.py	2020-01-22 06:48:21.260707830 -0700
 @@ -23,8 +23,13 @@
  # support pyzmq 13.0.x, TODO: remove once we force people to 14.0.x
  if not hasattr(zmq.eventloop.ioloop, 'ZMQIOLoop'):
@@ -3163,7 +3238,7 @@ diff -Naur a/tests/unit/transport/test_zeromq.py b/tests/unit/transport/test_zer
  
  # Import Salt libs
  import salt.config
-@@ -136,12 +141,12 @@
+@@ -137,12 +142,12 @@
          del self.channel
  
      @classmethod
@@ -3178,7 +3253,7 @@ diff -Naur a/tests/unit/transport/test_zeromq.py b/tests/unit/transport/test_zer
  
      def test_master_uri_override(self):
          '''
-@@ -165,12 +170,12 @@
+@@ -167,12 +172,12 @@
          del self.channel
  
      @classmethod
@@ -3194,8 +3269,8 @@ diff -Naur a/tests/unit/transport/test_zeromq.py b/tests/unit/transport/test_zer
      # TODO: make failed returns have a specific framing so we can raise the same exception
      # on encrypted channels
 diff -Naur a/tests/unit/utils/test_asynchronous.py b/tests/unit/utils/test_asynchronous.py
---- a/tests/unit/utils/test_asynchronous.py	2019-10-08 13:03:32.157402745 +0000
-+++ b/tests/unit/utils/test_asynchronous.py	2019-10-08 13:03:55.088227054 +0000
+--- a/tests/unit/utils/test_asynchronous.py	2020-01-21 16:38:13.246103146 -0700
++++ b/tests/unit/utils/test_asynchronous.py	2020-01-22 06:48:21.260707830 -0700
 @@ -4,9 +4,12 @@
  from __future__ import absolute_import, print_function, unicode_literals
  
@@ -3247,8 +3322,8 @@ diff -Naur a/tests/unit/utils/test_asynchronous.py b/tests/unit/utils/test_async
          '''
          Test that the helper classes do what we expect within a regular asynchronous env
 diff -Naur a/tests/unit/utils/test_context.py b/tests/unit/utils/test_context.py
---- a/tests/unit/utils/test_context.py	2019-10-08 13:03:32.157402745 +0000
-+++ b/tests/unit/utils/test_context.py	2019-10-08 13:03:55.088227054 +0000
+--- a/tests/unit/utils/test_context.py	2020-01-21 16:38:13.246103146 -0700
++++ b/tests/unit/utils/test_context.py	2020-01-22 06:48:21.260707830 -0700
 @@ -5,9 +5,15 @@
  '''
  # Import python libs
@@ -3319,14 +3394,15 @@ diff -Naur a/tests/unit/utils/test_context.py b/tests/unit/utils/test_context.py
              r = yield wait_iterator.next()  # pylint: disable=incompatible-py3-code
              self.assertEqual(r[0], r[1])  # verify that the global value remails
 diff -Naur a/tests/unit/utils/test_event.py b/tests/unit/utils/test_event.py
---- a/tests/unit/utils/test_event.py	2019-10-08 13:03:32.158402738 +0000
-+++ b/tests/unit/utils/test_event.py	2019-10-08 13:04:36.796907489 +0000
-@@ -13,7 +13,12 @@
- import hashlib
- import time
- import warnings
+--- a/tests/unit/utils/test_event.py	2020-01-21 16:38:13.242103182 -0700
++++ b/tests/unit/utils/test_event.py	2020-01-22 06:48:21.260707830 -0700
+@@ -25,8 +25,12 @@
+ import salt.utils.event
+ import salt.utils.stringutils
+ 
+-# Import 3rd-+arty libs
 -from tornado.testing import AsyncTestCase
-+
++# Import 3rd-party libs
 +try:
 +    from tornado4.testing import AsyncTestCase
 +except ImportError:

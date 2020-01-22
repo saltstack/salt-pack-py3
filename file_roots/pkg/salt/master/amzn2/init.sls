@@ -56,6 +56,6 @@
       - salt://{{slspath}}/sources/fish-completions/{{pkg_name}}-minion.fish
       - salt://{{slspath}}/sources/fish-completions/{{pkg_name}}-run.fish
       - salt://{{slspath}}/sources/fish-completions/{{pkg_name}}-syndic.fish
-##      - salt://{{slspath}}/sources/{{pkg_name}}-py3-2019.2.2-tornado4.patch
+      - salt://{{slspath}}/sources/{{pkg_name}}-py3-3000.0.0-tornado4.patch
 
 {% endif %}
