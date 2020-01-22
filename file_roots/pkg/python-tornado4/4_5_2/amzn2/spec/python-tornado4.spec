@@ -18,7 +18,7 @@
 
 Name:           python-%{srcname}%{nameext}
 Version:        4.5.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -118,8 +118,8 @@ Supports Python %{python3_version}.
 %build
 %if %{with python3}
 ## %%py3_build
-## amzn2 has issue with %{py_setup} expansion
-CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+## amzn2 has issue with %{py_setup} expansion and remove '-s'
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3}" %{?*}
 sleep 1
 %endif # with_python3
 %if %{with python2}
@@ -171,6 +171,9 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 
 
 %changelog
+* Tue Jan 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-5
+- Updated spec file to not use py3_build  due to '-s' preventing pip installs
+
 * Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-4
 - Updated Amazon Linux 2 support
 

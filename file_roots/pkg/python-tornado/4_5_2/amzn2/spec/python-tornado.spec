@@ -13,7 +13,7 @@
 
 Name:           python-%{srcname}
 Version:        4.5.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -112,7 +112,13 @@ server and and tools. This package contains some example applications.
 
 %build
 %if %{with python3}
-%py3_build
+## %%py3_build
+## amzn2 has an issue with py_setup macro
+## py3_shbang_opts is '-s' and causing issues with pip install
+## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__p         ython3} %%{py3_shbang_opts}" %%{?*}
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3}" %{?*}
+sleep 1
+
 %endif # with python3
 %if %{with python2}
 %py2_build
@@ -121,7 +127,10 @@ server and and tools. This package contains some example applications.
 
 %install
 %if %{with python3}
-%py3_install
+## %%py3_install
+## amzn2 has issue with %{py_setup} expansion
+cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 %endif # with python3
 %if %{with python2}
 %py2_install
@@ -160,6 +169,9 @@ server and and tools. This package contains some example applications.
 
 
 %changelog
+* Tue Jan 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-5
+- Updated spec file to not use py3_build  due to '-s' preventing pip installs
+
 * Mon Jan 13 2020 SaltStack Packaging Team <packaging@saltstack.com> - 4.5.2-4
 - added definition for python3_pkgversion 3 if not exists
 
