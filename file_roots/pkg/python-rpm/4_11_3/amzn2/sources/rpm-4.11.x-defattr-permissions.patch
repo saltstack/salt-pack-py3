@@ -1,0 +1,16 @@
+--- rpm-4.8.0/build/files.c.defattr-permissions	2015-02-23 10:45:47.043339687 +0100
++++ rpm-4.8.0/build/files.c	2015-02-23 10:53:55.673480702 +0100
+@@ -1446,6 +1446,12 @@
+ 	    if (fl->def.ar.ar_dmodestr) {
+ 		fileMode &= S_IFMT;
+ 		fileMode |= fl->def.ar.ar_dmode;
++	    } else if (fl->def.ar.ar_fmodestr){
++		rpmlog(RPMLOG_WARNING, _("%%defattr doesn't define directory "
++		    "mode so file mode defined in %%defattr is used for "
++		    "directory: %s\n"), diskPath);
++		fileMode &= S_IFMT;
++		fileMode |= fl->def.ar.ar_fmode;
+ 	    }
+ 	} else if (!S_ISLNK(fileMode) && fl->def.ar.ar_fmodestr) {
+ 	    fileMode &= S_IFMT;
+

@@ -1,0 +1,40 @@
+From e38574428c952b143fc4e0e42cb99b242c7b7977 Mon Sep 17 00:00:00 2001
+From: Irmen de Jong <irmen@razorvine.net>
+Date: Tue, 3 Apr 2018 19:43:08 +0200
+Subject: [PATCH] fix bucket iteration; adhere to Pep 479. Required for Python
+ 3.7 which is now also included in the test matrix
+
+---
+ more_itertools/more.py | 5 ++++-
+ setup.py               | 2 ++
+ 4 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index c4b08ae..ca413a7 100644
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -723,7 +723,10 @@ def _get_values(self, value):
+             # a matching item, caching the rest.
+             else:
+                 while True:
+-                    item = next(self._it)
++                    try:
++                        item = next(self._it)
++                    except StopIteration:
++                        return
+                     item_value = self._key(item)
+                     if item_value == value:
+                         yield item
+diff --git a/setup.py b/setup.py
+index c4670dd..e6fd01b 100644
+--- a/setup.py
++++ b/setup.py
+@@ -51,6 +51,8 @@ def get_long_description():
+         'Programming Language :: Python :: 3.3',
+         'Programming Language :: Python :: 3.4',
+         'Programming Language :: Python :: 3.5',
++        'Programming Language :: Python :: 3.6',
++        'Programming Language :: Python :: 3.7',
+         'Topic :: Software Development :: Libraries'],
+     keywords=['itertools', 'iterator', 'iteration', 'filter', 'peek',
+               'peekable', 'collate', 'chunk', 'chunked'],

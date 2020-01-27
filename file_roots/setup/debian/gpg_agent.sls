@@ -11,13 +11,6 @@
 {% set gpg_tty_info = gpg_key_dir ~ '/gpg-tty-info-salt' %}
 {% set gpg_agent_config_file = gpg_key_dir ~ '/gpg-agent.conf' %}
 
-{% if build_cfg.build_release != 'debian9' %}
-{% set write_env_file_prefix = '--' %}
-{% set write_env_file = 'write-env-file ' ~  gpg_key_dir ~ '/gpg-agent-info-salt' %}
-{% set pinentry_parms = '' -%}
-{% set pinentry_text = '' %}
-{% set kill_gpg_agent_text = 'killall -v -w gpg-agent' %}
-{% else %}
 {% set write_env_file_prefix = '' %}
 {% set write_env_file = '' %}
 {% set pinentry_parms = '
@@ -25,7 +18,6 @@
         allow-loopback-pinentry' %}
 {% set pinentry_text = 'pinentry-program /usr/bin/pinentry-tty' %}
 {% set kill_gpg_agent_text = 'gpgconf --kill gpg-agent' %}
-{% endif %}
 
 {% set pkg_pub_key_absfile = gpg_key_dir ~ '/' ~ pkg_pub_key_file %}
 {% set pkg_priv_key_absfile = gpg_key_dir ~ '/' ~ pkg_priv_key_file %}
@@ -51,12 +43,15 @@
 {% set gpg_agent_script_file = build_cfg.build_homedir ~ '/gpg-agent_start.sh' %}
 
 ## GPG_TTY=$(tty) getting 'not a tty', TDB this fix is temp
+
+## don't name kill script with gpg-agent as part of name, makes script easier
+{% set gpg_ps_kill_script_file = build_cfg.build_homedir ~ '/gpg_kill.sh' %}
+
 {% set gpg_agent_script_text = '#!/bin/sh
-        ' ~ kill_gpg_agent_text ~ '
-        gpg-agent --homedir ' ~ gpg_key_dir ~ ' ' ~ write_env_file_prefix ~ write_env_file ~ ' --allow-preset-passphrase --max-cache-ttl 600 --daemon
+        gpgconf --launch gpg-agent
         GPG_TTY=/dev/pts/0
         export GPG_TTY
-        echo "GPG_TTY=${GPG_TTY}" > ' ~ gpg_tty_info ~ '
+        echo "GPG_TTY=/dev/pts/0" > ' ~ gpg_tty_info ~ '
         sleep 5
 ' %}
 
@@ -71,6 +66,7 @@ gpg_agent_stop:
 gpg_dir_rm:
   file.absent:
     - name: {{gpg_key_dir}}
+    - use_vt: True
 
 
 gpg_clear_agent_log:
@@ -81,6 +77,11 @@ gpg_clear_agent_log:
 gpg_agent_script_file_rm:
   file.absent:
     - name: {{gpg_agent_script_file}}
+
+
+gpg_ps_kill_script_file_rm:
+  file.absent:
+    - name: {{gpg_ps_kill_script_file}}
 
 
 manage_priv_key:
@@ -167,14 +168,55 @@ gpg_agent_stop2:
       - file: gpg_agent_script_file_exists
 
 
+gpg_agent_ps_kill_script_file_exists:
+  file.managed:
+    - name: {{gpg_ps_kill_script_file}}
+    - dir_mode: 755
+    - mode: 755
+    - show_changes: False
+    - user: {{build_cfg.build_runas}}
+    - group: {{build_cfg.build_runas}}
+    - makedirs: True
+    - contents: |
+        #!/bin/bash
+        gpg_active=$(ps -ef | grep -v 'grep' | grep 'gpg-agent')
+        IFS=$'\n'	# make newlines the only seperator
+        if [[ -n "$gpg_active" ]]; then
+            for gpg_line in $gpg_active; do
+                kpid=$(echo "$gpg_line" | awk '{print $2}')
+                kill -9 $kpid
+                sleep 1
+            done
+        fi
+        unset IFS
+
+
+#ensure all gpg activity completed before killing gpg
+gpg_agent_ps_kill_run:
+  module.run:
+    - name: cmd.shell
+    - cmd: {{gpg_ps_kill_script_file}}
+    - runas: 'root'
+    - require:
+      - file: manage_priv_key
+      - file: manage_pub_key
+      - file: gpg_conf_file_exists
+      - file: gpg_tty_file_exists
+      - file: gpg_agent_conf_file
+      - file: gpg_agent_script_file_exists
+      - module: gpg_agent_stop2
+      - file: gpg_agent_ps_kill_script_file_exists
+
+
 gpg_agent_start:
   module.run:
     - name: cmd.shell
     - cmd: {{gpg_agent_script_file}}
     - cwd: {{build_cfg.build_homedir}}
     - runas: {{build_cfg.build_runas}}
+    - use_vt: True
     - require:
-      - module: gpg_agent_stop2
+      - module: gpg_agent_ps_kill_run
 
 
 gpg_load_pub_key:

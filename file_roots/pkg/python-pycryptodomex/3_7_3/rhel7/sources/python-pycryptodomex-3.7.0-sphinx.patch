@@ -1,0 +1,27 @@
+diff -up ./Doc/conf.py.bak ./Doc/conf.py
+--- ./Doc/conf.py.bak	2018-10-27 23:08:03.000000000 +0200
++++ ./Doc/conf.py	2018-11-17 15:34:58.392588884 +0100
+@@ -20,6 +20,10 @@ print sys.path
+ # Mock existence of native modules
+ from Crypto.Util import _raw_api
+ 
++from distutils.version import LooseVersion
++
++import sphinx
++
+ class MockLib(object):
+     ghash_portable = None
+     ghash_expand_portable = None
+@@ -40,7 +44,11 @@ _raw_api.load_pycryptodome_raw_lib = lam
+ 
+ # Add any Sphinx extension module names here, as strings. They can be extensions
+ # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
+-extensions = [ 'sphinx.ext.autodoc', 'sphinx.ext.napoleon',
++if LooseVersion(sphinx.__version__) <= LooseVersion('1.2'):
++    napoleon_ext = 'sphinxcontrib.napoleon'
++else:
++    napoleon_ext = 'sphinx.ext.napoleon'
++extensions = [ 'sphinx.ext.autodoc', napoleon_ext,
+         'sphinx.ext.mathjax' ]
+ 
+ # Add any paths that contain templates here, relative to this directory.

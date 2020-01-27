@@ -1,0 +1,41 @@
+From 4c621e97776a47c2b4e7f17c1cd2a7961453babf Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Wed, 3 Dec 2014 14:01:14 +0100
+Subject: [PATCH 2/2] Ignore "use" or "requires" within multi-line print or
+ assign statement
+
+- Now script perl.req ignores "use" and "requires" on lines that are
+  part of printing or assigning multi-line string i. e. string that
+  hasn't starting and ending quote on the same line.
+  (RhBug:1024517)
+---
+ scripts/perl.req | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/scripts/perl.req b/scripts/perl.req
+index e17ad5a..6e53c91 100755
+--- a/scripts/perl.req
++++ b/scripts/perl.req
+@@ -174,6 +174,19 @@ sub process_file {
+         $_ = <FILE>;
+     }
+ 
++    # Skip multiline print and assign statements
++    if ( m/\$\S+\s*=\s*(")([^"\\]|(\\.))*$/ ||
++         m/\$\S+\s*=\s*(')([^'\\]|(\\.))*$/ ||
++         m/print\s+(")([^"\\]|(\\.))*$/ ||
++         m/print\s+(')([^'\\]|(\\.))*$/ ) {
++
++        my $quote = $1;
++        while (<FILE>) {
++          m/^([^\\$quote]|(\\.))*$quote/ && last;
++        }
++        $_ = <FILE>;
++    }
++
+     if (
+ 
+ # ouch could be in a eval, perhaps we do not want these since we catch
+-- 
+2.5.5
+

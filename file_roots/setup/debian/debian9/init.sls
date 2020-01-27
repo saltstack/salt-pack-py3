@@ -11,7 +11,7 @@
         Pin-Priority: 750
 
         Package: *
-        Pin: release a=stable
+        Pin: release a=oldstable
         Pin-Priority: 720
 ' %}
 
@@ -28,6 +28,8 @@ build_additional_pkgs:
       - dh-python
       - gnupg2
       - pinentry-tty
+      - python-setuptools
+      - python-gnupg
       - python-sphinx
       - python-setuptools-git
 
@@ -46,6 +48,7 @@ build_additional_py3_pkgs:
       - python3-sphinx
       - python3-all-dev
       - python3-debian
+      - python3-gnupg
       - apt-utils
 {%- endif %}
 
@@ -79,6 +82,7 @@ build_prefs_rm:
 build_pbldhookskeys_file:
   file.append:
     - name: {{build_cfg.build_homedir}}/.pbuilder-hooks/G04importkeys
+    - makedirs: True
     - text: |
         /usr/bin/gpg --keyserver keyserver.ubuntu.com --receive-keys 90FDDD2E
         /usr/bin/gpg --export --armor 90FDDD2E | apt-key add -
@@ -167,8 +171,8 @@ build_pbldrc:
         fi
         HOOKDIR="${HOME}/.pbuilder-hooks"
 {%- if build_cfg.build_arch == 'armhf' %}
-        DEBOOTSTRAPOPTS=( 
-            '--variant=buildd' 
+        DEBOOTSTRAPOPTS=(
+            '--variant=buildd'
             '--keyring' "/etc/apt/trusted.gpg"
         )
         OTHERMIRROR="deb [trusted=yes] file:${LOCAL_REPO} ./ | deb http://archive.raspbian.org/raspbian/ {{os_codename}} main contrib non-free rpi"

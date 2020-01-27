@@ -1,0 +1,37 @@
+From 1d9a0018f9cde8fc5c59df9af70a2164e672210f Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Wed, 25 Nov 2015 13:49:01 +0100
+Subject: [PATCH] Improve perl.req script
+
+This commit 0d5929ba5eabadec49273bb090ba9158dfccc30c tries to ignore
+"use" and "require" within multi-line print statements that start with
+line like this "print <<EOF" but it incorrectly parses lines in
+following format "print <<EOF unless $o" and every "use" or "require"
+below this line to the end of file is ignored. That causes that some
+requires which was previously found are not found now. This commit
+fixes this problem (#1268021).
+---
+ scripts/perl.req | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/perl.req b/scripts/perl.req
+index 6e53c91..f1000c8 100755
+--- a/scripts/perl.req
++++ b/scripts/perl.req
+@@ -163,10 +163,10 @@ sub process_file {
+     # within a multi-line print statement.  So, let's skip over such print
+     # statements whose content should not be loading modules anyway. -BEF-
+     #
+-    if ( m/print(\s+|\s+\S+\s+)\<\<(.*)/g ) {
++    if (m/print(?:\s+|\s+\S+\s+)\<\<\s*(["'`])(.+?)\1/ ||
++        m/print(\s+|\s+\S+\s+)\<\<(\w+)/) {
++
+         my $tag = $2;
+-        $tag =~ s/^\s*['"]?//;       # strip off leading space and quote
+-        $tag =~ s/["']?\s*;\s*$//;   # strip off trailing quote and space and semicolon
+         while (<FILE>) {
+             chomp;
+             ( $_ eq $tag ) && last;
+-- 
+2.5.5
+

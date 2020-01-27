@@ -8,7 +8,6 @@
 {% set repo_sign_timeout = basecfg.repo_sign_timeout %}
 
 # Get the release and architecture
-{% set build_release = pillar.get('build_release', 'amzn') %}
 {% set build_arch = pillar.get('build_arch', 'x86_64') %}
 
 # determine which version of Python to build for
@@ -16,8 +15,12 @@
 
 {% if build_py3 %}
 {% set build_py_ver = 'py3' %}
+{% set build_release = pillar.get('build_release', 'amzn2') %}
+{% set build_epel = 'amzn2' %}
 {% else %}
 {% set build_py_ver = 'py2' %}
+{% set build_release = pillar.get('build_release', 'amzn') %}
+{% set build_epel = 'amzn1' %}
 {% endif %}
 
 # Set the destination for built packages
@@ -25,14 +28,9 @@
 
 
 # Set the mock target
-{% if build_release == 'amzn' %}
-
-  {% set build_epel = 'amzn1' %}
 {#  {% set build_tgt = build_epel ~ '-' ~ build_arch %} #}
   {% set build_tgt = build_release ~ '-salt-' ~ build_arch %}
   {% set build_dist = build_epel %}
-
-{% endif %}
 
 
 # Get the home and gpg keys directories to use, some tools assume ~/.gnupg

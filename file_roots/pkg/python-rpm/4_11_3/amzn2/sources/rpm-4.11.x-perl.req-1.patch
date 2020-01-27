@@ -1,0 +1,30 @@
+From 4f05fa0e15bcb66d29f89e28829ea43107f6382b Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Mon, 1 Dec 2014 16:04:32 +0100
+Subject: [PATCH 1/2] Fix parsing multi-line print statement with unquoted tag
+
+- script perl.req was able to parse only multi-line print statements
+  with quoted tag e.g. 'print <<"tag"' or "print <<'tag'". Now it can
+  also parse "print <<tag".
+---
+ scripts/perl.req | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/perl.req b/scripts/perl.req
+index 04f822c..e17ad5a 100755
+--- a/scripts/perl.req
++++ b/scripts/perl.req
+@@ -165,8 +165,8 @@ sub process_file {
+     #
+     if ( m/print(\s+|\s+\S+\s+)\<\<(.*)/g ) {
+         my $tag = $2;
+-        $tag =~ s/^\s*['"]//;       # strip off leading space and quote
+-        $tag =~ s/["']\s*;\s*$//;   # strip off trailing quote and space and semicolon
++        $tag =~ s/^\s*['"]?//;       # strip off leading space and quote
++        $tag =~ s/["']?\s*;\s*$//;   # strip off trailing quote and space and semicolon
+         while (<FILE>) {
+             chomp;
+             ( $_ eq $tag ) && last;
+-- 
+2.5.5
+

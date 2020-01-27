@@ -779,3 +779,372 @@ pkgbuild_registry:
         - zeromq
         - zeromq-devel
 
+  amzn2:
+    libsodium:
+      version: 1.0.16-1
+      results:
+        - libsodium
+        - libsodium-devel
+    libtomcrypt:
+      version: 1.17-27
+      build_deps:
+        - libtommath
+      results:
+        - libtomcrypt
+        - libtomcrypt-devel
+    libtommath:
+      version: 0.42.0-7
+      results:
+        - libtommath
+        - libtommath-devel
+    openpgm:
+      version: 5.2.122-15
+      results:
+        - openpgm
+        - openpgm-devel
+    python-atomicwrites:
+      version: 1.1.5-13
+      noarch: True
+      results:
+        - python3-atomicwrites
+    python-babel:
+      version: 2.6.0-6
+      noarch: True
+      build_deps:
+        - python-pytz
+        - python-freezegun
+        - python-pytest
+      results:
+        - python3-babel
+    python-bottle:
+      version: 0.12.13-7
+      noarch: True
+      results:
+        - python3-bottle
+    python-attrs:
+      version: 17.4.0-8
+      noarch: True
+      results:
+        - python3-attrs
+    python-chardet:
+      version: 3.0.4-8
+      noarch: True
+      results:
+        - python3-chardet
+    python-cherrypy:
+      version: 5.6.0-5
+      noarch: True
+      results:
+        - python3-cherrypy
+      build_deps:
+        - python-nose
+    python-coverage:
+      version: 4.5.1-4
+      results:
+        - python2-coverage
+        - python3-coverage
+    python-crypto:
+      version: 2.6.1-25
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
+      results:
+        - python3-crypto
+    python-dateutil:
+      version: 2.7.3-2
+      noarch: True
+      build_deps:
+        - python-six
+        - python-setuptools_scm
+        - python-hypothesis
+      results:
+        - python3-dateutil
+    python-freezegun:
+      version: 0.3.8-12
+      noarch: True
+      build_deps:
+        - python-dateutil
+        - python-sure
+        - python-nose
+        - python-coverage
+        - python-six
+        - python-mock
+      results:
+        - python2-freezegun
+        - python3-freezegun
+    python-funcsigs:
+      version: 1.0.2-12
+      noarch: True
+      build_deps:
+        - python-unittest2
+      results:
+        - python3-funcsigs
+    python-hypothesis:
+      version: 3.66.11-2
+      noarch: True
+      build_deps:
+        - python-attrs
+        - python-coverage
+      results:
+        - python3-hypothesis
+    python-idna:
+      version: 2.7-4
+      noarch: True
+      results:
+        - python3-idna
+    python-jinja2:
+      version: 2.10-7
+      noarch: True
+      build_deps:
+        - python-markupsafe
+        - python-babel
+        - python-pytest
+      results:
+        - python3-jinja2
+    python-libcloud:
+      version: 2.2.1-9
+      noarch: True
+      build_deps:
+        - python-pytest-runner
+      results:
+        - python3-libcloud
+    python-m2crypto:
+      version: 0.30.1-3
+      results:
+        - m2crypto
+        - python3-m2crypto
+      build_deps:
+        - python-typing
+    python-markupsafe:
+      version: 1.0-2
+      results:
+        - python2-markupsafe
+        - python3-markupsafe
+    python-mock:
+      version: 1.0.1-12
+      noarch: True
+      results:
+        - python3-mock
+    python-more-itertools:
+      version: 4.1.0-5
+      noarch: True
+      build_deps:
+        - python-nose
+        - python-six
+      results:
+        - python3-more-itertools
+    python-msgpack:
+      version: 0.5.6-6
+      build_deps:
+        - python-funcsigs
+      results:
+        - python3-msgpack
+    python-nose:
+      version: 1.3.7-22
+      noarch: True
+      build_deps:
+        - python-setuptools
+        - python-mock
+        - python-coverage
+      results:
+        - python3-nose
+    python-psutil:
+      version: 5.4.3-7
+      build_deps:
+        - python-mock
+      results:
+        - python3-psutil
+    python-py:
+      version: 1.5.4-4 
+      noarch: True
+      build_deps:
+        - python-setuptools_scm
+      results:
+        - python3-py
+    python-pluggy:
+      version: 0.7.1-2
+      noarch: True
+      build_deps:
+        - python-setuptools_scm
+      results:
+        - python3-pluggy
+    python-pycryptodome:
+      version: 3.6.1-3
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
+      results:
+        - python3-pycryptodomex
+    python-pycurl:
+      version: 7.43.0.2-4
+      build_deps:
+        - python-bottle
+        - python-nose
+        - python-pyflakes
+      results:
+        - python3-pycurl
+    python-pyflakes:
+      version: 2.0.0-8
+      noarch: True
+      results:
+        - python3-pyflakes
+    python-pysocks:
+      version: 1.6.8-5
+      noarch: True
+      results:
+        - python3-pysocks
+    python-pytest:
+      version: 3.6.4-2
+      noarch: True
+      build_deps:
+        - python-atomicwrites
+        - python-attrs
+        - python-hypothesis
+        - python-more-itertools
+        - python-setuptools_scm
+        - python-zope-interface
+        - python-zope-event
+        - python-pluggy
+        - python-py
+      results:
+        - python3-pytest
+    python-pytest-runner:
+      version: 4.0-4
+      noarch: True
+      build_deps:
+        - python-pytest
+        - python-setuptools_scm
+      results:
+        - python3-pytest-runner
+    python-pytz:
+      version: 2018.5-2
+      noarch: True
+      build_deps:
+        - python-pytest
+      results:
+        - python3-pytz
+    python-pyzmq:
+      name: python-zmq
+      version: 17.0.0-4
+      results:
+        - python3-zmq
+      build_deps:
+        - zeromq
+    python-requests:
+      version: 2.19.1-4
+      noarch: True
+      build_deps:
+        - python-chardet
+        - python-idna
+        - python-urllib3
+      results:
+        - python3-requests
+    python-setuptools_scm:
+      version: 3.1.0-2
+      noarch: True
+      results:
+        - python2-setuptools_scm
+        - python3-setuptools_scm
+    python-simplejson:
+      version: 3.16.0-2
+      build_deps:
+        - python-nose
+      results:
+        - python3-simplejson
+    python-six:
+      version: 1.11.0-7
+      noarch: True
+      results:
+        - python3-six
+    python-sure:
+      version: 1.4.11-4 
+      noarch: True
+      build_deps:
+        - python-mock
+        - python-six
+        - python-nose
+      results:
+        - python2-sure
+        - python3-sure
+    python-timelib:
+      version: 0.2.4-4
+      noarch: True
+      results:
+        - python3-timelib
+    python-tornado:
+      version: 5.0.2-5
+      build_deps:
+        - python-pycurl
+      results:
+        - python3-tornado
+    python-typing:
+      version: 3.5.2.2-4
+      noarch: True
+      results:
+        - python3-typing
+    python-unittest2:
+      version: 1.1.0-16
+      noarch: True
+      build_deps:
+        - python-six
+      results:
+        - python3-unittest2
+    python-urllib3:
+      version: 1.23-5
+      noarch: True
+      build_deps:
+        - python-six
+        - python-pysocks
+      results:
+        - python3-urllib3
+    python-yaml:
+      name: PyYAML
+      version: 4.2-0.1.b4
+      results:
+        - python3-pyyaml
+    python-zope-event:
+      version: 4.2.0-12
+      noarch: True
+      results:
+        - python3-zope-event
+    python-zope-interface:
+      version: 4.5.0-3
+      build_deps:
+        - python-nose
+        - python-zope-event
+      results:
+        - python3-zope-interface
+    salt:
+      version: 2018.3.3-2
+      noarch: True
+      build_deps:
+        - python-pycryptodome
+        - python-msgpack
+        - python-yaml
+        - python-requests
+        - python-pyzmq
+        - python-markupsafe
+        - python-tornado
+        - python-futures
+        - python-libcloud
+        - python-mock
+        - python-six
+      results:
+        - salt
+        - salt-master
+        - salt-minion
+        - salt-syndic
+        - salt-api
+        - salt-cloud
+        - salt-ssh
+    zeromq:
+      version: 4.2.3-1
+      build_deps:
+        - openpgm
+        - libsodium
+      results:
+        - zeromq
+        - zeromq-devel
+

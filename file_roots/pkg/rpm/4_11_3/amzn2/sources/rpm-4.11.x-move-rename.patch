@@ -1,0 +1,89 @@
+From d519580bd638ceb48829ae66557ca3c5941b4a5f Mon Sep 17 00:00:00 2001
+From: Florian Festi <ffesti@redhat.com>
+Date: Wed, 4 May 2016 14:05:06 +0200
+Subject: [PATCH] Set permissions before moving new files to their final place
+
+---
+ lib/fsm.c | 37 ++++++++++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
+
+diff --git a/lib/fsm.c b/lib/fsm.c
+index 1ee7e67..3bb23a4 100644
+--- a/lib/fsm.c
++++ b/lib/fsm.c
+@@ -621,14 +621,15 @@ static FSM_t fsmFree(FSM_t fsm)
+ 
+ /* Find and set file security context */
+ static int fsmSetSELabel(struct selabel_handle *sehandle,
+-			 const char *path, mode_t mode)
++			 const char *path, const char * nominalpath,
++			 mode_t mode)
+ {
+     int rc = 0;
+ #if WITH_SELINUX
+     if (sehandle) {
+ 	security_context_t scon = NULL;
+ 
+-	if (selabel_lookup_raw(sehandle, &scon, path, mode) == 0) {
++	if (selabel_lookup_raw(sehandle, &scon, nominalpath, mode) == 0) {
+ 	    rc = lsetfilecon(path, scon);
+ 
+ 	    if (_fsm_debug) {
+@@ -1215,7 +1216,7 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle)
+ 		mode_t mode = S_IFDIR | (_dirPerms & 07777);
+ 		rc = fsmMkdir(dn, mode);
+ 		if (!rc) {
+-		    rc = fsmSetSELabel(sehandle, dn, mode);
++		    rc = fsmSetSELabel(sehandle, dn, dn, mode);
+ 
+ 		    rpmlog(RPMLOG_DEBUG,
+ 			    "%s directory created with perms %04o\n",
+@@ -1534,22 +1535,11 @@ static int fsmCommit(FSM_t fsm, int ix)
+ 	/* Backup on-disk file if needed. Directories are handled earlier */
+ 	if (!S_ISDIR(st->st_mode))
+ 	    rc = fsmBackup(fsm);
+-        /* Rename temporary to final file name. */
+-        if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
+-            char *npath = fsmFsPath(fsm, 0, fsm->nsuffix);
+-            rc = fsmRename(fsm->path, npath, fsm->mapFlags);
+-            if (!rc && fsm->nsuffix) {
+-                char * opath = fsmFsPath(fsm, 0, NULL);
+-                rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
+-                       opath, npath);
+-                free(opath);
+-            }
+-            free(fsm->path);
+-            fsm->path = npath;
+-        }
+         /* Set file security context (if enabled) */
+         if (!rc && !getuid()) {
+-            rc = fsmSetSELabel(fsm->sehandle, fsm->path, fsm->sb.st_mode);
++	    char * opath = fsmFsPath(fsm, 0, NULL);
++	    rc = fsmSetSELabel(fsm->sehandle, fsm->path, opath, fsm->sb.st_mode);
++	    opath = _free(opath);
+         }
+         if (S_ISLNK(st->st_mode)) {
+             if (!rc && !getuid())
+@@ -1571,6 +1561,19 @@ static int fsmCommit(FSM_t fsm, int ix)
+                 rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
+             }
+         }
++        /* Rename temporary to final file name. */
++        if (!rc && !S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
++            char *npath = fsmFsPath(fsm, 0, fsm->nsuffix);
++            rc = fsmRename(fsm->path, npath, fsm->mapFlags);
++            if (!rc && fsm->nsuffix) {
++                char * opath = fsmFsPath(fsm, 0, NULL);
++                rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
++                       opath, npath);
++                free(opath);
++            }
++            free(fsm->path);
++            fsm->path = npath;
++        }
+     }
+ 
+     if (rc && fsm->failedFile && *fsm->failedFile == NULL) {
+-- 
+2.5.5
+

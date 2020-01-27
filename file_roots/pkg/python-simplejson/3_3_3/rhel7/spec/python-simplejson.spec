@@ -28,7 +28,7 @@ python stdlib.
 
 Name:           python-simplejson
 Version:        3.3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python
 
 Group:          System Environment/Libraries
@@ -39,10 +39,11 @@ URL:            http://undefined.org/python/#simplejson
 Source0:        http://pypi.python.org/packages/source/s/simplejson/simplejson-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  python2-devel
+## BuildRequires:  python2-devel
+BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-nose
-BuildRequires: python-sphinx
+BuildRequires:	python-sphinx
 
 %if 0%{?with_python3}
 BuildRequires: python%{python3_pkgversion}-devel
@@ -74,7 +75,7 @@ Group:          %{group}
 Provides:       python%{python3_pkgversion}-%{srcname}
 
 %description -n python%{python3_pkgversion}-simplejson %{_description}
-Supports Python 3.
+Supports Python %{python3_version}.
 %endif # with_python3
 
 %prep
@@ -134,6 +135,9 @@ rm -rf %{buildroot}
 %endif # python3
 
 %changelog
+* Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.3.3-3
+- Add support for Python 3.6
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.3.3-2
 - Add support for Python 3
 

@@ -1,0 +1,15 @@
+diff -up Babel-2.3.4/setup.py.orig Babel-2.3.4/setup.py
+--- Babel-2.3.4/setup.py.orig	2016-04-11 11:58:25.000000000 +0200
++++ Babel-2.3.4/setup.py	2016-04-25 13:35:54.458765892 +0200
+@@ -59,7 +59,10 @@ setup(
+         # This version identifier is currently necessary as
+         # pytz otherwise does not install on pip 1.4 or
+         # higher.
+-        'pytz>=0a',
++        ### But the version confuses setuptools 8 and higher so remove it in the
++        ### system package
++        #'pytz>=0a',
++        'pytz',
+     ],
+ 
+     cmdclass={'import_cldr': import_cldr},

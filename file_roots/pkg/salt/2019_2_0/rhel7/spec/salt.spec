@@ -51,7 +51,7 @@
 
 Name:    salt
 Version: 2019.2.0%{?__rc_ver}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -237,7 +237,7 @@ Requires: systemd-python
 
 %description master
 The Salt master is the central server to which all minions connect.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    minion
@@ -248,7 +248,7 @@ Requires:   %{name} = %{version}-%{release}
 %description minion
 The Salt minion is the agent component of Salt. It listens for instructions
 from the master, runs jobs, and returns results back to the master.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    syndic
@@ -260,7 +260,7 @@ Requires:   %{name}-master = %{version}-%{release}
 The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
 infrastructure.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    api
@@ -275,7 +275,7 @@ Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    cloud
@@ -287,7 +287,7 @@ Requires:   python%{python3_pkgversion}-libcloud
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
 adds them to the master's collection of controllable minions.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    ssh
@@ -298,7 +298,7 @@ Requires:   %{name} = %{version}-%{release}
 %description ssh
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %else
@@ -377,7 +377,7 @@ Supports Python 2.
 
 
 %prep
-%autosetup 
+%autosetup
 
 %if 0%{?with_python3}
 rm -rf %{py3dir}
@@ -850,10 +850,13 @@ rm -rf %%{buildroot}
 
 
 %changelog
+* Mon Apr 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-2
+- Update to support Python 3.6
+
 * Sat Feb 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1
 - Update to feature release 2019.2.0-1  for Python 3
 
-* Mon Jan 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-0
+* Wed Jan 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-0
 - Update to feature release branch 2019.2.0-0 for Python 2
 - Revised acceptable versions of cherrypy, futures
 

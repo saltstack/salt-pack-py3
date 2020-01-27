@@ -1,0 +1,17 @@
+--- rpm-4.11.3/macros.in.orig	2015-08-19 11:09:48.785440045 +0200
++++ rpm-4.11.3/macros.in	2015-08-19 11:10:15.322505916 +0200
+@@ -1038,10 +1038,10 @@
+ #------------------------------------------------------------------------------
+ # Collection specific macros
+ %__plugindir		%{_libdir}/rpm-plugins
+-%__collection_font	%{__plugindir}/exec.so /usr/bin/fc-cache
+-%__collection_java	%{__plugindir}/exec.so /usr/bin/rebuild-gcj-db
+-%__collection_sepolicy		%{__plugindir}/sepolicy.so
+-%__collection_sepolicy_flags	1
++# %__collection_font	%{__plugindir}/exec.so /usr/bin/fc-cache
++# %__collection_java	%{__plugindir}/exec.so /usr/bin/rebuild-gcj-db
++# %__collection_sepolicy		%{__plugindir}/sepolicy.so
++# %__collection_sepolicy_flags	1
+ 
+ # Transaction plugin macros
+ %__transaction_systemd_inhibit	%{__plugindir}/systemd_inhibit.so

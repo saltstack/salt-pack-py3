@@ -1,4 +1,10 @@
-%if 0%{?fedora} || 0%{?rhel} > 6
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+
+%if 0%{?fedora} || 0%{?rhel} >= 7
 %global with_python3 1
 %endif
 
@@ -9,14 +15,12 @@ action, you can make assertions about which methods / attributes were used and \
 arguments they were called with. You can also specify return values and set \
 needed attributes in the normal way.
 
-# Not yet in Fedora buildroot
-%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %global mod_name mock
 
 Name:           python-mock
 Version:        1.0.1
-Release:        11%{?dist}
+Release:        13%{?dist}
 Summary:        A Python Mocking and Patching Library for Testing
 
 License:        BSD
@@ -29,10 +33,11 @@ BuildArch:      noarch
 
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-mock
 Summary:    %{summary}
 BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python2-setuptools
 # For tests
 %if 0%{?rhel} <= 7
 BuildRequires:  python-unittest2
@@ -42,9 +47,10 @@ BuildRequires:  python-unittest2
 
 %description -n python2-mock %{_description}
 Python 2 version.
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-mock
 Summary:    %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
@@ -65,28 +71,41 @@ cp -p %{SOURCE1} .
 
 
 %build
+%if %{with python2}
 %{py2_build}
+%endif
+%if %{with python3}
 %{py3_build}
-
+%endif
 
 %check
+%if %{with python2}
 %{__python2} setup.py test
+%endif
+%if %{with python3}
 # Failing
 #{__python3} setup.py test
+%endif
 
 
 %install
-%{py3_install}
+%if %{with python2}
 %{py2_install}
+%endif
+%if %{with python3}
+%{py3_install}
+%endif
 
  
+%if %{with python2}
 %files -n python2-mock
 %license LICENSE.txt
 %doc docs/* README.txt PKG-INFO
 %{python2_sitelib}/*.egg-info
 %{python2_sitelib}/%{mod_name}.py*
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-mock
 %license LICENSE.txt
 %doc docs/* README.txt PKG-INFO
@@ -97,9 +116,14 @@ cp -p %{SOURCE1} .
 
 
 %changelog
+* Fri Jun 07 2019 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-13
+- Made support for Python 2 packages optional
+
+* Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> -1.0.1-12 
+- Add support for Python 3.6
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 1.0.1-11
 - Add support for Python 3
-
 
 * Thu Jan 11 2018 SaltStack Packaging Team <packaging@saltstack.com> -1.0.1-10 
 - Support for Python 3 on RHEL

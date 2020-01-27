@@ -1,0 +1,12 @@
+diff -up tornado-4.4.1/tornado/test/options_test.py.test tornado-4.4.1/tornado/test/options_test.py
+--- tornado-4.4.1/tornado/test/options_test.py.test	2016-07-15 09:00:52.000000000 -0600
++++ tornado-4.4.1/tornado/test/options_test.py	2016-09-16 10:01:19.542583874 -0600
+@@ -36,7 +36,7 @@ class OptionsTest(unittest.TestCase):
+         options.define("port", default=80)
+         options.define("username", default='foo')
+         options.define("my_path")
+-        config_path = os.path.join(os.path.dirname(__file__),
++        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "options_test.cfg")
+         options.parse_config_file(config_path)
+         self.assertEqual(options.port, 443)

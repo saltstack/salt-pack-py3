@@ -1,0 +1,67 @@
+diff -uNr rpm-4.9.0-orig//macros.in rpm-4.9.0/macros.in
+--- rpm-4.9.0-orig//macros.in	2011-08-05 12:23:04.000000000 -0500
++++ rpm-4.9.0/macros.in	2011-08-05 12:25:13.000000000 -0500
+@@ -1032,7 +1032,7 @@
+ 
+ #------------------------------------------------------------------------------
+ # arch macro for all supported ARM processors
+-%arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l armv7l
++%arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l armv7l armv7hl armv7hnl
+ 
+ #------------------------------------------------------------------------------
+ # arch macro for all supported Sparc processors
+diff -uNr rpm-4.9.0-orig//rpmrc.in rpm-4.9.0/rpmrc.in
+--- rpm-4.9.0-orig//rpmrc.in	2011-08-05 12:23:04.000000000 -0500
++++ rpm-4.9.0/rpmrc.in	2011-08-05 12:26:34.000000000 -0500
+@@ -66,8 +66,10 @@
+ optflags: armv5tejl -O2 -g -march=armv5te
+ optflags: armv6l -O2 -g -march=armv6
+ optflags: armv7l -O2 -g -march=armv7
++optflags: armv7hl -O2 -g -march=armv7-a -mfloat-abi=hard -mfpu=vfpv3-d16
++optflags: armv7hnl -O2 -g -march=armv7-a -mfloat-abi=hard -mfpu=neon
+ 
+ optflags: m68k -O2 -g -fomit-frame-pointer
+ 
+ optflags: atarist -O2 -g -fomit-frame-pointer
+ optflags: atariste -O2 -g -fomit-frame-pointer
+@@ -140,6 +142,8 @@
+ arch_canon:     armv5tejl: armv5tejl 	12
+ arch_canon:     armv6l: armv6l 	12
+ arch_canon:     armv7l: armv7l 	12
++arch_canon:     armv7hl: armv7hl 	12
++arch_canon:     armv7hnl: armv7hnl 	12
+ 
+ arch_canon:	m68kmint: m68kmint	13
+ arch_canon:	atarist: m68kmint	13
+@@ -248,8 +252,10 @@
+ buildarchtranslate: armv5tejl: armv5tejl
+ buildarchtranslate: armv6l: armv6l
+ buildarchtranslate: armv7l: armv7l
++buildarchtranslate: armv7hl: armv7hl
++buildarchtranslate: armv7hnl: armv7hnl
+ 
+ buildarchtranslate: m68k: m68k
+ 
+ buildarchtranslate: atarist: m68kmint
+ buildarchtranslate: atariste: m68kmint
+@@ -336,8 +342,10 @@
+ arch_compat: armv4tl: armv4l
+ arch_compat: armv4l: armv3l
+ arch_compat: armv3l: noarch
++arch_compat: armv7hnl: armv7hl
++arch_compat: armv7hl: noarch
+ 
+ arch_compat: m68k: noarch
+ 
+ arch_compat: atarist: m68kmint noarch
+ arch_compat: atariste: m68kmint noarch
+@@ -441,6 +449,9 @@
+ buildarch_compat: armv4l: armv3l
+ buildarch_compat: armv3l: noarch
+ 
++buildarch_compat: armv7hnl: armv7hl
++buildarch_compat: armv7hl: noarch
++
+ buildarch_compat: hppa2.0: hppa1.2
+ buildarch_compat: hppa1.2: hppa1.1
+ buildarch_compat: hppa1.1: hppa1.0

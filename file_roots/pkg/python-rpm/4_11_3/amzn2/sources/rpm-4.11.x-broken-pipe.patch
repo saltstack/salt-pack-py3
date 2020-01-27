@@ -1,0 +1,45 @@
+From f515907c71c03019a52f89921c41303fa5926b2a Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Fri, 12 Jun 2015 13:38:23 +0200
+Subject: [PATCH] Don't show error message if log function fails because of
+ broken pipe.
+
+- regression from commit 11b005c957fb0e52d42078480104d3e27e95e609
+- rhbz: #1231138
+---
+ rpmio/rpmlog.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/rpmio/rpmlog.c b/rpmio/rpmlog.c
+index f43e622..43ae36f 100644
+--- a/rpmio/rpmlog.c
++++ b/rpmio/rpmlog.c
+@@ -4,7 +4,8 @@
+ 
+ #include "system.h"
+ #include <stdarg.h>
++#include <errno.h>
+ #include <stdlib.h>
+ #include <rpm/rpmlog.h>
+ #include "debug.h"
+ 
+@@ -127,13 +128,13 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
+         break;
+     }
+ 
+-    if (fputs(rpmlogLevelPrefix(rec->pri), msgout) == EOF)
++    if (fputs(rpmlogLevelPrefix(rec->pri), msgout) == EOF && errno != EPIPE)
+ 	perror("Error occurred during writing of a log message");
+ 
+-    if (fputs(rec->message, msgout) == EOF)
++    if (fputs(rec->message, msgout) == EOF && errno != EPIPE)
+ 	perror("Error occurred during writing of a log message");
+ 
+-    if (fflush(msgout) == EOF)
++    if (fflush(msgout) == EOF && errno != EPIPE)
+ 	perror("Error occurred during writing of a log message");
+ 
+     return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
+-- 
+1.9.3
+

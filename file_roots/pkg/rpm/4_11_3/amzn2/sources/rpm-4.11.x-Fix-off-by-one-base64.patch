@@ -1,0 +1,30 @@
+From 0964912b94f9f48a0a812fbfbb2f996dbd93eff0 Mon Sep 17 00:00:00 2001
+From: Jonathan Wakely <github@kayari.org>
+Date: Wed, 25 May 2016 12:31:19 +0100
+Subject: [PATCH] Fix off-by-one error
+
+There's an off-by-one error in base64_decode_value which results in undefined behaviour:
+
+    void* out;
+    size_t len;
+    rpmBase64Decode("\x7b", &out, &len);
+---
+ rpmio/base64.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rpmio/base64.c b/rpmio/base64.c
+index 60e67d4..4424aab 100644
+--- a/rpmio/base64.c
++++ b/rpmio/base64.c
+@@ -104,7 +104,7 @@ static int base64_decode_value(unsigned char value_in)
+ {
+ 	static const int decoding[] = {62,-1,-1,-1,63,52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-2,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,-1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51};
+ 	value_in -= 43;
+-	if (value_in > sizeof(decoding)/sizeof(int))
++	if (value_in >= sizeof(decoding)/sizeof(int))
+ 		return -1;
+ 	return decoding[value_in];
+ }
+-- 
+2.9.3
+

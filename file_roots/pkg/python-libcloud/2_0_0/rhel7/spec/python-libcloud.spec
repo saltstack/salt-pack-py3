@@ -1,4 +1,7 @@
-%global with_python3 1
+%bcond_with python2 
+%bcond_without python3
+
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %global tarball_name apache-libcloud
 %global srcname libcloud
@@ -12,7 +15,6 @@ any of the services that it supports.
 # Don't duplicate the same documentation
 %global _docdir_fmt %{name}
 
-%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 Name:           python-libcloud
 Version:        2.0.0
@@ -22,75 +24,83 @@ Summary:        A Python library to address multiple cloud provider APIs
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            http://libcloud.apache.org/
-Source0:        http://files.pythonhosted.org/packages/a/%{tarball_name}/%{tarball_name}-%{version}.tar.gz
-## Source0:        http://www-us.apache.org/dist/libcloud/%{tarball_name}/%{tarball_name}-%{version}.tar.gz
+Source0:        http://www-us.apache.org/dist/libcloud/%{tarball_name}/%{tarball_name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
 %description %{_description}
 
+%if %{with python2}
 %package -n python2-%{srcname}
 Summary:        %{summary}
-## BuildRequires:  python2-devel
-## BuildRequires:  python2-setuptools
-BuildRequires:  python-devel
-BuildRequires:  python-setuptools
-%{?python_provide:%python_provide python-%{srcname}}
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
 %{?python_provide:%python_provide python2-%{srcname}}
+%python_provide python-%{srcname}
 
 %description -n python2-%{srcname} %{_description}
 Python 2 version.
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        %{summary}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
-## %%{?python_provide:%%python_provide python%%{python3_pkgversion}-%%{srcname}}
-Provides:       python%{python3_pkgversion}-%{srcname}
+%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
 %description -n python%{python3_pkgversion}-%{srcname} %{_description}
-Python 3 version.
+Python %{python3_version} version.
 %endif
 
 %prep
-%autosetup -n %{tarball_name}-%{version}
+## %%autosetup -n %%{tarball_name}-%%{version}
+%setup     -n apache-libcloud-2.0.0
 
 # Delete shebang lines in the demos
 sed -i '1d' demos/gce_demo.py demos/compute_demo.py
 
 %build
+%if %{with python2}
 %py2_build
-
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_build
 %endif
+
 
 # Fix permissions for demos
 chmod -x demos/gce_demo.py demos/compute_demo.py
 
+
 %install
+%if %{with python2}
 %py2_install
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 %py3_install
 %endif
 
 # Don't package the test suite. We dont run it anyway
 # because it requires some valid cloud credentials
+%if %{with python2}
 rm -r $RPM_BUILD_ROOT%{python2_sitelib}/%{srcname}/test
-
-%if 0%{?with_python3}
+%endif
+%if %{with python3}
 rm -r $RPM_BUILD_ROOT%{python3_sitelib}/%{srcname}/test
 %endif
 
+
+%if %{with python2}
 %files -n python2-%{srcname}
 %doc README.rst demos/
 %license LICENSE
 %{python2_sitelib}/%{srcname}/
 %{python2_sitelib}/%{eggname}-*.egg-info/
+%endif
 
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-%{srcname}
 %doc README.rst demos/
 %license LICENSE
@@ -99,12 +109,11 @@ rm -r $RPM_BUILD_ROOT%{python3_sitelib}/%{srcname}/test
 %endif
 
 %changelog
-* Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-4
-- Add support for Python 3
+* Wed Jun 05 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-4
+- Made support for Python 2 packages optional
 
-
-* Fri Jan 12 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-3
-- Python 3 support for RHEL 7 & 6
+* Thu Apr 04 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-3
+- Added support for Python 3.6
 
 * Thu Jun 22 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2.0.0-2
 - Removed support for Python 3, and support for RHEL
