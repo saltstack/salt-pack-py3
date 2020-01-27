@@ -47,9 +47,9 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-%if 0%{?rhel} > 7
-Patch0:  salt-py3-2019.2.2-tornado4.patch
-%endif
+## %%if 0%%{?rhel} > 7
+## Patch0:  salt-py3-2019.2.2-tornado4.patch
+## %%endif
 Patch1:  salt-py3-2019.2.1-rpmsign.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -102,11 +102,13 @@ Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 
-%if 0%{?rhel} == 7
-Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
-%else
-Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
-%endif
+## Tornado removed in Neon
+## %%if 0%%{?rhel} == 7
+## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
+## %%else
+## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
+## %%endif
+Requires: python%{python3_pkgversion}-pycurl
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
@@ -509,6 +511,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+## - Removed Torando since salt.ext.tornado, add dependencies for Tornado
+
 * Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
 - Update to Neon Release Candidate 2 for Python 3
 - Updated spec file to not use py3_build  due to '-s' preventing pip installs

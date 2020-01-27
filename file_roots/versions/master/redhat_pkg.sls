@@ -29,7 +29,7 @@ include:
     - pkg.python-pyroute2.0_4_13.rhel8      ## B
     - pkg.python-pyzmq.17_0_0.rhel8         ## B
     - pkg.python-simplejson.3_16_0.rhel8    ## B EPEL-7 python36-simplejson 3.10.0-2.el7
-    - pkg.python-tornado4.4_5_2.rhel8       ## B EPEL-7 python36-tornado 4.4.2-2.el7
+##    - pkg.python-tornado4.4_5_2.rhel8       ## B EPEL-7 python36-tornado 4.4.2-2.el7
     - pkg.python-typing.3_5_2_2.rhel8       ## B EPEL-7 python34-typing 3.5.2.2-4.el7
     - pkg.salt.master.rhel8
     - pkg.zeromq.4_3_1.rhel8                ## B EPEL-7 zeromq-4.1.4-6.el7
@@ -61,7 +61,7 @@ include:
     - pkg.python-setuptools.39_2_0.rhel7    ## EPEL python36-setuptools.309.2.0-4.el7
     - pkg.python-simplejson.3_10_0.rhel7    ##   EPEL python36-simplejson 3.10.0-2.el7
     - pkg.python-six.1_11_0.rhel7           ## EPEL python36-six.1.11.0-3.el7
-    - pkg.python-tornado.4_4_2.rhel7        ##   EPEL python36-tornado 4.4.2-2.el7
+##    - pkg.python-tornado.4_4_2.rhel7        ##   EPEL python36-tornado 4.4.2-2.el7
     - pkg.python-typing.3_5_2_2.rhel7       ##   EPEL python36-typing 3.5.2.2-4.el7
     - pkg.python-urllib3.1_19_1.rhel7       ##   EPEL python36-urllib3 1.19.1-5.el7
     - pkg.python-yaml.3_11.rhel7            ##   EPEL python36-PyYaml-3.12-1.el7
