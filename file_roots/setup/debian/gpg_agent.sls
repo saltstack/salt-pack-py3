@@ -11,13 +11,6 @@
 {% set gpg_tty_info = gpg_key_dir ~ '/gpg-tty-info-salt' %}
 {% set gpg_agent_config_file = gpg_key_dir ~ '/gpg-agent.conf' %}
 
-{% if build_cfg.build_release == 'debian8' %}
-{% set write_env_file_prefix = '--' %}
-{% set write_env_file = 'write-env-file ' ~  gpg_key_dir ~ '/gpg-agent-info-salt' %}
-{% set pinentry_parms = '' -%}
-{% set pinentry_text = '' %}
-{% set kill_gpg_agent_text = 'killall -v -w gpg-agent' %}
-{% else %}
 {% set write_env_file_prefix = '' %}
 {% set write_env_file = '' %}
 {% set pinentry_parms = '
@@ -25,7 +18,6 @@
         allow-loopback-pinentry' %}
 {% set pinentry_text = 'pinentry-program /usr/bin/pinentry-tty' %}
 {% set kill_gpg_agent_text = 'gpgconf --kill gpg-agent' %}
-{% endif %}
 
 {% set pkg_pub_key_absfile = gpg_key_dir ~ '/' ~ pkg_pub_key_file %}
 {% set pkg_priv_key_absfile = gpg_key_dir ~ '/' ~ pkg_priv_key_file %}
