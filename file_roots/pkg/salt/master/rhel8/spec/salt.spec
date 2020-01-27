@@ -509,8 +509,16 @@ rm -rf %{buildroot}
 
 
 %changelog
-## - Update to Neon naming
-## - Updated spec file to not use py3_build  due to '-s' preventing pip installs
+* Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
+- Update to Neon Release Candidate 2 for Python 3
+- Updated spec file to not use py3_build  due to '-s' preventing pip installs
+- Updated patch file to support Tornado4
+
+* Wed Jan 08 2020 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.3-1
+- Update to feature release 2019.2.3-1  for Python 3
+
+* Tue Oct 15 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-1
+- Update to feature release 2019.2.2-1  for Python 3
 
 * Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
 - Update to feature release 2019.2.1-1  for Python 3
