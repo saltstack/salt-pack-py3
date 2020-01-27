@@ -1,0 +1,86 @@
+Move RPMCALLBACK_ELEM_PROGRESS to rpmteProcess to have header available
+
+The header of the rpmte is only available after rpmteOpen().
+Added num param to rpmteProcess to be able to signal the progress to the
+callback.
+
+(cherry picked from commit 124ed29259b05fdf574d5e3e145bc1201b24ae4d)
+---
+diff -uNr rpm-4.11.3.orig/lib/rpmte.c rpm-4.11.3/lib/rpmte.c
+--- rpm-4.11.3.orig/lib/rpmte.c	2017-08-23 15:39:18.195927789 +0200
++++ rpm-4.11.3/lib/rpmte.c	2017-08-23 15:40:12.857349575 +0200
+@@ -939,7 +939,7 @@
+     return rc;
+ }
+ 
+-int rpmteProcess(rpmte te, pkgGoal goal)
++int rpmteProcess(rpmte te, pkgGoal goal, int num)
+ {
+     /* Only install/erase resets pkg file info */
+     int scriptstage = (goal != PKG_INSTALL && goal != PKG_ERASE);
+@@ -959,6 +959,11 @@
+     }
+ 
+     if (rpmteOpen(te, reset_fi)) {
++	if (!scriptstage) {
++	    rpmtsNotify(te->ts, te, RPMCALLBACK_ELEM_PROGRESS, num,
++			rpmtsMembers(te->ts)->orderCount);
++	}
++
+ 	failed = rpmpsmRun(te->ts, te, goal);
+ 	rpmteClose(te, reset_fi);
+     }
+diff -uNr rpm-4.11.3.orig/lib/rpmte_internal.h rpm-4.11.3/lib/rpmte_internal.h
+--- rpm-4.11.3.orig/lib/rpmte_internal.h	2013-11-22 11:31:31.000000000 +0100
++++ rpm-4.11.3/lib/rpmte_internal.h	2017-08-23 15:40:24.654440605 +0200
+@@ -56,7 +56,7 @@
+ FD_t rpmtePayload(rpmte te);
+ 
+ RPM_GNUC_INTERNAL
+-int rpmteProcess(rpmte te, pkgGoal goal);
++int rpmteProcess(rpmte te, pkgGoal goal, int num);
+ 
+ RPM_GNUC_INTERNAL
+ void rpmteAddProblem(rpmte te, rpmProblemType type,
+diff -uNr rpm-4.11.3.orig/lib/transaction.c rpm-4.11.3/lib/transaction.c
+--- rpm-4.11.3.orig/lib/transaction.c	2017-08-23 15:39:18.257928268 +0200
++++ rpm-4.11.3/lib/transaction.c	2017-08-23 15:42:24.986369126 +0200
+@@ -1170,10 +1170,11 @@
+ static int runTransScripts(rpmts ts, pkgGoal goal) 
+ {
+     int rc = 0;
++    int i = 0;
+     rpmte p;
+     rpmtsi pi = rpmtsiInit(ts);
+     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+-	rc += rpmteProcess(p, goal);
++	rc += rpmteProcess(p, goal, i++);
+     }
+     rpmtsiFree(pi);
+     return rc;
+@@ -1415,7 +1416,6 @@
+ static int rpmtsProcess(rpmts ts)
+ {
+     rpmtsi pi;	rpmte p;
+-    tsMembers tsmem = rpmtsMembers(ts);
+     int rc = 0;
+     int i = 0;
+ 
+@@ -1423,8 +1423,6 @@
+     while ((p = rpmtsiNext(pi, 0)) != NULL) {
+ 	int failed;
+ 
+-	rpmtsNotify(ts, NULL, RPMCALLBACK_ELEM_PROGRESS, i++,
+-		tsmem->orderCount);
+ 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+ 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+ 
+@@ -1432,7 +1430,7 @@
+ 	    rpmtsSELabelInit(ts, 0);
+ 	}
+ 
+-	failed = rpmteProcess(p, rpmteType(p));
++	failed = rpmteProcess(p, rpmteType(p), i++);
+ 	if (failed) {
+ 	    rpmlog(RPMLOG_ERR, "%s: %s %s\n", rpmteNEVRA(p),
+ 		   rpmteTypeString(p), failed > 1 ? _("skipped") : _("failed"));

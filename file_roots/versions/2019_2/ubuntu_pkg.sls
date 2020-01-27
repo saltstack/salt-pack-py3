@@ -4,6 +4,7 @@ include:
 {% if buildcfg.build_release == 'ubuntu1804' %}
 
     - pkg.python-ioflo.1_7_4.ubuntu1804
+    - pkg.python-m2crypto.0_31_0.ubuntu1804
     - pkg.python-raet.0_6_8.ubuntu1804
     - pkg.python-timelib.0_2_4.ubuntu1804
     - pkg.salt.2019_2.ubuntu1804

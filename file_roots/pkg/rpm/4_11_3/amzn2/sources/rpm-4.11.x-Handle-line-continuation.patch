@@ -1,0 +1,31 @@
+From 817959609b95afe34ce0f7f6c3dc5d7d0d9a8470 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Wed, 25 Jun 2014 11:28:02 +0300
+Subject: [PATCH] Handle line continuation in grabArgs() (related to
+ RhBug:1045723)
+
+- Commit 1bdcd0500865efd3566efd7f951228f69b58e755 to fix RhBug:1045723
+  broke some funky java macros in Fedora which include line continuation
+  in the argument (comments 6-7 in the bug). That it ever worked seems
+  far more like luck than by design but since this seems to fix it...
+---
+ rpmio/macro.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/rpmio/macro.c b/rpmio/macro.c
+index 12a65a4..b00155c 100644
+--- a/rpmio/macro.c
++++ b/rpmio/macro.c
+@@ -771,7 +771,8 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
+ 
+ exit:
+     argvFree(argv);
+-    return (*lastc == '\0' || *lastc == '\n') ? lastc : lastc + 1;
++    return ((*lastc == '\0' || *lastc == '\n') && *(lastc-1) != '\\') ?
++	   lastc : lastc + 1;
+ }
+ 
+ /**
+-- 
+2.1.0
+

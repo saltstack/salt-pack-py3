@@ -100,7 +100,7 @@
 pkgbuild_registry:
   rhel7:
     libsodium:
-      version: 1.0.16-1
+      version: 1.0.18-1
       results:
         - libsodium
         - libsodium-devel
@@ -119,145 +119,254 @@ pkgbuild_registry:
       results:
         - openpgm
         - openpgm-devel
+    python36:
+      version: 3.6.8-2
+      results:
+        - python36
+        - python36-debug
+        - python36-debuginfo
+        - python36-devel
+        - python36-idle
+        - python36-libs
+        - python36-test
+        - python36-tkinter
+    python-bottle:
+      version: 0.12.13-9
+      noarch: True
+      build_deps:
+        - python36
+        - python-setuptools
+      results:
+        - python36-bottle
     python-chardet:
-      version: 2.2.1-1
+      version: 3.0.4-12
       noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-chardet
     python-cherrypy:
-      version: 5.6.0-4
+      version: 5.6.0-6
       noarch: True
-      results:
-        - python-cherrypy
-        - python34-cherrypy
       build_deps:
+        - python36
         - python-mock
+      results:
+        - python36-cherrypy
     python-crypto:
-      version: 2.6.1-2
-      results:
-        - python2-crypto
-        - python34-crypto
-    python-enum34:
-      version: 1.0-4
-      noarch: True
-    python-futures:
-      version: 3.0.3-1
-      noarch: True
-    python-ioflo:
-      version: 1.3.8-3
-      noarch: True
-      results:
-        - python2-ioflo
-        - python34-ioflo
-    python-libcloud:
-      name: python2-libcloud
-      version: 2.0.0-4
-      noarch: True
-      results:
-        - python2-libcloud
-        - python34-libcloud
-    python-libnacl:
-      version: 1.6.1-1
-      noarch: True
-      results:
-        - python-libnacl
-        - python34-libnacl
-      build_deps:
-        - libsodium
-    python-m2crypto:
-      version: 0.31.0-2
-      results:
-        - m2crypto
-        - python34-m2crypto
-      build_deps:
-        - python-typing
-    python-msgpack:
-      version: 0.4.6-2
-      results:
-        - python2-msgpack
-        - python34-msgpack
-    python-mock:
-      version: 1.0.1-11
-      noarch: True
-      results:
-        - python2-mock
-        - python34-mock
-    python-psutil:
-      version: 2.2.1-2
-      results:
-        - python2-psutil
-        - python34-psutil
-    python-pycryptodome:
-      version: 3.6.1-2
-      results:
-        - python2-pycryptodomex
-        - python34-pycryptodomex
+      version: 2.6.1-26
       build_deps:
         - libtommath
         - libtomcrypt
         - libtomcrypt-devel
+        - python36
+      results:
+        - python36-crypto
+    python-gnupg:
+      version: 0.4.4-2
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-gnupg
+    python-idna:
+      version: 2.7-5
+      noarch: True
+      results:
+        - python36-idna
+    python-ioflo:
+      version: 1.3.8-5
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-ioflo
+    python-jinja2:
+      version: 2.8.1-3
+      noarch: True
+      build_deps:
+        - python36
+        - python-markupsafe
+        - python-setuptools
+      results:
+        - python36-jinja2
+    python-libcloud:
+      version: 2.0.0-4
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-libcloud
+    python-libnacl:
+      version: 1.6.1-3
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-libnacl
+    python-m2crypto:
+      version: 0.33.0-1
+      build_deps:
+        - python36
+      results:
+        - python36-m2crypto
+    python-markupsafe:
+      version: 0.23-4
+      build_deps:
+        - python36
+        - python-setuptools
+      results:
+        - python36-markupsafe
+    python-msgpack:
+      version: 0.5.6-6
+      build_deps:
+        - python36
+      results:
+        - python36-msgpack
+    python-mock:
+      version: 2.0.0-3
+      noarch: True
+      build_deps:
+        - python36
+        - python-pbr
+        - python-six
+      results:
+        - python36-mock
+    python-pbr:
+      version: 4.2.0-4
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-pbr
+    python-psutil:
+      version: 2.2.1-3
+      build_deps:
+        - python36
+      results:
+        - python36-psutil
+    python-pycryptodomex:
+      version: 3.7.3-3
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
+        - python36
+      results:
+        - python36-pycryptodomex
+    python-pycurl:
+      version: 7.43.0-8
+      build_deps:
+        - python-bottle
+      results:
+        - python36-pycurl
+    python-pysocks:
+      version: 1.6.8-6
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-pysocks
     python-pyzmq:
       name: python-zmq
-      version: 15.3.0-5
-      results:
-        - python2-zmq
-        - python34-zmq
+      version: 15.3.0-6
       build_deps:
+        - python36
         - zeromq
-    python-raet:
-      version: 0.6.6-5
-      noarch: True
       results:
-        - python2-raet
-        - python34-raet
+        - python36-zmq
+    python-raet:
+      version: 0.6.6-7
+      noarch: True
       build_deps:
+        - python36
         - python-ioflo
         - python-libnacl
-      additonal_deps:
-        - python-simplejson
+      results:
+        - python36-raet
+    python-requests:
+      version: 2.12.5-4
+      noarch: True
+      build_deps:
+        - python36
+        - python-chardet
+        - python-urllib3
+        - python-idna
+      results:
+        - python36-requests
+    python-setuptools:
+      version: 39.2.0-4
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-setuptools
     python-simplejson:
-      version: 3.3.3-2
+      version: 3.10.0-3
+      build_deps:
+        - python36
       results:
-        - python2-simplejson
-        - python34-simplejson
+        - python36-simplejson
+    python-six:
+      version: 1.11.0-4
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-six
     python-timelib:
-      version: 0.2.4-3
+      version: 0.2.4-5
       noarch: True
+      build_deps:
+        - python36
       results:
-        - python2-timelib
-        - python34-timelib
+        - python36-timelib
     python-tornado:
-      version: 4.2.1-2
+      version: 4.4.2-4
+      build_deps:
+        - python36
+        - python-setuptools
       results:
-        - python2-tornado
-        - python34-tornado
+        - python36-tornado
     python-typing:
-      version: 3.5.2.2-3
+      version: 3.5.2.2-4
       noarch: True
+      build_deps:
+        - python36
       results:
-        - python2-typing
-        - python34-typing
+        - python36-typing
     python-urllib3:
-      version: 1.10.4-3
+      version: 1.19.1-6
       noarch: True
+      build_deps:
+        - python36
+        - python-pysocks
+        - python-setuptools
       results:
-        - python2-urllib3
-        - python34-urllib3
+        - python36-urllib3
     python-yaml:
       name: PyYAML
-      version: 3.11-2
+      version: 3.11-3
+      build_deps:
+        - python36
+        - python-setuptools
       results:
-        - PyYAML
+        - python36-PyYAML
     salt:
       version: 2018.3.0tobereplaced_date-0
       noarch: True
       build_deps:
-        - python-pycryptodome
+        - python36
+        - python-m2crypto
         - python-msgpack
         - python-yaml
+        - python-requests
         - python-pyzmq
         - python-markupsafe
         - python-tornado
-        - python-futures
         - python-libcloud
+        - python-mock
+        - python-six
       results:
         - salt
         - salt-master
@@ -273,491 +382,461 @@ pkgbuild_registry:
       results:
         - zeromq
         - zeromq-devel
-
-  rhel6:
-    babel:
-      name: python27-babel
-      version: 0.9.4-5.3
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-babel
-    libsodium:
-      version: 0.4.5-3
-      results:
-        - libsodium
-        - libsodium-debuginfo
-        - libsodium-devel
-    libtomcrypt:
-      version: 1.17-23
-      results:
-        - libtomcrypt
-        - libtomcrypt-devel
-    libtommath:
-      version: 0.42.0-4
-      results:
-        - libtommath
-        - libtommath-devel
-    libyaml:
-      version: 0.1.3-4
-      results:
-        - libyaml
-        - libyaml-debuginfo
-        - libyaml-devel
-    pciutils:
-      version: 3.1.10-4
-      results:
-        - pciutils
-        - pciutils-debuginfo
-        - pciutils-devel
-        - pciutils-devel-static
-        - pciutils-libs
-    pytest:
-      name: pytest27
-      version: 2.7.0-2
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - python-py
-      results:
-        - pytest27
-    python27:
-      version: 2.7.13-3.ius
-      results:
-        - python27
-        - python27-debuginfo
-        - python27-devel
-        - python27-libs
-        - python27-test
-        - python27-tools
-        - tkinter27
-    python-backports:
-      name: python27-backports
-      version: 1.0-7
-      build_deps:
-        - python27
-    python-backports-ssl_match_hostname:
-      name: python27-backports-ssl_match_hostname
-      version: 3.4.0.2-4
-      noarch: True
-      build_deps:
-        - python27
-        - python-backports
-        - python-setuptools
-    python-chardet:
-      name: python27-chardet
-      version: 2.2.1-4
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - python-nose
-      results:
-        - python27-chardet
-    python-cherrypy:
-      name: python27-cherrypy
-      version: 5.6.0-5
-      noarch: True
-      build_deps:
-        - python27
-        - python-mock
-        - python-nose
-      results:
-        - python27-cherrypy
-    python-crypto:
-      name: python27-crypto
-      version: 2.6.1-5
-      build_deps:
-        - python27
-      results:
-        - python27-crypto
-    python-pycryptodome:
-      name: python27-pycryptodome
-      version: 3.6.1-2
-      build_deps:
-        - python27
-        - python-setuptools
-        - libtommath
-        - libtomcrypt
-        - libtomcrypt-devel
-      results:
-        - python27-pycryptodomex
-    python-enum34:
-      name: python27-enum34
-      version: 1.0-6
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-enum34
-    python-futures:
-      name: python27-futures
-      version: 3.0.3-3
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-futures
-    python-impacket:
-      name: python27-impacket
-      version: 0.9.14-5
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - python-crypto
-      results:
-        - python27-impacket
-    python-ioflo:
-      name: python27-ioflo
-      version: 1.3.8-4
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-ioflo
-    python-jinja2:
-      name: python27-jinja2
-      version: 2.8.1-3
-      noarch: True
-      build_deps:
-        - python27
-        - python-babel
-        - python-markupsafe
-      results:
-        - python27-jinja2
-    python-libcloud:
-      name: python27-libcloud
-      version: 2.0.0-3
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-libcloud
-    python-libnacl:
-      name: python27-libnacl
-      version: 1.6.1-1
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - libsodium
-      results:
-        - python27-libnacl
-    python-markupsafe:
-      name: python27-markupsafe
-      version: 0.11-12
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-markupsafe
-    python-msgpack:
-      name: python27-msgpack
-      version: 0.4.6-3
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-msgpack
-    python-mock:
-      name: python27-mock
-      version: 1.0.1-12
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-##        - python-unittest2
-      results:
-        - python27-mock
-    python-nose:
-      name: python27-nose
-      version: 1.3.7-2
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - python-mock
-      results:
-        - python27-nose
-    python-pip:
-      name: python27-pip
-      version: 9.0.1-2.ius
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-pip
-    python-psutil:
-      name: python27-psutil
-      version: 5.4.2-1.ius
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-psutil
-    python-py:
-      name: python27-py
-      version: 1.4.27-3
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-py
-    python-pycurl:
-      name: python27-pycurl
-      version: 7.19.0-11
-      build_deps:
-        - python27
-      results:
-        - python27-pycurl
-    python-pyzmq:
-      name: python27-zmq
-      version: 14.5.0-4
-      build_deps:
-        - python27
-        - python-setuptools
-        - zeromq
-    python-raet:
-      name: python27-raet
-      version: 0.6.6-3
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - python-ioflo
-        - python-six
-      additional_deps:
-        - python-libnacl
-    python-requests:
-      name: python27-requests
-      version: 2.7.0-9
-      noarch: True
-      build_deps:
-        - python27
-        - python-chardet
-        - python-urllib3
-      results:
-        - python27-requests
-    python-setuptools:
-      name: python27-setuptools
-      version: 36.6.0-1.ius
-      noarch: True
-      build_deps:
-        - python27
-      results:
-        - python27-setuptools
-    python-six:
-      name: python27-six
-      version: 1.9.0-4
-      noarch: True
-      build_deps:
-        - python27
-      results:
-        - python27-six
-    python-tornado:
-      name: python27-tornado
-      version: 4.2.1-4
-      build_deps:
-        - python27
-        - python-backports-ssl_match_hostname
-        - python-pycurl
-        - python-setuptools
-##        - python-unittest2
-      results:
-        - python27-tornado
-    python-timelib:
-      name: python27-timelib
-      version: 0.2.4-3
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-      results:
-        - python27-timelib
-    python-unittest2:
-      name: python27-unittest2
-      version: 1.1.0-6
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - python-six
-      results:
-        - python27-unittest2
-    python-urllib3:
-      name: python27-urllib3
-      version: 1.10.4-8
-      noarch: True
-      build_deps:
-        - python27
-        - python-setuptools
-        - python-six
-      results:
-        - python27-urllib3
-    python-yaml:
-      name: python27-PyYAML
-      version: 3.11-3
-      build_deps:
-        - python27
-        - python-setuptools
-        - libyaml
-      results:
-        - PyYAML27
-    salt:
-      version: 2018.3.0tobereplaced_date-0
-      noarch: True
-      build_deps:
-        - python27
-        - python-pycrypto
-        - python-msgpack
-        - python-yaml
-        - python-requests
-        - python-pyzmq
-        - python-markupsafe
-        - python-tornado
-        - python-futures
-        - python-libcloud
-      results:
-        - salt
-        - salt-master
-        - salt-minion
-        - salt-syndic
-        - salt-api
-        - salt-cloud
-        - salt-ssh
-    winexe:
-      version: 1.1-1b787d2.2
-      results:
-        - winexe
-        - winexe-debuginfo
-      build_deps:
-        - python27
-        - python-impacket
-    yum-utils:
-      version: 1.1.30-30
-      noarch: True
-      results:
-        - yum-utils
-        - yum-NetworkManager-dispatcher
-        - yum-plugin-verify
-        - yum-plugin-fastestmirror
-        - yum-plugin-show-leaves
-        - yum-plugin-filter-data
-        - yum-plugin-versionlock
-        - yum-plugin-ps
-        - yum-plugin-tsflags
-        - yum-plugin-changelog
-        - yum-plugin-remove-with-leaves
-        - yum-plugin-downloadonly
-        - yum-plugin-tmprepo
-        - yum-plugin-protectbase
-        - yum-plugin-priorities
-        - yum-plugin-post-transaction-actions
-        - yum-plugin-fs-snapshot
-        - yum-plugin-aliases
-        - yum-plugin-local
-        - yum-plugin-auto-update-debug-info
-        - yum-plugin-security
-        - yum-plugin-rpm-warm-cache
-        - yum-plugin-list-data
-        - yum-plugin-upgrade-helper
-        - yum-plugin-merge-conf
-        - yum-plugin-keys
-        - yum-updateonboot
     zeromq:
-      version: 4.0.5-4
+      version: 4.1.4-7
+      build_deps:
+        - openpgm
       results:
         - zeromq
         - zeromq-devel
 
 
-  amzn:
+  amzn2:
+    distribution-gpg-keys:
+      version: 1.30-1
+      noarch: True
+      results:
+        - distribution-gpg-keys
+        - distribution-gpg-keys-copr
     libsodium:
-      version: 0.4.5-3
+      version: 1.0.16-1
       results:
         - libsodium
-        - libsodium-debuginfo
         - libsodium-devel
-    python-cherrypy:
-      name: python27-cherrypy
-      version: 3.2.2-5
-      noarch: True
-    python-enum34:
-      name: python27-enum34
-      version: 1.0-5
-      noarch: True
-    python-gnupg:
-      name: python27-gnupg
-      version: 0.3.8-4
-      noarch: True
-    python-impacket:
-      name: python27-impacket
-      version: 0.9.14-3
-      noarch: True
-    python-ioflo:
-      name: python27-ioflo
-      version: 1.3.8-2
-      noarch: True
-    python-libcloud:
-      name: python27-libcloud
-      version: 2.0.0-2
-      noarch: True
+    libtomcrypt:
+      version: 1.17-27
+      build_deps:
+        - libtommath
       results:
-        - python27-libcloud
-    python-libnacl:
-      name: python27-libnacl
-      version: 1.6.1-1
+        - libtomcrypt
+        - libtomcrypt-devel
+    libtommath:
+      version: 0.42.0-7
+      results:
+        - libtommath
+        - libtommath-devel
+    mock:
+      version: 1.4.15-3
       noarch: True
       build_deps:
-        - libsodium
-    python-msgpack:
-      name: python27-msgpack
-      version: 0.4.6-2
-    python-psutil:
-      name: python27-psutil
-      version: 5.2.2-2.ius
+        - mock-core-configs
+        - python-distro
+        - python-jinja2
+        - python-requests
+        - python-pyroute2
+        - python-rpm
+        - python-six
       results:
-        - python27-psutil
+        - mock
+        - mock-lvm
+        - mock-scm
+    mock-core-configs:
+      version: 30.3-2
+      noarch: True
+      build_deps:
+        - distribution-gpg-keys
+      results:
+        - mock-core-configs
+    openpgm:
+      version: 5.2.122-15
+      results:
+        - openpgm
+        - openpgm-devel
+    python-atomicwrites:
+      version: 1.1.5-14
+      noarch: True
+      results:
+        - python3-atomicwrites
+    python-attrs:
+      version: 17.4.0-9
+      noarch: True
+      results:
+        - python3-attrs
+    python-babel:
+      version: 2.6.0-7
+      noarch: True
+      build_deps:
+        - python-pytz
+        - python-freezegun
+        - python-pytest
+      results:
+        - python3-babel
+    python-backports_abc:
+      version: 0.5-10
+      noarch: True
+      results:
+        - python3-backports_abc
+    python-bottle:
+      version: 0.12.13-8
+      noarch: True
+      results:
+        - python3-bottle
+    python-chardet:
+      version: 3.0.4-10
+      noarch: True
+      results:
+        - python3-chardet
+    python-cherrypy:
+      version: 5.6.0-6
+      noarch: True
+      results:
+        - python3-cherrypy
+      build_deps:
+        - python-nose
+    python-coverage:
+      version: 4.5.1-5
+      results:
+        - python3-coverage
+    python-crypto:
+      version: 2.6.1-26
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
+      results:
+        - python3-crypto
+    python-dateutil:
+      version: 2.7.3-3
+      noarch: True
+      build_deps:
+        - python-six
+        - python-setuptools_scm
+        - python-hypothesis
+      results:
+        - python3-dateutil
+    python-distro:
+      version: 1.2.0-5
+      noarch: True
+      results:
+        - python3-distro
+    python-freezegun:
+      version: 0.3.8-13
+      noarch: True
+      build_deps:
+        - python-dateutil
+        - python-sure
+        - python-nose
+        - python-coverage
+        - python-six
+        - python-mock
+      results:
+        - python3-freezegun
+    python-funcsigs:
+      version: 1.0.2-13
+      noarch: True
+      build_deps:
+        - python-unittest2
+      results:
+        - python3-funcsigs
+    python-gnupg:
+      version: 0.4.4-2
+      noarch: True
+      results:
+        - python3-gnupg
+    python-hypothesis:
+      version: 3.66.11-3
+      noarch: True
+      build_deps:
+        - python-attrs
+        - python-coverage
+      results:
+        - python3-hypothesis
+    python-idna:
+      version: 2.7-5
+      noarch: True
+      results:
+        - python3-idna
+    python-jinja2:
+      version: 2.10-8
+      noarch: True
+      build_deps:
+        - python-markupsafe
+        - python-babel
+        - python-pytest
+      results:
+        - python3-jinja2
+    python-libcloud:
+      version: 2.2.1-10
+      noarch: True
+      build_deps:
+        - python-pytest-runner
+      results:
+        - python3-libcloud
+    python-m2crypto:
+      version: 0.31.0-4
+      results:
+        - python3-m2crypto
+      build_deps:
+        - python-typing
+    python-markupsafe:
+      version: 1.0-3
+      results:
+        - python3-markupsafe
+    python-mock:
+      version: 2.0.0-15
+      noarch: True
+      build_deps:
+        - python-pbr
+        - python-six
+      results:
+        - python3-mock
+    python-more-itertools:
+      version: 4.1.0-6
+      noarch: True
+      build_deps:
+        - python-nose
+        - python-six
+      results:
+        - python3-more-itertools
+    python-msgpack:
+      version: 0.5.6-7
+      build_deps:
+        - python-funcsigs
+      results:
+        - python3-msgpack
+    python-nose:
+      version: 1.3.7-23
+      noarch: True
+      build_deps:
+        - python-setuptools
+        - python-mock
+        - python-coverage
+        - python-six
+      results:
+        - python3-nose
+    python-pbr:
+      version: 5.1.2-4
+      noarch: True
+      results:
+        - python3-pbr
+    python-pluggy:
+      version: 0.7.1-3
+      noarch: True
+      build_deps:
+        - python-setuptools_scm
+      results:
+        - python3-pluggy
+    python-psutil:
+      version: 5.4.3-8
+      build_deps:
+        - python-mock
+        - python-six
+      results:
+        - python3-psutil
+    python-py:
+      version: 1.5.4-5
+      noarch: True
+      build_deps:
+        - python-setuptools_scm
+      results:
+        - python3-py
+    python-pycryptodome:
+      version: 3.6.1-4
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
+      results:
+        - python3-pycryptodomex
+    python-pycurl:
+      version: 7.43.0.2-5
+      build_deps:
+        - python-bottle
+        - python-nose
+        - python-pyflakes
+      results:
+        - python3-pycurl
+    python-pyflakes:
+      version: 2.0.0-8
+      noarch: True
+      results:
+        - python3-pyflakes
+    python-pyroute2:
+      version: 0.5.3-4
+      noarch: True
+      results:
+        - python3-pyroute2
+    python-pysocks:
+      version: 1.6.8-6
+      noarch: True
+      results:
+        - python3-pysocks
+    python-pytest:
+      version: 3.6.4-3
+      noarch: True
+      build_deps:
+        - python-atomicwrites
+        - python-attrs
+        - python-funcsigs
+        - python-hypothesis
+        - python-more-itertools
+        - python-setuptools_scm
+        - python-zope-interface
+        - python-zope-event
+        - python-pluggy
+        - python-py
+      results:
+        - python3-pytest
+    python-pytest-runner:
+      version: 4.0-5
+      noarch: True
+      build_deps:
+        - python-pytest
+        - python-setuptools_scm
+      results:
+        - python3-pytest-runner
+    python-pytz:
+      version: 2018.5-3
+      noarch: True
+      build_deps:
+        - python-pytest
+      results:
+        - python3-pytz
     python-pyzmq:
-      name: python27-zmq
-      version: 14.5.0-3
+      name: python-zmq
+      version: 17.0.0-5
       build_deps:
         - zeromq
-    python-raet:
-      name: python27-raet
-      version: 0.6.3-3
+      results:
+        - python3-zmq
+    python-requests:
+      version: 2.19.1-5
       noarch: True
       build_deps:
-        - python-ioflo
-      additional_deps:
-        - python-libnacl
-    python-tornado:
-      name: python27-tornado
-      version: 4.2.1-2
-    python-timelib:
-      name: python27-timelib
-      version: 0.2.4-2
+        - python-chardet
+        - python-idna
+        - python-urllib3
+      results:
+        - python3-requests
+    python-rpm:
+      version: 4.11.3-5
+      build_deps:
+        - rpm
+        - rpm-build
+        - rpm-build-libs
+        - rpm-libs
+        - rpm-plugin-systemd-inhibit
+        - rpm-python
+        - rpm-sign
+      results:
+        - python3-rpm
+    python-setuptools_scm:
+      version: 3.1.0-3
       noarch: True
+      results:
+        - python3-setuptools_scm
+    python-simplejson:
+      version: 3.16.0-3
+      build_deps:
+        - python-nose
+      results:
+        - python3-simplejson
+    python-singledispatch:
+      version: 3.4.0.3-15
+      noarch: True
+      build_deps:
+        - python-six
+      results:
+        - python3-singledispatch
+    python-six:
+      version: 1.11.0-8
+      noarch: True
+      results:
+        - python3-six
+    python-sure:
+      version: 1.4.11-5
+      noarch: True
+      build_deps:
+        - python-mock
+        - python-six
+        - python-nose
+      results:
+        - python3-sure
+    python-timelib:
+      version: 0.2.4-5
+      noarch: True
+      results:
+        - python3-timelib
+    python-tornado:
+      version: 5.0.2-6
+      build_deps:
+        - python-backports_abc
+        - python-pycurl
+        - python-singledispatch
+      results:
+        - python3-tornado
+    python-tornado4:
+      version: 4.5.2-4
+      build_deps:
+        - python-backports_abc
+        - python-pycurl
+        - python-singledispatch
+      results:
+        - python3-tornado4
+    python-typing:
+      version: 3.5.2.2-5
+      noarch: True
+      results:
+        - python3-typing
+    python-unittest2:
+      version: 1.1.0-17
+      noarch: True
+      build_deps:
+        - python-six
+      results:
+        - python3-unittest2
+    python-urllib3:
+      version: 1.23-6
+      noarch: True
+      build_deps:
+        - python-six
+        - python-pysocks
+      results:
+        - python3-urllib3
+    python-yaml:
+      name: PyYAML
+      version: 4.2-0.1.b5
+      results:
+        - python3-pyyaml
+    python-zope-event:
+      version: 4.2.0-13
+      noarch: True
+      results:
+        - python3-zope-event
+    python-zope-interface:
+      version: 4.5.0-4
+      build_deps:
+        - python-nose
+        - python-zope-event
+      results:
+        - python3-zope-interface
+    rpm:
+      version: 4.11.3-36
+      results:
+        - rpm
+        - rpm-build
+        - rpm-build-libs
+        - rpm-libs
+        - rpm-plugin-systemd-inhibit
+        - rpm-python
+        - rpm-sign
+        - rpm-debuginfo
+        - rpm-devel
     salt:
       version: 2018.3.0tobereplaced_date-0
       noarch: True
       build_deps:
+        - python-pycryptodome
         - python-msgpack
+        - python-yaml
+        - python-requests
         - python-pyzmq
-        - python-tornado
-        - python-libcloud
-        - python-gnupg
+        - python-markupsafe
+        - python-tornado4
         - python-futures
+        - python-libcloud
+        - python-mock
+        - python-six
       results:
         - salt
         - salt-master
@@ -766,15 +845,11 @@ pkgbuild_registry:
         - salt-api
         - salt-cloud
         - salt-ssh
-    winexe:
-      version: 1.1-b787d2.1
-      results:
-        - winexe
-        - winexe-debuginfo
-      build_deps:
-        - python-impacket
     zeromq:
-      version: 4.0.5-4
+      version: 4.2.3-1
+      build_deps:
+        - openpgm
+        - libsodium
       results:
         - zeromq
         - zeromq-devel

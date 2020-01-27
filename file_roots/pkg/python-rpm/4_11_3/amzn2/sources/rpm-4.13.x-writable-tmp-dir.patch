@@ -1,0 +1,106 @@
+commit c707ab26362e795d3f9dba4eb87dc7ed99a28bcb
+Author: Robin Lee <cheeselee@fedoraproject.org>
+Date:   Sat Apr 8 21:21:39 2017 +0800
+
+    Fix non-standard inherented modes of directories in debuginfo
+    
+    In case that binary compiled from source generated in /tmp, a
+    /usr/src/debug/tmp directory will be created with the same mode as
+    /tmp, a.k.a 777, which should be avoided.
+    
+    Fixes: rhbz#641022
+
+diff --git a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
+old mode 100644
+new mode 100755
+index 547dbd9..6f38e19
+--- a/scripts/find-debuginfo.sh
++++ b/scripts/find-debuginfo.sh
+@@ -396,9 +396,10 @@
+   mkdir -p "${RPM_BUILD_ROOT}/usr/src/debug"
+   LC_ALL=C sort -z -u "$SOURCEFILE" | grep -E -v -z '(<internal>|<built-in>)$' |
+   (cd "$RPM_BUILD_DIR"; cpio -pd0mL "${RPM_BUILD_ROOT}/usr/src/debug")
+-  # stupid cpio creates new directories in mode 0700, fixup
++  # stupid cpio creates new directories in mode 0700,
++  # and non-standard modes may be inherented from original directories, fixup
+   find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 |
+-  xargs --no-run-if-empty -0 chmod a+rx
++  xargs --no-run-if-empty -0 chmod 0755
+ fi
+ 
+ if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
+
+commit e795899780337dea751d85db8f381eff3fe75275
+Author: Mark Wielaard <mark@klomp.org>
+Date:   Fri Apr 21 17:33:26 2017 +0200
+
+    debugedit: Only output comp_dir under build dir (once).
+    
+    The fix for rhbz#444310 (commit c1a5eb - Include empty CU current dirs)
+    was a little greedy. It would also include comp_dirs outside the build
+    root. Those are unnecessary and we don't have a good way to store them.
+    Such dirs (e.g. /tmp) would then show up at the root of /usr/src/debug.
+    
+    Fix this by including only comp_dirs under base_dir. Also only output
+    all dirs once (during phase zero) and don't output empty dirs (which
+    was harmless but would produce a warning from cpio).
+    
+    This still includes all empty dirs from the original rhbz#444310
+    nodir testcase and it is an alternative fix for rhbz#641022
+    (commit c707ab).
+    
+    Both fixes are necessary in case of an unexpected mode for a directory
+    actually in the build root that we want to include in the source list.
+    
+    Signed-off-by: Mark Wielaard <mark@klomp.org>
+
+diff --git a/tools/debugedit.c b/tools/debugedit.c
+index 8444e03..bf11513 100644
+--- a/tools/debugedit.c
++++ b/tools/debugedit.c
+@@ -926,27 +926,27 @@
+   /* Ensure the CU current directory will exist even if only empty.  Source
+      filenames possibly located in its parent directories refer relatively to
+      it and the debugger (GDB) cannot safely optimize out the missing
+-     CU current dir subdirectories.  */
+-  if (comp_dir && list_file_fd != -1)
++     CU current dir subdirectories.  Only do this once in phase one. And
++     only do this for dirs under our build/base_dir.  Don't output the
++     empty string (in case the comp_dir == base_dir).  */
++  if (phase == 0 && base_dir && comp_dir && list_file_fd != -1)
+     {
+-      char *p;
+-      size_t size;
+ 
+-      if (base_dir && has_prefix (comp_dir, base_dir))
+-	p = comp_dir + strlen (base_dir);
+-      else if (dest_dir && has_prefix (comp_dir, dest_dir))
+-	p = comp_dir + strlen (dest_dir);
+-      else
+-	p = comp_dir;
+-
+-      size = strlen (p) + 1;
+-      while (size > 0)
++      if (has_prefix (comp_dir, base_dir))
+ 	{
+-	  ssize_t ret = write (list_file_fd, p, size);
+-	  if (ret == -1)
+-	    break;
+-	  size -= ret;
+-	  p += ret;
++	  char *p = comp_dir + strlen (base_dir);
++	  if (p[0] != '\0')
++	    {
++	      size_t size = strlen (p) + 1;
++	      while (size > 0)
++		{
++		  ssize_t ret = write (list_file_fd, p, size);
++		  if (ret == -1)
++		    break;
++		  size -= ret;
++		  p += ret;
++		}
++	    }
+ 	}
+     }
+ 

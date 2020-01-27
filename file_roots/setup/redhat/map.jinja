@@ -8,7 +8,7 @@
 {% set repo_sign_timeout = basecfg.repo_sign_timeout %}
 
 # Get the release and architecture
-{% set build_release = pillar.get('build_release', 'rhel7') %}
+{% set build_release = pillar.get('build_release', 'rhel8') %}
 {% set build_arch = pillar.get('build_arch', 'x86_64') %}
 
 # determine which version of Python to build for
@@ -25,7 +25,13 @@
 
 
 # Set the mock target
-{% if build_release == 'rhel7' %}
+{% if build_release == 'rhel8' %}
+
+  {% set build_epel = 'epel-8' %}
+  {% set build_tgt = build_epel ~ '-' ~ build_arch %}
+  {% set build_dist = 'el8' %}
+
+{% elif build_release == 'rhel7' %}
 
   {% set build_epel = 'epel-7' %}
   {% set build_tgt = build_epel ~ '-' ~ build_arch %}

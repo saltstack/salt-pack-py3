@@ -1,0 +1,156 @@
+--- rpm-4.11.3/configure.ac.old	2018-05-25 09:02:29.103209393 +0200
++++ rpm-4.11.3/configure.ac	2018-05-28 14:46:27.134913783 +0200
+@@ -334,6 +334,22 @@
+ AC_SUBST(WITH_POPT_INCLUDE)
+ AC_SUBST(WITH_POPT_LIB)
+ 
++
++#=================
++# Check for audit library.
++AC_ARG_WITH(audit,
++AS_HELP_STRING([--with-audit],[log results using Linux Audit]),
++with_audit=$withval,
++with_audit=auto)
++
++WITH_AUDIT_LIB=
++AS_IF([test "$with_audit" = auto],[
++    AC_SEARCH_LIBS([audit_open],[audit],[WITH_AUDIT_LIB="$ac_res"],
++       [AC_MSG_ERROR([missing audit library])
++    ])
++])
++AC_SUBST(WITH_AUDIT_LIB)
++
+ #=================
+ # Process --with/without-external-db
+ AC_ARG_WITH(external_db, [AS_HELP_STRING([--with-external-db],[build against an external Berkeley db])],
+--- rpm-4.11.3/lib/Makefile.am.old	2014-09-05 13:51:05.000000000 +0200
++++ rpm-4.11.3/lib/Makefile.am	2018-05-28 13:24:17.309657132 +0200
+@@ -47,6 +47,7 @@
+ 	@WITH_SELINUX_LIB@ \
+ 	@WITH_CAP_LIB@ \
+ 	@WITH_ACL_LIB@ \
++	@WITH_AUDIT_LIB@ \
+ 	@LIBINTL@
+ 
+ if WITH_LUA
+--- rpm-4.11.3/lib/rpmte.c.old	2018-05-25 09:02:29.173209513 +0200
++++ rpm-4.11.3/lib/rpmte.c	2018-06-18 10:38:02.929670757 +0200
+@@ -3,6 +3,7 @@
+  * Routine(s) to handle an "rpmte"  transaction element.
+  */
+ #include "system.h"
++#include <libaudit.h>
+ 
+ #include <rpm/rpmtypes.h>
+ #include <rpm/rpmlib.h>		/* RPM_MACHTABLE_* */
+@@ -22,6 +23,16 @@
+ 
+ #include "debug.h"
+ 
++#ifndef AUDIT_SOFTWARE_UPDATE
++#define AUDIT_SOFTWARE_UPDATE   1138
++#endif
++
++RPM_GNUC_INTERNAL
++int auditEnabled = 0;
++
++RPM_GNUC_INTERNAL
++int auditGpgResult = 0;
++
+ /** \ingroup rpmte
+  * A single package instance to be installed/removed atomically.
+  */
+@@ -698,7 +709,15 @@
+ 
+     switch (rpmteType(te)) {
+     case TR_ADDED:
+-	h = rpmteDBInstance(te) ? rpmteDBHeader(te) : rpmteFDHeader(te);
++	if (rpmteDBInstance(te)) {
++	    h = rpmteDBHeader(te);
++	} else {
++	    if (reload_fi) {
++		auditEnabled = 1;
++		auditGpgResult = 0;
++	    }
++	    h = rpmteFDHeader(te);
++	}
+ 	break;
+     case TR_REMOVED:
+ 	h = rpmteDBHeader(te);
+@@ -904,6 +923,41 @@
+     return rc;
+ }
+ 
++/*
++ * Input variables:
++ *      te - transaction element
++ *      keyEnforcement - gpg key enforcement status: 1 enforced, 0 not enforced
++ *      gpgResult - results of gpg signature check: 1 verified, 0 otherwise
++ *      result - overall result of installing the rpm: 1 success, 0 failure
++ */
++static void audit_rpm_install(rpmte te, unsigned int keyEnforcement,
++                unsigned int gpgResult, int result)
++{
++    int auditFd;
++    char eventTxt[128], *packageField, *dirField;
++    const char *dir;
++
++    auditFd = audit_open();
++    if (auditFd < 0)
++	return;
++
++    packageField = audit_encode_nv_string("sw", te->NEVRA, strlen(te->NEVRA));
++    dir = rpmtsRootDir(te->ts);
++    dirField = audit_encode_nv_string("root_dir", dir, strlen(dir));
++
++    snprintf(eventTxt, sizeof(eventTxt),
++	"%s sw_type=rpm key_enforce=%u gpg_res=%u %s",
++	packageField, keyEnforcement, gpgResult, dirField);
++    audit_log_user_comm_message(auditFd, AUDIT_SOFTWARE_UPDATE, eventTxt,
++	NULL, NULL, NULL, NULL, result);
++
++    free(packageField);
++    free(dirField);
++    audit_close(auditFd);
++
++    return;
++}
++
+ static rpmRC rpmteRunAllCollections(rpmte te, rpmPluginHook hook)
+ {
+     ARGV_const_t colls;
+@@ -977,5 +1031,10 @@
+ 	failed = rpmteMarkFailed(te);
+     }
+ 
++    if (auditEnabled) {
++	audit_rpm_install(te, 0, auditGpgResult, failed ? 0 : 1);
++	auditEnabled = 0;
++    }
++
+     return failed;
+ }
+--- rpm-4.11.3/lib/package.c.old	2018-05-25 09:02:29.132209443 +0200
++++ rpm-4.11.3/lib/package.c	2018-06-15 12:11:58.996022237 +0200
+@@ -25,6 +25,9 @@
+ static unsigned int nextkeyid  = 0;
+ static unsigned int * keyids;
+ 
++extern int auditGpgResult;
++extern int auditEnabled;
++
+ /** \ingroup header
+  * Translate and merge legacy signature tags into header.
+  * @param h		header (dest)
+@@ -646,7 +649,10 @@
+ 
+     /** @todo Implement disable/enable/warn/error/anal policy. */
+     rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &msg);
+-	
++
++    if (auditEnabled && (sig != NULL))
++	auditGpgResult = (rc == 0);
++
+     switch (rc) {
+     case RPMRC_OK:		/* Signature is OK. */
+ 	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, msg);

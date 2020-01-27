@@ -50,7 +50,7 @@
 
 Name:    salt
 Version: 2018.3.4%{?__rc_ver}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -231,7 +231,7 @@ Requires: systemd-python
 
 %description master
 The Salt master is the central server to which all minions connect.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    minion
@@ -242,7 +242,7 @@ Requires:   %{name} = %{version}-%{release}
 %description minion
 The Salt minion is the agent component of Salt. It listens for instructions
 from the master, runs jobs, and returns results back to the master.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    syndic
@@ -254,7 +254,7 @@ Requires:   %{name}-master = %{version}-%{release}
 The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
 infrastructure.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    api
@@ -270,7 +270,7 @@ Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    cloud
@@ -282,7 +282,7 @@ Requires:   python%{python3_pkgversion}-libcloud
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
 adds them to the master's collection of controllable minions.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %package    ssh
@@ -293,7 +293,7 @@ Requires:   %{name} = %{version}-%{release}
 %description ssh
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
-Supports Python 3.
+Supports Python %{python3_version}.
 
 
 %else
@@ -372,7 +372,7 @@ Supports Python 2.
 
 
 %prep
-%autosetup 
+%autosetup
 
 %if 0%{?with_python3}
 rm -rf %{py3dir}
@@ -396,9 +396,6 @@ cd $RPM_BUILD_DIR/%{name}-%{version}
 
 %if 0%{?with_python3}
 ## Python 3
-
-## rm -rf %%{buildroot}
-
 pushd %{py3dir}
 %py3_install
 
@@ -460,7 +457,6 @@ popd
 
 %else
 ## Python 2
-
 %py2_install
 
 # Add some directories
@@ -503,14 +499,6 @@ install -p -m 0644 %{SOURCE8} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE9} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/
 %endif
-
-## # Force python2.7 on EPEL6
-## # https://github.com/saltstack/salt/issues/22003
-## %if 0%{?rhel} == 6
-## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/spm
-## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/salt*
-## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_initrddir}/salt*
-## %endif
 
 # Logrotate
 install -p %{SOURCE10} .
@@ -853,6 +841,9 @@ rm -rf %%{buildroot}
 
 
 %changelog
+* Mon Apr 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-2
+- Update to allow for Python 3.6
+
 * Sun Feb 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-1
 - Update to feature release 2018.3.4-1  for Python 3
 

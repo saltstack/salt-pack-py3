@@ -1,7 +1,11 @@
+%bcond_with python2
+%bcond_without python3
+%bcond_with tests
 
-%global with_python3 1
 
+%if %{with python2}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
+%endif
 
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 
@@ -21,7 +25,7 @@ configuration files to object serialization and persistance.
 
 Name:           PyYAML
 Version:        3.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        YAML parser and emitter for Python
 
 Group:          Development/Libraries
@@ -29,19 +33,23 @@ License:        MIT
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-BuildRequires:  python-devel
-BuildRequires:  python-setuptools
-BuildRequires:  libyaml-devel
 
-%if 0%{?with_python3}
-BuildRequires: python%{python3_pkgversion}-devel
-BuildRequires: python%{python3_pkgversion}-setuptools
-%endif
+BuildRequires:  libyaml-devel
 
 %description    %{_description}
 
 
-%if 0%{?with_python3}
+%if %{with python2}
+BuildRequires:  python-devel
+BuildRequires:  python-setuptools
+%endif
+%if %{with python3}
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-setuptools
+%endif
+
+
+%if %{with python3}
 %package    -n  python%{python3_pkgversion}-PyYAML
 Summary:        %{summary}
 Group:          {%group}
@@ -57,16 +65,18 @@ Support Python 3.
 %setup -q -n %{name}-%{version}
 chmod a-x examples/yaml-highlight/yaml_hl.py
 
-%if 0%{?with_python3}
+%if %{with python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
 %endif
 
 
 %build
+%if %{with python2}
 CFLAGS="${RPM_OPT_FLAGS}" %{__python} setup.py --with-libyaml build
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 pushd %{py3dir}
 CFLAGS="${RPM_OPT_FLAGS}" %{__python3} setup.py --with-libyaml build
 popd
@@ -75,9 +85,11 @@ popd
 
 %install
 rm -rf %{buildroot}
+%if %{with python2}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 pushd %{py3dir}
 %{__python3} setup.py install -O1 --skip-build --root %{buildroot}
 popd
@@ -88,12 +100,14 @@ popd
 rm -rf %{buildroot}
 
 
+%if %{with python2}
 %files -n PyYAML
 %defattr(644,root,root,755)
 %doc CHANGES LICENSE PKG-INFO README examples
 %{python_sitearch}/*
+%endif
 
-%if 0%{?with_python3}
+%if %{with python3}
 %files -n python%{python3_pkgversion}-PyYAML
 %defattr(644,root,root,755)
 %doc CHANGES LICENSE PKG-INFO README examples
@@ -102,6 +116,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Sep 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.11-3
+- Made support for Python 2 optional
+
 * Wed Feb 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 3.11-2
 - Add support for Python 3
 

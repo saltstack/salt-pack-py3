@@ -1,0 +1,33 @@
+From 2797d00ecd224a59a8ca967f40240e827ff31c69 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Neal=20Gompa=20=28=E3=83=8B=E3=83=BC=E3=83=AB=E3=83=BB?=
+ =?UTF-8?q?=E3=82=B3=E3=82=99=E3=83=B3=E3=83=8F=E3=82=9A=29?=
+ <ngompa13@gmail.com>
+Date: Fri, 11 Nov 2016 05:28:40 -0500
+Subject: [PATCH] python: remove redundant suffix in python module name in
+ metadata
+
+No one is quite sure why there's a redundant '-python' suffix,
+but the module isn't named that, and typically we want the name
+in the metadata to be the same as the name of the module.
+
+This has no effect on Python code itself, as it doesn't change the
+name of the installed module used in import statements, and since
+we've never published to PyPi, it's not something that can be sanely
+referenced for 'pip' and other similar tools in a useful manner.
+---
+ python/setup.py.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/python/setup.py.in b/python/setup.py.in
+index f94873fe5..8f7fa2e5a 100644
+--- a/python/setup.py.in
++++ b/python/setup.py.in
+@@ -55,7 +55,7 @@ rpmsign_mod = Extension('rpm._rpms',
+                    extra_link_args = additional_link_args
+                   )
+ 
+-setup(name='@PACKAGE_NAME@-python',
++setup(name='@PACKAGE_NAME@',
+       version='@VERSION@',
+       description='Python bindings for @PACKAGE_NAME@',
+       maintainer_email='@PACKAGE_BUGREPORT@',

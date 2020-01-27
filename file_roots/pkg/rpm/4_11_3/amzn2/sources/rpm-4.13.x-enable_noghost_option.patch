@@ -1,0 +1,46 @@
+--- rpm-4.11.3/doc/rpm.8.old	2018-05-25 09:24:59.329885663 +0200
++++ rpm-4.11.3/doc/rpm.8	2018-05-25 09:25:19.598901802 +0200
+@@ -76,7 +76,7 @@
+  [\fB--nodigest\fR] [\fB--nosignature\fR]
+  [\fB--nolinkto\fR] [\fB--nofiledigest\fR] [\fB--nosize\fR] [\fB--nouser\fR]
+  [\fB--nogroup\fR] [\fB--nomtime\fR] [\fB--nomode\fR] [\fB--nordev\fR]
+- [\fB--nocaps\fR] [\fB--noconfig\fR]
++ [\fB--nocaps\fR] [\fB--noconfig\fR] [\fB--noghost\fR]
+ 
+ .SS "install-options"
+ .PP
+@@ -683,6 +683,9 @@
+ \fB--noconfig\fR
+ Don't verify config files.
+ .TP
++\fB--noghost\fR
++Don't display ghost files.
++.TP
+ \fB--noscripts\fR
+ Don't execute the \fB%verifyscript\fR scriptlet (if any).
+ .TP
+--- rpm-4.11.3/lib/poptQV.c.old	2018-05-10 12:29:26.716304826 +0200
++++ rpm-4.11.3/lib/poptQV.c	2018-05-11 14:08:36.389255974 +0200
+@@ -182,7 +182,7 @@
+ 	N_("list files in package"), NULL },
+ 
+  /* Duplicate file attr flags from packages into command line options. */
+- { "noghost", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
++ { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
+         N_("skip %%ghost files"), NULL },
+  { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+--- rpm-4.11.3/lib/verify.c.old	2018-05-10 12:29:26.715304826 +0200
++++ rpm-4.11.3/lib/verify.c	2018-05-11 14:17:16.474959233 +0200
+@@ -453,6 +453,11 @@
+ 	    rpmlog(RPMLOG_NOTICE, "%s\n", buf);
+ 	    buf = _free(buf);
+ 	}
++	
++	/* Filter out missing %ghost/%missingok errors from final result */
++	if (fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST))
++	    verifyResult &= ~RPMVERIFY_LSTATFAIL;
++
+     }
+     rpmfiFree(fi);
+ 	

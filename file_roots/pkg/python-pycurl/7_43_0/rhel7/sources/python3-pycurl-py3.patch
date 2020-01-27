@@ -1,0 +1,59 @@
+diff -up pycurl-7.43.0/Makefile.py3 pycurl-7.43.0/Makefile
+--- pycurl-7.43.0/Makefile.py3	2016-01-31 22:14:18.000000000 -0700
++++ pycurl-7.43.0/Makefile	2016-11-08 11:48:47.501887014 -0700
+@@ -7,6 +7,7 @@ SHELL = /bin/sh
+ 
+ PYTHON = python
+ NOSETESTS = nosetests
++PYFLAKES = pyflakes
+ 
+ # -c on linux
+ # freebsd does not understand -c
+@@ -98,7 +99,7 @@ do-test:
+ 	cd tests/fake-curl/libcurl && make
+ 	./tests/run.sh
+ 	./tests/ext/test-suite.sh
+-	pyflakes python examples tests setup.py winbuild.py
++	$(PYFLAKES) python examples tests setup.py winbuild.py
+ 
+ test: build do-test
+ test-release: build-release do-test
+diff -up pycurl-7.43.0/tests/ext/test-suite.sh.py3 pycurl-7.43.0/tests/ext/test-suite.sh
+--- pycurl-7.43.0/tests/ext/test-suite.sh.py3	2016-01-23 18:01:09.000000000 -0700
++++ pycurl-7.43.0/tests/ext/test-suite.sh	2016-11-16 11:43:15.532029371 -0700
+@@ -6,22 +6,24 @@ export PATH="$(pwd)/tests/bin":$PATH
+ 
+ . "$dir"/test-lib.sh
+ 
++[ -z "$PYTHON" ] && PYTHON=python
++
+ setup
+ 
+-desc 'setup.py without arguments'
+-fails 'python setup.py'
+-succeeds 'python setup.py 2>&1 |grep "usage: setup.py"'
++desc "setup.py without arguments"
++fails "$PYTHON setup.py"
++succeeds "$PYTHON setup.py 2>&1 |grep 'usage: setup.py'"
+ 
+-desc 'setup.py --help'
+-succeeds 'python setup.py --help'
++desc "setup.py --help"
++succeeds "$PYTHON setup.py --help"
+ # .* = Unix|Windows
+-succeeds 'python setup.py --help |grep "PycURL .* options:"'
++succeeds "$PYTHON setup.py --help |grep 'PycURL .* options:'"
+ # distutils help
+-succeeds 'python setup.py --help |grep "Common commands:"'
++succeeds "$PYTHON setup.py --help |grep 'Common commands:'"
+ 
+-desc 'setup.py --help with bogus --curl-config'
+-succeeds 'python setup.py --help --curl-config=/dev/null'
+-succeeds 'python setup.py --help --curl-config=/dev/null |grep "PycURL .* options:"'
++desc "setup.py --help with bogus --curl-config"
++succeeds "$PYTHON setup.py --help --curl-config=/dev/null"
++succeeds "$PYTHON setup.py --help --curl-config=/dev/null |grep 'PycURL .* options:'"
+ # this checks that --curl-config is consumed prior to
+ # distutils processing --help
+-fails 'python setup.py --help --curl-config=/dev/null 2>&1 |grep "option .* not recognized"'
++fails "$PYTHON setup.py --help --curl-config=/dev/null 2>&1 |grep 'option .* not recognized'"

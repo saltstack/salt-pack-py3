@@ -1,0 +1,56 @@
+From 5b4805df2085b0e7c4f09caad62638c3238b3bc1 Mon Sep 17 00:00:00 2001
+From: Florian Festi <ffesti@redhat.com>
+Date: Tue, 30 Jun 2015 11:39:21 +0200
+Subject: [PATCH] Fix stripping of binaries for changed file output.
+
+file will print a "warning" that it only processed up to 256 notes.
+
+ - Related: 659614aeb6fffe3b249c12b442bd85129100f73b
+ - Related: http://rpm.org/ticket/887
+ - Related: rhbz#1206312
+---
+ scripts/brp-strip              | 2 +-
+ scripts/brp-strip-comment-note | 2 +-
+ scripts/brp-strip-shared       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/brp-strip b/scripts/brp-strip
+index 2e99d1e..5e64566 100755
+--- a/scripts/brp-strip
++++ b/scripts/brp-strip
+@@ -15,6 +15,6 @@ esac
+ for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
+         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
+ 	grep -v ' shared object,' | \
+-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
++	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p'`; do
+ 	$STRIP -g "$f" || :
+ done
+diff --git a/scripts/brp-strip-comment-note b/scripts/brp-strip-comment-note
+index 323c041..833ac78 100755
+--- a/scripts/brp-strip-comment-note
++++ b/scripts/brp-strip-comment-note
+@@ -16,7 +16,7 @@ esac
+ # for already stripped elf files in the build root
+ for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
+         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
+-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, stripped/\1/p'`; do
++	sed -n -e 's/^\(.*\):[ 	]*ELF.*, stripped.*/\1/p'`; do
+ 	note="-R .note"
+ 	if $OBJDUMP -h $f | grep '^[ 	]*[0-9]*[ 	]*.note[ 	]' -A 1 | \
+ 		grep ALLOC >/dev/null; then
+diff --git a/scripts/brp-strip-shared b/scripts/brp-strip-shared
+index e06ee4b..51d10d5 100644
+--- a/scripts/brp-strip-shared
++++ b/scripts/brp-strip-shared
+@@ -20,6 +20,6 @@ esac
+ for f in `find "$RPM_BUILD_ROOT" -type f -a -exec file {} \; | \
+         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
+ 	grep ' shared object,' | \
+-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
++	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p'`; do
+ 	$STRIP --strip-unneeded "$f"
+ done
+-- 
+2.1.0
+
