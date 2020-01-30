@@ -51,7 +51,7 @@ include:
     - pkg.python-pytz.2018_5.amzn2
     - pkg.python-pyzmq.17_0_0.amzn2
     - pkg.python-requests.2_19_1.amzn2
-    - pkg.python-rpm.4_11_3.amzn2
+##    - pkg.python-rpm.4_11_3.amzn2
     - pkg.python-setuptools_scm.3_1_0.amzn2
     - pkg.python-simplejson.3_16_0.amzn2
     - pkg.python-singledispatch.3_4_0_3.amzn2

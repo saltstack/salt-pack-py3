@@ -48,7 +48,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-## Patch0:  salt-py3-3000.0.0-tornado4.patch
+## Patch0:  salt-3000-async.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -329,7 +329,7 @@ Supports Python 2.
 ## %%autosetup
 %setup -q -c
 cd %{name}-%{version}
- ## %%patch0 -p1
+## %%patch0 -p1
 
 
 %build
