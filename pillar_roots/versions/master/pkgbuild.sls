@@ -574,8 +574,8 @@ pkgbuild_registry:
         - python-jinja2
         - python-requests
         - python-pyroute2
-        - python-rpm
         - python-six
+##        - python-rpm
       results:
         - mock
         - mock-lvm
