@@ -212,9 +212,9 @@ Supports Python 3.
 ## %%autosetup
 %setup -c
 cd %{name}-%{version}
-%if 0%{?rhel} > 7
-%patch0 -p1
-%endif
+## %%if 0%%{?rhel} > 7
+## %%patch0 -p1
+## %%endif
 %patch1 -p1
 
 %if %{with python3}
