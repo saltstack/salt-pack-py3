@@ -160,6 +160,15 @@ pkgbuild_registry:
         - python-mock
       results:
         - python3-cherrypy
+    python-crypto:
+      version: 2.6.1-26
+      build_deps:
+        - libtommath
+        - libtomcrypt
+        - libtomcrypt-devel
+        - python3
+      results:
+        - python3-crypto
     python-distro:
       version: 1.2.0-4
       noarch: True
