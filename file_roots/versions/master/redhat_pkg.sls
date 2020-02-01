@@ -16,6 +16,7 @@ include:
     - pkg.mock.1_4_15.rhel8                 ## B
     - pkg.mock-core-configs.30_3.rhel8      ## B
     - pkg.python36.3_6_8.rhel7
+    - pkg.python-crypto.2_6_1.rhel8         ## here for requirements crypto.txt
     - pkg.python-cherrypy.5_6_0.rhel8       ## B
     - pkg.python-distro.1_2_0.rhel8         ## B
     - pkg.python-funcsigs.1_0_2.rhel8       ## B
