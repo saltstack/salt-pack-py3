@@ -11,6 +11,8 @@ include:
     - pkg.Cython.0_29_6.rhel8               ## B
     - pkg.distribution-gpg-keys.1_30.rhel8  ## B
     - pkg.libsodium.1_0_17.rhel8            ## B EPEL-7 libsodium-1.0.17-1.el7
+    - pkg.libtomcrypt.1_17.rhel8            ## extras   1.17-26.el7
+    - pkg.libtommath.0_42_0.rhel8           ## extras   0.42.0-6.el7
     - pkg.libunwind.1_3_1.rhel8             ## B
     - pkg.openpgm.5_2_122.rhel8             ## B EPEL-7 openpgm-5.2.122--2.el7
     - pkg.mock.1_4_15.rhel8                 ## B
@@ -38,6 +40,8 @@ include:
 {% elif buildcfg.build_release == 'rhel7' %}
 
     - pkg.libsodium.1_0_18.rhel7            ##   EPEL libsodium-1.0.18-1.el7
+    - pkg.libtomcrypt.1_17.rhel7            ## extras   1.17-26.el7
+    - pkg.libtommath.0_42_0.rhel7           ## extras   0.42.0-6.el7
     - pkg.openpgm.5_2_122.rhel7             ##   EPEL openpgm-5.2.122-2.el7
     - pkg.python36.3_6_8.rhel7
     - pkg.python-bottle.0_12_13.rhel7       ##   EPEL python36-bottle.0.12.13-3
