@@ -115,16 +115,6 @@ pkgbuild_registry:
       results:
         - libsodium
         - libsodium-devel
-    libtomcrypt:
-      version: 1.17-23
-      results:
-        - libtomcrypt
-        - libtomcrypt-devel
-    libtommath:
-      version: 0.42.0-4
-      results:
-        - libtommath
-        - libtommath-devel
     libunwind:
       version: 1.3.1-2
       results:
@@ -160,15 +150,6 @@ pkgbuild_registry:
         - python-mock
       results:
         - python3-cherrypy
-    python-crypto:
-      version: 2.6.1-26
-      build_deps:
-        - libtommath
-        - libtomcrypt
-        - libtomcrypt-devel
-        - python3
-      results:
-        - python3-crypto
     python-distro:
       version: 1.2.0-4
       noarch: True
@@ -529,7 +510,6 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
-        - python-tornado
         - python-libcloud
         - python-mock
         - python-six
@@ -986,7 +966,6 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
-        - python-tornado4
         - python-futures
         - python-libcloud
         - python-mock

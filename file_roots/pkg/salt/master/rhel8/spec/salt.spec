@@ -13,13 +13,13 @@
 %endif
 
 # Release Candidate
-%define __rc_ver tobereplaced_date
+%define __rc_ver %{nil}
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: master%{?__rc_ver}
-Release: 0%{?dist}
+Version: 3000%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -51,6 +51,7 @@ Source21: salt-syndic.fish
 ## Patch0:  salt-py3-2019.2.2-tornado4.patch
 ## %%endif
 Patch1:  salt-py3-2019.2.1-rpmsign.patch
+Patch2: salt-m2_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -96,7 +97,7 @@ Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 
 ## for dump requirements file
-Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+## Requires: python%{python3_pkgversion}-crypto >= 2.6.1
 
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 
@@ -218,6 +219,7 @@ cd %{name}-%{version}
 ## %%patch0 -p1
 ## %%endif
 %patch1 -p1
+%patch2 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -513,6 +515,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
+- Update to feature release 3000-1  for Python 3
+
 ## - Removed Torando since salt.ext.tornado, add dependencies for Tornado
 
 * Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
