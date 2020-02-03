@@ -88,9 +88,11 @@ BuildRequires: python%{python3_pkgversion}-pyyaml
 BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
-Requires: python%{python3_pkgversion}-msgpack >= 0.4
+Requires: python%{python3_pkgversion}-msgpack >= 0.6
 
-## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
+## for dump requirements file
+Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 
 Requires: python%{python3_pkgversion}-requests
@@ -499,7 +501,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Sat Feb 01 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
+* Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
 - Update to feature release 3000-1  for Python 3
 
 ## - Removed Torando since salt.ext.tornado, add dependencies for Tornado

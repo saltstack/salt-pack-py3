@@ -115,16 +115,6 @@ pkgbuild_registry:
       results:
         - libsodium
         - libsodium-devel
-    libtomcrypt:
-      version: 1.17-23
-      results:
-        - libtomcrypt
-        - libtomcrypt-devel
-    libtommath:
-      version: 0.42.0-4
-      results:
-        - libtommath
-        - libtommath-devel
     libunwind:
       version: 1.3.1-2
       results:

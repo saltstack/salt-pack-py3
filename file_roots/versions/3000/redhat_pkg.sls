@@ -16,7 +16,7 @@ include:
     - pkg.mock.1_4_15.rhel8                 ## B
     - pkg.mock-core-configs.30_3.rhel8      ## B
     - pkg.python36.3_6_8.rhel7
-    - pkg.python-crypto.2_6_1.rhel8         ## here for requirements crypto.txt
+##    - pkg.python-crypto.2_6_1.rhel8         ## here for requirements crypto.txt
     - pkg.python-cherrypy.5_6_0.rhel8       ## B
     - pkg.python-distro.1_2_0.rhel8         ## B
     - pkg.python-funcsigs.1_0_2.rhel8       ## B
@@ -38,6 +38,8 @@ include:
 {% elif buildcfg.build_release == 'rhel7' %}
 
     - pkg.libsodium.1_0_18.rhel7            ##   EPEL libsodium-1.0.18-1.el7
+    - pkg.libtomcrypt.1_17.rhel7            ## extras   1.17-26.el7
+    - pkg.libtommath.0_42_0.rhel7           ## extras   0.42.0-6.el7
     - pkg.openpgm.5_2_122.rhel7             ##   EPEL openpgm-5.2.122-2.el7
     - pkg.python36.3_6_8.rhel7
     - pkg.python-bottle.0_12_13.rhel7       ##   EPEL python36-bottle.0.12.13-3
