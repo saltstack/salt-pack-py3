@@ -400,7 +400,7 @@ pkgbuild_registry:
       results:
         - python36-markupsafe
     python-msgpack:
-      version: 0.5.6-6
+      version: 0.6.2-2
       build_deps:
         - python36
       results:
@@ -748,7 +748,7 @@ pkgbuild_registry:
       results:
         - python3-more-itertools
     python-msgpack:
-      version: 0.5.6-7
+      version: 0.6.2-2
       build_deps:
         - python-funcsigs
       results:
