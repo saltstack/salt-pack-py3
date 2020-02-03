@@ -88,7 +88,7 @@ BuildRequires: python%{python3_pkgversion}-pyyaml
 BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
-Requires: python%{python3_pkgversion}-msgpack >= 0.4
+Requires: python%{python3_pkgversion}-msgpack >= 0.6
 
 ## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
