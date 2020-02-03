@@ -2,8 +2,8 @@
 %global sum A Python MessagePack (de)serializer
 
 
-%bcond_without python2
-%bcond_with python3
+%bcond_with python2
+%bcond_without python3
 %bcond_with tests
 
 %if %{with python2}
