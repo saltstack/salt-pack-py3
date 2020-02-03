@@ -90,7 +90,9 @@ BuildRequires: git
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.6
 
-## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
+## for dump requirements file
+Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 
 Requires: python%{python3_pkgversion}-requests
