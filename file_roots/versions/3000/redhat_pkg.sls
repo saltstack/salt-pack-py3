@@ -16,6 +16,7 @@ include:
     - pkg.mock.1_4_15.rhel8                 ## B
     - pkg.mock-core-configs.30_3.rhel8      ## B
     - pkg.python36.3_6_8.rhel7
+    - pkg.python-crypto.2_6_1.rhel8         ## here for requirements crypto.txt
     - pkg.python-cherrypy.5_6_0.rhel8       ## B
     - pkg.python-distro.1_2_0.rhel8         ## B
     - pkg.python-funcsigs.1_0_2.rhel8       ## B
@@ -49,7 +50,7 @@ include:
     - pkg.python-libcloud.2_0_0.rhel7       ## B
     - pkg.python-m2crypto.0_33_0.rhel7      ## B
     - pkg.python-markupsafe.0_23.rhel7      ## EPEL python36-markupsafe-0.23-3.el7
-    - pkg.python-msgpack.0_5_6.rhel7        ##   EPEL python36-msgpack 0.5.6-5.el7
+    - pkg.python-msgpack.0_6_2.rhel7        ##   EPEL python36-msgpack 0.5.6-5.el7
     - pkg.python-mock.2_0_0.rhel7           ##   EPEL python36-mock-2.0.0-2.el7
     - pkg.python-pycryptodomex.3_7_3.rhel7  ##   EPEL python36-pycryptodomex-3.7.3-2
     - pkg.python-psutil.2_2_1.rhel7         ##   EPEL python36-psutil 2.2.1-5.el7
