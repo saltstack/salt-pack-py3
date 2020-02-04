@@ -30,7 +30,9 @@ build_additional_pkgs:
       - python-gnupg
       - python-sphinx
       - python-setuptools-git
-
+      - python-nose
+      - python-pytes
+      - cython
 
 {%- if build_cfg.build_py3 %}
 build_additional_py3_pkgs:
@@ -48,6 +50,8 @@ build_additional_py3_pkgs:
       - python3-debian
       - python3-gnupg
       - apt-utils
+      - python3-nose
+      - python3-pytest
     - require:
       - pkg: build_additional_pkgs
 {%- endif %}

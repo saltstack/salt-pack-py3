@@ -8,6 +8,7 @@ include:
 {% elif buildcfg.build_release == 'debian9' %}
 
     - pkg.python-jinja2.2_9_4.debian9
+    - pkg.python-msgpack.0_6_2.debian9
     - pkg.salt.master.debian9
 
 {% endif %}
