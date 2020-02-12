@@ -49,6 +49,7 @@
 
 {% set gpg_agent_script_text = '#!/bin/sh
         gpgconf --launch gpg-agent
+        sleep 5
         GPG_TTY=/dev/pts/0
         export GPG_TTY
         echo "GPG_TTY=/dev/pts/0" > ' ~ gpg_tty_info ~ '

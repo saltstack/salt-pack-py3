@@ -115,16 +115,6 @@ pkgbuild_registry:
       results:
         - libsodium
         - libsodium-devel
-    libtomcrypt:
-      version: 1.17-23
-      results:
-        - libtomcrypt
-        - libtomcrypt-devel
-    libtommath:
-      version: 0.42.0-4
-      results:
-        - libtommath
-        - libtommath-devel
     libunwind:
       version: 1.3.1-2
       results:
@@ -391,7 +381,7 @@ pkgbuild_registry:
       results:
         - python36-markupsafe
     python-msgpack:
-      version: 0.5.6-6
+      version: 0.6.2-2
       build_deps:
         - python36
       results:
@@ -520,7 +510,6 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
-        - python-tornado
         - python-libcloud
         - python-mock
         - python-six
@@ -574,8 +563,8 @@ pkgbuild_registry:
         - python-jinja2
         - python-requests
         - python-pyroute2
-        - python-rpm
         - python-six
+##        - python-rpm
       results:
         - mock
         - mock-lvm
@@ -739,7 +728,7 @@ pkgbuild_registry:
       results:
         - python3-more-itertools
     python-msgpack:
-      version: 0.5.6-7
+      version: 0.6.2-2
       build_deps:
         - python-funcsigs
       results:
@@ -977,7 +966,6 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
-        - python-tornado4
         - python-futures
         - python-libcloud
         - python-mock

@@ -48,7 +48,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-Patch0:  salt-py3-3000.0.0-tornado4.patch
+## Patch0:  salt-3000-async.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -88,18 +88,21 @@ BuildRequires: git
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 
+## Tornado removed in Neon
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1
 
-%if 0%{?with_amzn2}
-Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
+## %%if 0%%{?with_amzn2}
+## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
+## ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
+## %%else
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
-%else
-Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
-%endif
+## %%endif
+Requires: python%{python3_pkgversion}-pycurl
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
@@ -327,7 +330,7 @@ Supports Python 2.
 ## %%autosetup
 %setup -q -c
 cd %{name}-%{version}
- ## %%patch0 -p1
+## %%patch0 -p1
 
 
 %build
@@ -797,6 +800,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+## - Removed Torando since salt.ext.tornado, add dependencies for Tornado
+
 * Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
 - Update to Neon Release Candidate 2 for Python 3
 - Updated spec file to not use py3_build  due to '-s' preventing pip installs
