@@ -1,0 +1,6 @@
+diff -Naur a/requirements/crypto.txt b/requirements/crypto.txt
+--- a/requirements/crypto.txt	2020-02-03 21:33:35.989983615 +0000
++++ b/requirements/crypto.txt	2020-02-03 21:33:57.651350234 +0000
+@@ -1,2 +1 @@
+-pycrypto>=2.6.1; sys.platform not in 'win32,darwin'
+ pycryptodomex; sys.platform == 'win32'
