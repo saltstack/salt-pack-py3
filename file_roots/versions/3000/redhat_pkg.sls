@@ -9,12 +9,12 @@ include:
 {% if buildcfg.build_release == 'rhel8' %}
 
     - pkg.Cython.0_29_6.rhel8               ## B
-    - pkg.distribution-gpg-keys.1_30.rhel8  ## B
+##    - pkg.distribution-gpg-keys.1_30.rhel8  ## B
     - pkg.libsodium.1_0_17.rhel8            ## B EPEL-7 libsodium-1.0.17-1.el7
     - pkg.libunwind.1_3_1.rhel8             ## B
     - pkg.openpgm.5_2_122.rhel8             ## B EPEL-7 openpgm-5.2.122--2.el7
-    - pkg.mock.1_4_15.rhel8                 ## B
-    - pkg.mock-core-configs.30_3.rhel8      ## B
+##    - pkg.mock.1_4_15.rhel8                 ## B
+##    - pkg.mock-core-configs.30_3.rhel8      ## B
     - pkg.python36.3_6_8.rhel7
 ##    - pkg.python-crypto.2_6_1.rhel8         ## here for requirements crypto.txt
     - pkg.python-cherrypy.5_6_0.rhel8       ## B
