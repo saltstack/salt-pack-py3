@@ -43,7 +43,7 @@ with the PyCrypto library.
 
 Name:           python-%{srcname}
 Version:        3.7.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A self-contained cryptographic library for Python
 
 # PyCrypto-based code is public domain, further PyCryptodome contributions are
@@ -206,7 +206,7 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_other_sitearch}/Cryptodome/SelfTest/PublicKe
 %doc AUTHORS.rst Changelog.rst README.rst
 %license LICENSE.rst
 %{python2_sitearch}/Cryptodome/
-%{python2_sitearch}/%{srcname}-*.egg-info/
+%{python2_sitearch}/%{srcname}-*.egg-info
 %if %{with docs}
 %{_mandir}/man1/pycryptodome.1.*
 %endif
@@ -218,7 +218,7 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_other_sitearch}/Cryptodome/SelfTest/PublicKe
 %doc AUTHORS.rst Changelog.rst README.rst
 %license LICENSE.rst
 %{python3_sitearch}/Cryptodome/
-%{python3_sitearch}/%{srcname}-*.egg-info/
+%{python3_sitearch}/%{srcname}-*.egg-info
 %if %{with docs}
 %{_mandir}/man1/pycryptodome.1.*
 %endif
@@ -228,7 +228,7 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_other_sitearch}/Cryptodome/SelfTest/PublicKe
 %doc AUTHORS.rst Changelog.rst README.rst
 %license LICENSE.rst
 %{python3_other_sitearch}/Cryptodome/
-%{python3_other_sitearch}/%{srcname}-*.egg-info/
+%{python3_other_sitearch}/%{srcname}-*.egg-info
 %if %{with docs}
 %{_mandir}/man1/pycryptodome.1.*
 %endif
@@ -237,6 +237,9 @@ chmod 0755 $RPM_BUILD_ROOT%{python3_other_sitearch}/Cryptodome/SelfTest/PublicKe
 
 
 %changelog
+* Tue Mar 24 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3.7.3-4
+- Fix build issue with egg.info path
+
 * Sun Sep 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.7.3-3
 - Made support for Python 2, test and docs optional
 
