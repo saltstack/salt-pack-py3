@@ -206,7 +206,7 @@ pkgbuild_registry:
       results:
         - python3-psutil
     python-pycryptodome:
-      version: 3.6.1-3
+      version: 3.6.1-4
       results:
         - python3-pycryptodomex
     python-pyroute2:
@@ -409,7 +409,7 @@ pkgbuild_registry:
       results:
         - python36-psutil
     python-pycryptodomex:
-      version: 3.7.3-3
+      version: 3.7.3-4
       build_deps:
         - libtommath
         - libtomcrypt
