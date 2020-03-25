@@ -15,10 +15,10 @@ Package-List:
  python3-msgpack deb python optional arch=any
 Checksums-Sha1:
  ea2251da90aca5da8c5b787ffd501699b97ebc37 123548 msgpack-python_0.6.2.orig.tar.gz
- 0ee6e399457c4d09ce70b0762920998dd6bcf25b 3292 msgpack-python_0.6.2-1.debian.tar.xz
+ f95a0b9f62fafea4b6aa17f7ec83cf025e8ae7b5 3288 msgpack-python_0.6.2-1.debian.tar.xz
 Checksums-Sha256:
  cdfe0c1547807fb9b4bd66075c892bb4d145b33e6c30d15dd349cc8973917b5c 123548 msgpack-python_0.6.2.orig.tar.gz
- 5af0af4ab3298b3325b50ec20325042279b67123071bd01b924c8816fdadba61 3292 msgpack-python_0.6.2-1.debian.tar.xz
+ 4930c9faaacad5ad607205f86d898eb3d1731c5db2c3f61d188666ee1c7fc202 3288 msgpack-python_0.6.2-1.debian.tar.xz
 Files:
  bf621cd80adbac9a97454d0617796e51 123548 msgpack-python_0.6.2.orig.tar.gz
- f2f9d2da1899ed1163367d857aedd6a3 3292 msgpack-python_0.6.2-1.debian.tar.xz
+ 3e9d453a13bb44dd5f45eebe51f0ea07 3288 msgpack-python_0.6.2-1.debian.tar.xz
