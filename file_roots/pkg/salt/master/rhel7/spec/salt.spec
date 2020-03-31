@@ -497,7 +497,12 @@ rm -rf %{buildroot}
 
 
 %changelog
-## - Removed Torando since salt.ext.tornado, add dependencies for Tornado
+* Mon Mar 30 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000.1-1
+- Update to feature release 3000.1-1  for Python 3
+
+* Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
+- Update to feature release 3000-1  for Python 3
+- Removed Torando since salt.ext.tornado, add dependencies for Tornado
 
 * Tue Jan 21 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
 - Update to Neon Release Candidate 2 for Python 3
