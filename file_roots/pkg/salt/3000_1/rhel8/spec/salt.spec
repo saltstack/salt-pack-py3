@@ -18,7 +18,7 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: 3000%{?__rc_ver}
+Version: 3000.1%{?__rc_ver}
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
@@ -97,7 +97,7 @@ Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 
 ## for dump requirements file
-## Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
 
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 
