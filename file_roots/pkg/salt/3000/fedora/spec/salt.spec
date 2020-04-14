@@ -64,12 +64,7 @@ Requires: dmidecode
 
 Requires: pciutils
 Requires: which
-
-%if 0%{?fedora} >= 26
 Requires: dnf-utils
-%else
-Requires: yum-utils
-%endif
 
 
 %if 0%{?systemd_preun:1}
@@ -79,6 +74,7 @@ Requires(postun): systemd-units
 %endif
 
 BuildRequires: systemd-units
+Requires:      python%{python3_pkgversion}-systemd
 
 
 %if %{with python3}
@@ -183,11 +179,7 @@ Supports Python 3.
 Summary:    REST API for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-%if ( "%{python3_pkgversion}" < "35" )
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2, python%{python3_pkgversion}-cherrypy < 18.0.0
-%else
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
-%endif
+Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
