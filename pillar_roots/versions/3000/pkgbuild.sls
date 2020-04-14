@@ -432,6 +432,14 @@ pkgbuild_registry:
         - python-bottle
       results:
         - python36-pycurl
+    python-pyOpenSSL:
+      version: 17.3.0-2
+      noarch: True
+      build_deps:
+        - python36
+        - python-setuptools
+      results:
+        - python36-pyOpenSSL
     python-pysocks:
       version: 1.6.8-6
       noarch: True
@@ -738,7 +746,7 @@ pkgbuild_registry:
       results:
         - python3-more-itertools
     python-msgpack:
-      version: 0.6.2-2
+      version: 0.5.6-7
       build_deps:
         - python-funcsigs
       results:

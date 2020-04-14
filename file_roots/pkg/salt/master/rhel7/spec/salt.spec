@@ -169,11 +169,7 @@ Supports Python 3.
 Summary:    REST API for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-%if ( "%{python3_pkgversion}" < "35" )
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2, python%{python3_pkgversion}-cherrypy < 18.0.0
-%else
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
-%endif
+Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
@@ -501,7 +497,12 @@ rm -rf %{buildroot}
 
 
 %changelog
-## - Removed Torando since salt.ext.tornado, add dependencies for Tornado
+* Mon Mar 30 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000.1-1
+- Update to feature release 3000.1-1  for Python 3
+
+* Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
+- Update to feature release 3000-1  for Python 3
+- Removed Torando since salt.ext.tornado, add dependencies for Tornado
 
 * Tue Jan 21 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
 - Update to Neon Release Candidate 2 for Python 3

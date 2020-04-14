@@ -31,7 +31,7 @@ build_additional_pkgs:
       - python-sphinx
       - python-setuptools-git
       - python-nose
-      - python-pytes
+      - python-pytest
       - cython
 
 {%- if build_cfg.build_py3 %}

@@ -9,12 +9,12 @@ include:
 {% if buildcfg.build_release == 'rhel8' %}
 
     - pkg.Cython.0_29_6.rhel8               ## B
-    - pkg.distribution-gpg-keys.1_30.rhel8  ## B
+##    - pkg.distribution-gpg-keys.1_30.rhel8  ## B
     - pkg.libsodium.1_0_17.rhel8            ## B EPEL-7 libsodium-1.0.17-1.el7
     - pkg.libunwind.1_3_1.rhel8             ## B
     - pkg.openpgm.5_2_122.rhel8             ## B EPEL-7 openpgm-5.2.122--2.el7
-    - pkg.mock.1_4_15.rhel8                 ## B
-    - pkg.mock-core-configs.30_3.rhel8      ## B
+##    - pkg.mock.1_4_15.rhel8                 ## B
+##    - pkg.mock-core-configs.30_3.rhel8      ## B
     - pkg.python36.3_6_8.rhel7
 ##    - pkg.python-crypto.2_6_1.rhel8         ## here for requirements crypto.txt
     - pkg.python-cherrypy.5_6_0.rhel8       ## B
@@ -58,6 +58,7 @@ include:
     - pkg.python-psutil.2_2_1.rhel7         ##   EPEL python36-psutil 2.2.1-5.el7
     - pkg.python-pbr.4_2_0.rhel7            ## EPEL python36-pbr.4.2.0-2.el7
     - pkg.python-pycurl.7_43_0.rhel7        ## EPEL python36-pycurl.7.43.0-7
+    - pkg.python-pyOpenSSL.17_3_0.rhel7     ## EPEL python36-pyOpenSSL.17.3.0-1
     - pkg.python-pysocks.1_6_8.rhel7        ## EPEL python36-pysocks.1.6.8-6.el7
     - pkg.python-pyzmq.15_3_0.rhel7         ## B
     - pkg.python-requests.2_12_5.rhel7      ## EPEL python36-requests.2.12.5-3.el7

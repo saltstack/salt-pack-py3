@@ -57,6 +57,7 @@ include:
     - pkg.python-psutil.2_2_1.rhel7         ##   EPEL python36-psutil 2.2.1-5.el7
     - pkg.python-pbr.4_2_0.rhel7            ## EPEL python36-pbr.4.2.0-2.el7
     - pkg.python-pycurl.7_43_0.rhel7        ## EPEL python36-pycurl.7.43.0-7
+    - pkg.python-pyOpenSSL.17_3_0.rhel7     ## EPEL python36-pyOpenSSL.17.3.0-1
     - pkg.python-pysocks.1_6_8.rhel7        ## EPEL python36-pysocks.1.6.8-6.el7
     - pkg.python-pyzmq.15_3_0.rhel7         ## B
     - pkg.python-requests.2_12_5.rhel7      ## EPEL python36-requests.2.12.5-3.el7

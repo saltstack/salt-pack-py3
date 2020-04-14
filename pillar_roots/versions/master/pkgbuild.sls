@@ -206,7 +206,7 @@ pkgbuild_registry:
       results:
         - python3-psutil
     python-pycryptodome:
-      version: 3.6.1-3
+      version: 3.6.1-4
       results:
         - python3-pycryptodomex
     python-pyroute2:
@@ -409,7 +409,7 @@ pkgbuild_registry:
       results:
         - python36-psutil
     python-pycryptodomex:
-      version: 3.7.3-3
+      version: 3.7.3-4
       build_deps:
         - libtommath
         - libtomcrypt
@@ -423,6 +423,14 @@ pkgbuild_registry:
         - python-bottle
       results:
         - python36-pycurl
+    python-pyOpenSSL:
+      version: 17.3.0-2
+      noarch: True
+      build_deps:
+        - python36
+        - python-setuptools
+      results:
+        - python36-pyOpenSSL
     python-pysocks:
       version: 1.6.8-6
       noarch: True
