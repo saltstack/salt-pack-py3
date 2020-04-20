@@ -736,7 +736,7 @@ pkgbuild_registry:
       results:
         - python3-more-itertools
     python-msgpack:
-      version: 0.6.2-2
+      version: 0.5.6-7
       build_deps:
         - python-funcsigs
       results:
