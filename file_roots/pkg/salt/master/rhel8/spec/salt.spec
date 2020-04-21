@@ -18,8 +18,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: 3000%{?__rc_ver}
-Release: 1%{?dist}
+Version: master%{?__rc_ver}
+Release: 0%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
