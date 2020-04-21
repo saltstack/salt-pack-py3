@@ -12,8 +12,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: master%{?__rc_ver}
-Release: 0%{?dist}
+Version: 2019.2.1%{?__rc_ver}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 License: ASL 2.0
@@ -180,11 +180,7 @@ cp -a . %{py3dir}
 
 %build
 pushd %{py3dir}
-## %%py3_build
-## py3_shbang_opts is '-s' and causing issues with pip install
-## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
-CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3}" %{?*}
-sleep 1
+%py3_build
 popd
 
 
@@ -461,8 +457,6 @@ rm -rf %{buildroot}
 
 
 %changelog
-## - Update to Neon naming
-
 * Fri Aug 30 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.1rc0-3
 - Fixed tornado requirement
 

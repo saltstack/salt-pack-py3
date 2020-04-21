@@ -88,24 +88,20 @@ BuildRequires: python%{python3_pkgversion}-pyyaml
 BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
-Requires: python%{python3_pkgversion}-msgpack >= 0.6
+Requires: python%{python3_pkgversion}-msgpack >= 0.4
 
-## for dump requirements file
-Requires: python%{python3_pkgversion}-crypto >= 2.6.1
-
+## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 
-## Tornado removed in Neon, hence need its BuildRequires
-## %%if 0%%{?rhel} == 7
-## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
-## %%else
-## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
-## %%endif
-Requires: python%{python3_pkgversion}-pycurl
+%if 0%{?rhel} == 7
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
+%else
+Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
+%endif
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
@@ -169,7 +165,11 @@ Supports Python 3.
 Summary:    REST API for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
+%if ( "%{python3_pkgversion}" < "35" )
+Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2, python%{python3_pkgversion}-cherrypy < 18.0.0
+%else
+Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
+%endif
 
 %description api
 salt-api provides a REST interface to the Salt master.
@@ -212,11 +212,7 @@ cp -a . %{py3dir}
 %build
 %if %{with python3}
 pushd %{py3dir}
-## %%py3_build
-## py3_shbang_opts is '-s' and causing issues with pip install
-## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
-CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3}" %{?*}
-sleep 1
+%py3_build
 popd
 %endif
 
@@ -290,7 +286,7 @@ popd
 
 %if (%{with python2} && 0%{with tests})
 %check
-## cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+## cd $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}
 cd $RPM_BUILD_DIR/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
@@ -497,22 +493,11 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Mon Mar 30 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000.1-1
-- Update to feature release 3000.1-1  for Python 3
+* Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.4-1
+- Update to feature release 2019.2.4-1  for Python 3
 
-* Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
-- Update to feature release 3000-1  for Python 3
-- Removed Torando since salt.ext.tornado, add dependencies for Tornado
-
-* Tue Jan 21 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
-- Update to Neon Release Candidate 2 for Python 3
-- Updated spec file to not use py3_build  due to '-s' preventing pip installs
-
-* Wed Jan 08 2020 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.3-1
+* Wed Jan 08 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 2019.2.3-1
 - Update to feature release 2019.2.3-1  for Python 3
-
-* Tue Oct 15 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-1
-- Update to feature release 2019.2.2-1  for Python 3
 
 * Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
 - Update to feature release 2019.2.1-1  for Python 3

@@ -115,6 +115,16 @@ pkgbuild_registry:
       results:
         - libsodium
         - libsodium-devel
+    libtomcrypt:
+      version: 1.17-23
+      results:
+        - libtomcrypt
+        - libtomcrypt-devel
+    libtommath:
+      version: 0.42.0-4
+      results:
+        - libtommath
+        - libtommath-devel
     libunwind:
       version: 1.3.1-2
       results:
@@ -225,6 +235,11 @@ pkgbuild_registry:
       version: 3.16.0-3
       results:
         - python3-simplejson
+    python-timelib:
+      version: 0.2.4-4
+      noarch: True
+      results:
+        - python3-timelib
     python-tornado4:
       version: 4.5.2-3
       build_deps:
@@ -344,6 +359,13 @@ pkgbuild_registry:
       noarch: True
       results:
         - python36-idna
+    python-ioflo:
+      version: 1.3.8-5
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-ioflo
     python-jinja2:
       version: 2.8.1-3
       noarch: True
@@ -381,7 +403,7 @@ pkgbuild_registry:
       results:
         - python36-markupsafe
     python-msgpack:
-      version: 0.6.2-2
+      version: 0.5.6-6
       build_deps:
         - python36
       results:
@@ -446,6 +468,15 @@ pkgbuild_registry:
         - zeromq
       results:
         - python36-zmq
+    python-raet:
+      version: 0.6.6-7
+      noarch: True
+      build_deps:
+        - python36
+        - python-ioflo
+        - python-libnacl
+      results:
+        - python36-raet
     python-requests:
       version: 2.12.5-4
       noarch: True
@@ -476,6 +507,13 @@ pkgbuild_registry:
         - python36
       results:
         - python36-six
+    python-timelib:
+      version: 0.2.4-5
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-timelib
     python-tornado:
       version: 4.4.2-4
       build_deps:
@@ -518,6 +556,7 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
+        - python-tornado
         - python-libcloud
         - python-mock
         - python-six
@@ -899,6 +938,11 @@ pkgbuild_registry:
         - python-nose
       results:
         - python3-sure
+    python-timelib:
+      version: 0.2.4-5
+      noarch: True
+      results:
+        - python3-timelib
     python-tornado:
       version: 4.5.2-5
       build_deps:
@@ -974,6 +1018,7 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
+        - python-tornado4
         - python-futures
         - python-libcloud
         - python-mock

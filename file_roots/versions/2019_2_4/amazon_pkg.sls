@@ -1,5 +1,6 @@
 ## Amazon Python 3 support is only for Python 3 itself, this implies
 ## that all dependencies will need to be produced for Python 3.
+## Removed support for ioflo, raet, libnacl since deprecated
 
 {% import "setup/amazon/map.jinja" as buildcfg %}
 
@@ -51,15 +52,15 @@ include:
     - pkg.python-pytz.2018_5.amzn2
     - pkg.python-pyzmq.17_0_0.amzn2
     - pkg.python-requests.2_19_1.amzn2
-##    - pkg.python-rpm.4_11_3.amzn2
+    - pkg.python-rpm.4_11_3.amzn2
     - pkg.python-setuptools_scm.3_1_0.amzn2
     - pkg.python-simplejson.3_16_0.amzn2
     - pkg.python-singledispatch.3_4_0_3.amzn2
     - pkg.python-six.1_11_0.amzn2
     - pkg.python-sure.1_4_11.amzn2
-##   - pkg.python-tornado.4_5_2.amzn2    ## build and use this till salt updated
-##   - pkg.python-tornado4.4_5_2.amzn2    ## build and use this till salt updated
-##   - pkg.python-tornado.5_0_2.amzn2     ## latest 5.1.1
+    - pkg.python-tornado.4_5_2.amzn2    ## build and use this till salt updated
+##    - pkg.python-tornado4.4_5_2.amzn2    ## build and use this till salt updated
+##    - pkg.python-tornado.5_0_2.amzn2     ## latest 5.1.1
     - pkg.python-timelib.0_2_4.amzn2
     - pkg.python-typing.3_5_2_2.amzn2
     - pkg.python-unittest2.1_1_0.amzn2

@@ -48,7 +48,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-## Patch0:  salt-3000-async.patch
+Patch0:  salt-py3-2019.2.3-tornado4.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -88,21 +88,18 @@ BuildRequires: git
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-crypto >= 2.6.1
-Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 
-## Tornado removed in Neon
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1
 
-## %%if 0%%{?with_amzn2}
-## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
-## ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
-## %%else
+%if 0%{?with_amzn2}
+Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
-## %%endif
-Requires: python%{python3_pkgversion}-pycurl
+%else
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
+%endif
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
@@ -330,20 +327,15 @@ Supports Python 2.
 ## %%autosetup
 %setup -q -c
 cd %{name}-%{version}
-## %%patch0 -p1
+%patch0 -p1
 
 
 %build
 %if %{with python3}
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 ## %%py3_build
-## amzn2 has issue with %{py_setup} expansion
-## CFLAGS="%%{optflags}" %%{__python3} setup.py %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
-## %%py3_build
-## py3_shbang_opts is '-s' and causing issues with pip install
-## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
-CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3}" %{?*}
-sleep 1
+## amzn2 has issue with %%{py_setup} expansion
+CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
 sleep 1
 %endif
 
@@ -360,7 +352,7 @@ cd $RPM_BUILD_DIR/%{name}-%{version}
 ## Python 3
 ## rm -rf %%{buildroot}
 ## %%py3_install
-## amzn2 has issue with %{py_setup} expansion
+## amzn2 has issue with %%{py_setup} expansion
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
 
@@ -485,12 +477,12 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
-%endif  ## %if %{with python2}
+%endif  ## %%if %%{with python2}
 
 
 %if %{with tests}
 %check
-## cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+## cd $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}
 cd $RPM_BUILD_DIR/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
@@ -590,7 +582,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-## %%doc $RPM_BUILD_DIR/%{name}-%{version}/LICENSE
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/LICENSE
 
 %{python2_sitelib}/%{name}/*
 #%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
@@ -683,7 +675,7 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-ssh.1*
 %{_bindir}/salt-ssh
 %config(noreplace) %{_sysconfdir}/salt/roster
-%endif      ## %if %{with python2}
+%endif      ## %%if %%{with python2}
 
 
 # less than RHEL 8 / Fedora 16
@@ -800,21 +792,8 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Mon Apr 20 2020 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.4-1
-- Update to feature release 2019.2.4-1
-
-## - Removed Torando since salt.ext.tornado, add dependencies for Tornado
-
-* Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
-- Update to Neon Release Candidate 2 for Python 3
-- Updated spec file to not use py3_build  due to '-s' preventing pip installs
-- Updated patch file to support Tornado4
-
-* Wed Jan 08 2020 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.3-1
-- Update to feature release 2019.2.3-1  for Python 3
-
-* Wed Nov 20 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-2
-- Changed Tornado support back to regular tornado 4.5.2
+* Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.4-1
+- Update to feature release 2019.2.4-1  for Python 3
 
 * Wed Oct 16 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-1
 - Update to feature release 2019.2.2-1
