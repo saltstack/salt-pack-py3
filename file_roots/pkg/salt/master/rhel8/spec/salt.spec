@@ -13,7 +13,7 @@
 %endif
 
 # Release Candidate
-%define __rc_ver tobereplaced_date
+%define __rc_ver %{nil}
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
@@ -47,10 +47,11 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-%if 0%{?rhel} > 7
-Patch0:  salt-py3-2019.2.2-tornado4.patch
-%endif
+## %%if 0%%{?rhel} > 7
+## Patch0:  salt-py3-2019.2.2-tornado4.patch
+## %%endif
 Patch1:  salt-py3-2019.2.1-rpmsign.patch
+Patch2: salt-m2_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -95,18 +96,22 @@ BuildRequires: git
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 
+## for dump requirements file
 ## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
+
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
 
-%if 0%{?rhel} == 7
-Requires: python%{python3_pkgversion}-tornado >= 4.2.1, python%{python3_pkgversion}-tornado < 5.0
-%else
-Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1, python%{python3_pkgversion}-tornado4 < 5.0
-%endif
+## Tornado removed in Neon
+## %%if 0%%{?rhel} == 7
+## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
+## %%else
+## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
+## %%endif
+Requires: python%{python3_pkgversion}-pycurl
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
@@ -171,11 +176,7 @@ Supports Python 3.
 Summary:    REST API for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-%if ( "%{python3_pkgversion}" < "35" )
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2, python%{python3_pkgversion}-cherrypy < 18.0.0
-%else
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
-%endif
+Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
@@ -210,10 +211,11 @@ Supports Python 3.
 ## %%autosetup
 %setup -c
 cd %{name}-%{version}
-%if 0%{?rhel} > 7
-%patch0 -p1
-%endif
+## %%if 0%%{?rhel} > 7
+## %%patch0 -p1
+## %%endif
 %patch1 -p1
+%patch2 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -509,6 +511,13 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Mar 30 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000.1-1
+- Update to feature release 3000.1-1  for Python 3
+
+* Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
+- Update to feature release 3000-1  for Python 3
+- Removed Torando since salt.ext.tornado, add dependencies for Tornado
+
 * Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
 - Update to Neon Release Candidate 2 for Python 3
 - Updated spec file to not use py3_build  due to '-s' preventing pip installs

@@ -115,16 +115,6 @@ pkgbuild_registry:
       results:
         - libsodium
         - libsodium-devel
-    libtomcrypt:
-      version: 1.17-23
-      results:
-        - libtomcrypt
-        - libtomcrypt-devel
-    libtommath:
-      version: 0.42.0-4
-      results:
-        - libtommath
-        - libtommath-devel
     libunwind:
       version: 1.3.1-2
       results:
@@ -216,7 +206,7 @@ pkgbuild_registry:
       results:
         - python3-psutil
     python-pycryptodome:
-      version: 3.6.1-3
+      version: 3.6.1-4
       results:
         - python3-pycryptodomex
     python-pyroute2:
@@ -391,7 +381,7 @@ pkgbuild_registry:
       results:
         - python36-markupsafe
     python-msgpack:
-      version: 0.5.6-6
+      version: 0.6.2-2
       build_deps:
         - python36
       results:
@@ -419,7 +409,7 @@ pkgbuild_registry:
       results:
         - python36-psutil
     python-pycryptodomex:
-      version: 3.7.3-3
+      version: 3.7.3-4
       build_deps:
         - libtommath
         - libtomcrypt
@@ -433,6 +423,14 @@ pkgbuild_registry:
         - python-bottle
       results:
         - python36-pycurl
+    python-pyOpenSSL:
+      version: 17.3.0-2
+      noarch: True
+      build_deps:
+        - python36
+        - python-setuptools
+      results:
+        - python36-pyOpenSSL
     python-pysocks:
       version: 1.6.8-6
       noarch: True
@@ -520,7 +518,6 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
-        - python-tornado
         - python-libcloud
         - python-mock
         - python-six
@@ -574,8 +571,8 @@ pkgbuild_registry:
         - python-jinja2
         - python-requests
         - python-pyroute2
-        - python-rpm
         - python-six
+##        - python-rpm
       results:
         - mock
         - mock-lvm
@@ -977,7 +974,6 @@ pkgbuild_registry:
         - python-requests
         - python-pyzmq
         - python-markupsafe
-        - python-tornado4
         - python-futures
         - python-libcloud
         - python-mock

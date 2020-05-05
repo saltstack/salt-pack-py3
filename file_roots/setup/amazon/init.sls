@@ -2,6 +2,11 @@
 {% import "setup/amazon/map.jinja" as build_cfg %}
 
 
+ensure_latest:
+  module.run:
+    - name: pkg.upgrade
+
+
 build_pkgs:
   pkg.installed:
     - allow_updates: True
@@ -13,7 +18,6 @@ build_pkgs:
       - gnupg2
       - python3-gnupg
       - wget
-      - rpm: latest
 
 
 {{build_cfg.build_runas}}:
