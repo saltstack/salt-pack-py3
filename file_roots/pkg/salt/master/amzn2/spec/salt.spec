@@ -800,23 +800,31 @@ rm -rf %{buildroot}
 
 
 %changelog
-## - Removed Torando since salt.ext.tornado, add dependencies for Tornado
+* Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
+- Update to feature release 3000.2-1  for Python 3
 
-* Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
+* Mon Mar 30 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.1-1
+- Update to feature release 3000.1-1  for Python 3
+
+* Mon Feb 03 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000-1
+- Update to feature release 3000-1  for Python 3
+- Removed Torando since salt.ext.tornado, add dependencies for Tornado
+
+* Wed Jan 22 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.0.0rc2-1
 - Update to Neon Release Candidate 2 for Python 3
 - Updated spec file to not use py3_build  due to '-s' preventing pip installs
 - Updated patch file to support Tornado4
 
-* Wed Jan 08 2020 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.3-1
+* Wed Jan 08 2020 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.3-1
 - Update to feature release 2019.2.3-1  for Python 3
 
-* Wed Nov 20 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-2
+* Wed Nov 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.2-2
 - Changed Tornado support back to regular tornado 4.5.2
 
-* Wed Oct 16 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-1
+* Wed Oct 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.2-1
 - Update to feature release 2019.2.2-1
 
-* Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
+* Thu Sep 12 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.1-1
 - Update to feature release 2019.2.1-1
 
 * Tue Sep 10 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
