@@ -4,7 +4,7 @@ include:
 {% if buildcfg.build_release == 'ubuntu2004' %}
 
     - pkg.python-m2crypto.0_31_0.ubuntu2004
-    - pkg.salt.master.ubuntu1804
+    - pkg.salt.master.ubuntu2004
 
 {% if buildcfg.build_release == 'ubuntu1804' %}
 
