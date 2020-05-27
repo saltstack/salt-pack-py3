@@ -24,9 +24,5 @@ include:
         CODENAME : 'focal'
         ARCHS : 'amd64 source'
         COMPONENTS : 'main'
-{%- if buildcfg.build_py3 %}
         DESCRIPTION : 'SaltStack Ubuntu 20.04 Python 3 package repo'
-{%- else %}
-        DESCRIPTION : 'SaltStack Ubuntu 20.04 Python 2 package repo'
-{%- endif %}
 
