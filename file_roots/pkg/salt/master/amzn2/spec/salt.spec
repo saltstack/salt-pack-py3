@@ -87,7 +87,7 @@ BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
-Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+Requires: python%{python3_pkgversion}-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
@@ -125,7 +125,6 @@ BuildRequires:  python2-rpm-macros
 ## BuildRequires: python-tornado >= 4.2.1, python-tornado < 5.0
 BuildRequires: python-tornado >= 4.2.1
 BuildRequires: python-futures >= 2.0
-BuildRequires: python-crypto >= 2.6.1
 BuildRequires: python-jinja2
 BuildRequires: python-msgpack >= 0.4
 BuildRequires: python-pip
@@ -146,7 +145,6 @@ BuildRequires: python-devel
 
 Requires: python-jinja2
 Requires: python-msgpack >= 0.4
-Requires: python-crypto >= 2.6.1
 Requires: PyYAML
 
 Requires: python-zmq
