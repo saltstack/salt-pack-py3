@@ -235,7 +235,7 @@ gpg_agent_start:
     - runas: {{build_cfg.build_runas}}
     - use_vt: True
     - require:
-{%- if build_cfg.build_release == ('ubuntu1804', 'ubuntu2004')' %}
+{%- if build_cfg.build_release == ('ubuntu1804', 'ubuntu2004') %}
       - module: gpg_agent_ps_kill_run
 {%- else %}
       - module: gpg_agent_stop2
