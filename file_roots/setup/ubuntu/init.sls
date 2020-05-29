@@ -15,7 +15,7 @@ build_pkgs:
       - reprepro
       - git
       - python-setuptools
-{% if build_cfg.build_release in 'ubuntu2004' %}
+{% if build_cfg.build_release == 'ubuntu2004' %}
 ￼     - python3-gnupg
 {% else %}
       - python-gnupg
