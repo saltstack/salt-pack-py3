@@ -50,8 +50,6 @@ Source21: salt-syndic.fish
 ## %%if 0%%{?rhel} > 7
 ## Patch0:  salt-py3-2019.2.2-tornado4.patch
 ## %%endif
-Patch1:  salt-py3-2019.2.1-rpmsign.patch
-Patch2: salt-m2_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -208,8 +206,6 @@ cd %{name}-%{version}
 ## %%if 0%%{?rhel} > 7
 ## %%patch0 -p1
 ## %%endif
-%patch1 -p1
-%patch2 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
