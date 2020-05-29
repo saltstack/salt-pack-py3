@@ -21,6 +21,8 @@
     - spec: salt://{{slspath}}/spec/{{pypi_name}}_{{version}}-{{release_ver}}.dsc
     - tgt: {{buildcfg.build_tgt}}
     - template: jinja
+    - env:
+        DEB_BUILD_OPTIONS : 'nocheck'
     - sources:
       - salt://{{slspath}}/sources/{{pypi_name}}_{{version}}.orig.tar.gz
       - salt://{{slspath}}/sources/{{pypi_name}}_{{version}}-{{release_ver}}.debian.tar.xz
