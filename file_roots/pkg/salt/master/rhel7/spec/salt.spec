@@ -86,15 +86,9 @@ BuildRequires: python%{python3_pkgversion}-PyYAML
 BuildRequires: python%{python3_pkgversion}-pyyaml
 %endif
 BuildRequires: git
-
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.6
-
-## for dump requirements file
-Requires: python%{python3_pkgversion}-crypto >= 2.6.1
-
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
-
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
