@@ -15,7 +15,9 @@ build_pkgs:
       - reprepro
       - git
       - python-setuptools
+{%- if build_cfg.build_release != 'ubuntu2004' %}
       - python-gnupg
+{%- endif %}
       - gnupg
       - gnupg-agent
       - pkg-config
