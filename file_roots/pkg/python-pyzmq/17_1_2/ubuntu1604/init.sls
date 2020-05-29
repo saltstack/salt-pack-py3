@@ -2,8 +2,8 @@
 {% set force = salt['pillar.get']('build_force.all', False) or salt['pillar.get']('build_force.' ~ slspath, False) %}
 
 {% set pypi_name = 'pyzmq' %}
-{% set name = 'python-' ~ pypi_name %}
-{% set name3 = 'python3-' ~ pypi_name %}
+{% set name = 'python-' ~ 'zmq' %}
+{% set name3 = 'python3-' ~ 'zmq' %}
 {% set version = '17.1.2' %}
 {% set release_ver = '3ubuntu1' %}
 
