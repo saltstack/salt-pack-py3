@@ -43,7 +43,7 @@
 {% set gpg_agent_script_file = build_cfg.build_homedir ~ '/gpg-agent_start.sh' %}
 
 ## GPG_TTY=$(tty) getting 'not a tty', TDB this fix is temp
-{% if build_cfg.build_release == ('ubuntu1804', 'ubuntu2004') %}
+{% if build_cfg.build_release in ['ubuntu1804', 'ubuntu2004'] %}
 
 ## don't name kill script with gpg-agent as part of name, makes script easier
 {% set gpg_ps_kill_script_file = build_cfg.build_homedir ~ '/gpg_kill.sh' %}
@@ -90,7 +90,7 @@ gpg_agent_script_file_rm:
     - name: {{gpg_agent_script_file}}
 
 
-{% if build_cfg.build_release == ('ubuntu1804', 'ubuntu2004') %}
+{% if build_cfg.build_release in ['ubuntu1804', 'ubuntu2004'] %}
 gpg_ps_kill_script_file_rm:
   file.absent:
     - name: {{gpg_ps_kill_script_file}}
@@ -181,7 +181,7 @@ gpg_agent_stop2:
       - file: gpg_agent_script_file_exists
 
 
-{% if build_cfg.build_release == ('ubuntu1804', 'ubuntu2004') %}
+{% if build_cfg.build_release in ['ubuntu1804', 'ubuntu2004'] %}
 ## finding killall and gpgpconf to stop gpg-agent failing on Ubuntu 18.04
 ## even as root from the command line, reqs investigation
 ## explicit kill with gusto for now
@@ -235,7 +235,7 @@ gpg_agent_start:
     - runas: {{build_cfg.build_runas}}
     - use_vt: True
     - require:
-{%- if build_cfg.build_release == ('ubuntu1804', 'ubuntu2004') %}
+{%- if build_cfg.build_release in ['ubuntu1804', 'ubuntu2004'] %}
       - module: gpg_agent_ps_kill_run
 {%- else %}
       - module: gpg_agent_stop2
