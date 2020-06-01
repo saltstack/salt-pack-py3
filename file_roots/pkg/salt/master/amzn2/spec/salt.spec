@@ -49,6 +49,7 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 ## Patch0:  salt-3000-async.patch
+Patch1: salt-pycryptodomex_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -329,6 +330,7 @@ Supports Python 2.
 %setup -q -c
 cd %{name}-%{version}
 ## %%patch0 -p1
+%patch1 -p1
 
 
 %build
