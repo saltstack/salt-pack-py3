@@ -196,9 +196,7 @@ Supports Python 3.
 
 
 %prep
-%autosetup
-
-%patch1 -p1
+%autosetup -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
