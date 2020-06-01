@@ -47,6 +47,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
+Patch1: salt-m2_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -196,6 +197,8 @@ Supports Python 3.
 
 %prep
 %autosetup
+
+%patch1 -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
