@@ -59,7 +59,7 @@ include:
     - pkg.python-pycurl.7_43_0.rhel7        ## EPEL python36-pycurl.7.43.0-7
     - pkg.python-pyOpenSSL.17_3_0.rhel7     ## EPEL python36-pyOpenSSL.17.3.0-1
     - pkg.python-pysocks.1_6_8.rhel7        ## EPEL python36-pysocks.1.6.8-6.el7
-    - pkg.python-pyzmq.15_3_0.rhel7         ## B
+    - pkg.python-pyzmq.17_0_0.rhel7         ## B
     - pkg.python-requests.2_12_5.rhel7      ## EPEL python36-requests.2.12.5-3.el7
     - pkg.python-setuptools.39_2_0.rhel7    ## EPEL python36-setuptools.309.2.0-4.el7
     - pkg.python-simplejson.3_10_0.rhel7    ##   EPEL python36-simplejson 3.10.0-2.el7
