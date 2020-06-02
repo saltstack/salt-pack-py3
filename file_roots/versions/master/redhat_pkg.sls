@@ -70,6 +70,7 @@ include:
     - pkg.python-yaml.3_11.rhel7            ##   EPEL python36-PyYaml-3.12-1.el7
     - pkg.salt.master.rhel7
     - pkg.zeromq.4_1_4.rhel7                ##   EPEL zeromq-4.1.4-6.el7
+    - pkg.python-distro.1_2_0.rhel8         ## B
 
 {% elif buildcfg.build_release == 'fedora' %}
 

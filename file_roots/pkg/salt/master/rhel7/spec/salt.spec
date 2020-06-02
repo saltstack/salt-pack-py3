@@ -106,6 +106,7 @@ Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 %if 0%{?rhel} == 7
 Requires: python%{python3_pkgversion}-PyYAML
+Requires: python%{python3_pkgversion}-distro
 %else
 Requires: python%{python3_pkgversion}-pyyaml
 %endif
