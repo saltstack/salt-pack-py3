@@ -49,6 +49,7 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 ## Patch0:  salt-3000-async.patch
+Patch1: salt-pycryptodomex_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -89,7 +90,7 @@ Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq
+Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 
 ## Tornado removed in Neon
@@ -329,6 +330,7 @@ Supports Python 2.
 %setup -q -c
 cd %{name}-%{version}
 ## %%patch0 -p1
+%patch1 -p1
 
 
 %build
@@ -798,9 +800,6 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Mon Jun 01 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3001rc1-1
-- Update to feature release 3001rc1-1
-
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
 - Update to feature release 3000.2-1  for Python 3
 
