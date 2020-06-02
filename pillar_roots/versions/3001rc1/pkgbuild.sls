@@ -323,6 +323,11 @@ pkgbuild_registry:
         - python-mock
       results:
         - python36-cherrypy
+    python-distro:
+      version: 1.2.0-4
+      noarch: True
+      results:
+        - python36-distro
     python-crypto:
       version: 2.6.1-26
       build_deps:
