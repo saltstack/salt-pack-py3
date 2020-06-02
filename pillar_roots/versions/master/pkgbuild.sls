@@ -327,7 +327,7 @@ pkgbuild_registry:
       version: 1.2.0-4
       noarch: True
       results:
-        - python3-distro
+        - python36-distro
     python-crypto:
       version: 2.6.1-26
       build_deps:
