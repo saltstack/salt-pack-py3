@@ -5,7 +5,7 @@
 {% set name = 'python-' ~ 'zmq' %}
 {% set name3 = 'python3-' ~ 'zmq' %}
 {% set version = '17.1.2' %}
-{% set release_ver = '3ubuntu1' %}
+{% set release_ver = '3ubuntu2+ds' %}
 
 {{name}}-{{version.replace('.', '_')}}:
   pkgbuild.built:
