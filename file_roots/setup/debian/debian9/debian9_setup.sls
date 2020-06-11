@@ -33,6 +33,16 @@ build_additional_pkgs:
       - python-nose
       - python-pytest
       - cython
+      - cython-dbg
+      - libzmq3-dev
+      - pypy-pytest
+      - python-all-dbg
+      - python-cffi
+      - python-cffi-backend-dbg
+      - python-gevent
+      - python-gevent-dbg
+      - python-numpy-dbg
+      - python-tornado
 
 {%- if build_cfg.build_py3 %}
 build_additional_py3_pkgs:
@@ -52,6 +62,10 @@ build_additional_py3_pkgs:
       - apt-utils
       - python3-nose
       - python3-pytest
+      - python3-all-dbg
+      - python3-cffi
+      - python3-cffi-backend-dbg
+      - python3-tornado
     - require:
       - pkg: build_additional_pkgs
 {%- endif %}
