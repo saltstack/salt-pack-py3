@@ -49,6 +49,7 @@ Source20: salt-run.fish
 Source21: salt-syndic.fish
 
 ## Patch0:  salt-3000-async.patch
+Patch1: salt-pycryptodomex_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -87,9 +88,9 @@ BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
-Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+Requires: python%{python3_pkgversion}-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq
+Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 
 ## Tornado removed in Neon
@@ -125,7 +126,6 @@ BuildRequires:  python2-rpm-macros
 ## BuildRequires: python-tornado >= 4.2.1, python-tornado < 5.0
 BuildRequires: python-tornado >= 4.2.1
 BuildRequires: python-futures >= 2.0
-BuildRequires: python-crypto >= 2.6.1
 BuildRequires: python-jinja2
 BuildRequires: python-msgpack >= 0.4
 BuildRequires: python-pip
@@ -146,7 +146,6 @@ BuildRequires: python-devel
 
 Requires: python-jinja2
 Requires: python-msgpack >= 0.4
-Requires: python-crypto >= 2.6.1
 Requires: PyYAML
 
 Requires: python-zmq
@@ -331,6 +330,7 @@ Supports Python 2.
 %setup -q -c
 cd %{name}-%{version}
 ## %%patch0 -p1
+%patch1 -p1
 
 
 %build

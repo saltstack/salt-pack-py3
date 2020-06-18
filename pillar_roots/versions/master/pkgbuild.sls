@@ -323,6 +323,11 @@ pkgbuild_registry:
         - python-mock
       results:
         - python36-cherrypy
+    python-distro:
+      version: 1.2.0-4
+      noarch: True
+      results:
+        - python36-distro
     python-crypto:
       version: 2.6.1-26
       build_deps:
@@ -440,7 +445,7 @@ pkgbuild_registry:
         - python36-pysocks
     python-pyzmq:
       name: python-zmq
-      version: 15.3.0-6
+      version: 17.0.0-5
       build_deps:
         - python36
         - zeromq

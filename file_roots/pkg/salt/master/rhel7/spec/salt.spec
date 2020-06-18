@@ -47,6 +47,7 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
+Patch1: salt-m2_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -86,17 +87,11 @@ BuildRequires: python%{python3_pkgversion}-PyYAML
 BuildRequires: python%{python3_pkgversion}-pyyaml
 %endif
 BuildRequires: git
-
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.6
-
-## for dump requirements file
-Requires: python%{python3_pkgversion}-crypto >= 2.6.1
-
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
-
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq
+Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 
 ## Tornado removed in Neon, hence need its BuildRequires
@@ -111,6 +106,7 @@ Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 %if 0%{?rhel} == 7
 Requires: python%{python3_pkgversion}-PyYAML
+Requires: python%{python3_pkgversion}-distro
 %else
 Requires: python%{python3_pkgversion}-pyyaml
 %endif
@@ -201,7 +197,7 @@ Supports Python 3.
 
 
 %prep
-%autosetup
+%autosetup -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
