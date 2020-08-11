@@ -1,7 +1,4 @@
-## For Python 3 only RHEL 7 & 8
-
-%bcond_with python2
-%bcond_without python3
+## For Python 3 only 
 
 %bcond_with tests
 %bcond_with docs
@@ -18,8 +15,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: 3001rc1%{?__rc_ver}
-Release: 2%{?dist}
+Version: 3001.1%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -47,8 +44,6 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-Patch: salt-3001-msgpack-zmq.patch
-
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 
@@ -58,13 +53,7 @@ Requires: dmidecode
 
 Requires: pciutils
 Requires: which
-
-%if 0%{?fedora} >= 26
 Requires: dnf-utils
-%else
-Requires: yum-utils
-%endif
-
 
 %if 0%{?systemd_preun:1}
 Requires(post): systemd-units
@@ -74,8 +63,6 @@ Requires(postun): systemd-units
 
 BuildRequires: systemd-units
 
-
-%if %{with python3}
 BuildRequires: python%{python3_pkgversion}-devel
 BuildRequires: python%{python3_pkgversion}-requests
 BuildRequires: python%{python3_pkgversion}-mock
@@ -85,20 +72,15 @@ BuildRequires: python%{python3_pkgversion}-six
 BuildRequires: python%{python3_pkgversion}-PyYAML
 %else
 BuildRequires: python%{python3_pkgversion}-pyyaml
-## BuildRequires: python%%{python3_pkgversion}-distro
 %endif
 BuildRequires: git
-
-%if 0%{?fedora} >= 31
 BuildRequires: python%{python3_pkgversion}-distro
-Requires: python%{python3_pkgversion}-distro
-%endif
 
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.5.6
 Requires: python%{python3_pkgversion}-pycryptodomex >= 3.7
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq
+Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 
 ## Tornado removed in Neon
@@ -108,12 +90,10 @@ Requires: python%{python3_pkgversion}-markupsafe
 ## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
 ## %%endif
 Requires: python%{python3_pkgversion}-pycurl
-
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 Requires: python%{python3_pkgversion}-pyyaml
 Requires: python%{python3_pkgversion}-distro
-%endif
 
 
 %description
@@ -125,7 +105,6 @@ information, and not just dozens, but hundreds or even thousands of individual
 servers, handle them quickly and through a simple and manageable interface.
 
 
-%if %{with python3}
 %package    master
 Summary:    Management component for salt, a parallel remote execution system
 Group:      System Environment/Daemons
@@ -192,23 +171,18 @@ Requires:   %{name} = %{version}-%{release}
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 Supports Python 3.
-%endif
 
 
 %prep
 ## %%autosetup
 %setup -q -c
 cd %{name}-%{version}
-%patch0 -p1
 
-%if %{with python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
-%endif
 
 
 %build
-%if %{with python3}
 pushd %{py3dir}
 ## %%py3_build
 ## py3_shbang_opts is '-s' and causing issues with pip install
@@ -216,14 +190,12 @@ pushd %{py3dir}
 CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3}" %{?*}
 sleep 1
 popd
-%endif
 
 
 %install
 rm -rf %{buildroot}
 cd $RPM_BUILD_DIR/%{name}-%{version}
 
-%if %{with python3}
 ## rm -rf %%{buildroot}
 pushd %{py3dir}
 %py3_install
@@ -283,16 +255,6 @@ install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
 popd
-%endif
-
-
-%if (%{with python2} && 0%{with tests})
-%check
-## cd $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}
-cd $RPM_BUILD_DIR/%{name}-%{version}
-mkdir %{_tmppath}/salt-test-cache
-PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
-%endif
 
 
 %clean
@@ -300,7 +262,6 @@ rm -rf %{buildroot}
 
 
 %files
-%if %{with python3}
 %defattr(-,root,root,-)
 %{python3_sitelib}/%{name}/*
 %{python3_sitelib}/%{name}-*-py?.?.egg-info
@@ -309,8 +270,6 @@ rm -rf %{buildroot}
 %{_var}/cache/salt
 %{_var}/log/salt
 
-## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/LICENSE
-## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
 %doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
 %doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
 
@@ -380,7 +339,6 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-ssh.1*
 %{_bindir}/salt-ssh
 %config(noreplace) %{_sysconfdir}/salt/roster
-%endif
 
 
 # assumes systemd for RHEL 7 & 8
@@ -495,6 +453,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Jul 27 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3001.1-1
+- Update to feature release 3001.1-1  for Python 3
+
+* Thu Jun 18 2020 SaltStack Packaging Team <packaging@saltstack.com.com> - 30001-1
+- Update to feature release 30001-1 for Python 3
+
 * Wed Jun 03 2020 SaltStack Packaging Team <packaging@saltstack.com.com> - 3001rc1-2
 - Altered msgpack and python-zmq versions limitation
 
