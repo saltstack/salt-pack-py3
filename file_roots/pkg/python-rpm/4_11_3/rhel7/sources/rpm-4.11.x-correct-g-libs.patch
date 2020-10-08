@@ -1,0 +1,11 @@
+--- rpm-4.11.3/scripts/find-debuginfo.sh.old	2019-07-26 10:03:50.390264038 +0200
++++ rpm-4.11.3/scripts/find-debuginfo.sh	2019-07-26 10:24:12.540154792 +0200
+@@ -109,7 +109,7 @@
+   shift
+ done
+ 
+-if ("$strip_g" = "true") && ("$strip_glibs" = "true"); then
++if [ "$strip_g" = "true" ] && [ "$strip_glibs" = "true" ]; then
+   echo >&2 "*** ERROR: -g  and --g-libs cannot be used together"
+   exit 2
+ fi

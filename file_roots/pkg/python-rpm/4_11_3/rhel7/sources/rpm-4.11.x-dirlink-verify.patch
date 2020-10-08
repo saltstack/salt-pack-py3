@@ -1,0 +1,27 @@
+commit 3ccd774255b8215733e0bdfdf5a683da9dd10923
+Author: Panu Matilainen <pmatilai@redhat.com>
+Date:   Wed Sep 24 10:31:51 2014 +0300
+
+    Handle directory replaced with a symlink to one in verify (RhBug:1101861)
+    
+    - An unforced installation must not cause verification failures - we
+      permit directories to be replaced by directory symlinks during
+      install so we need to do the same in verify too.
+
+diff --git a/lib/verify.c b/lib/verify.c
+index eb6f2e1..84e9843 100644
+--- a/lib/verify.c
++++ b/lib/verify.c
+@@ -96,6 +96,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
+ 	return 1;
+     }
+ 
++    /* If we expected a directory but got a symlink to one, follow the link */
++    if (S_ISDIR(fmode) && S_ISLNK(sb.st_mode) && stat(fn, &sb) != 0) {
++	*res |= RPMVERIFY_LSTATFAIL;
++	return 1;
++    }
++
+     /* Links have no mode, other types have no linkto */
+     if (S_ISLNK(sb.st_mode))
+ 	flags &= ~(RPMVERIFY_MODE);

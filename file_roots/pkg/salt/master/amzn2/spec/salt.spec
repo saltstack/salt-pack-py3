@@ -92,6 +92,7 @@ Requires: python%{python3_pkgversion}-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
+Requires: python%{python3_pkgversion}-rpm
 
 ## Tornado removed in Neon
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0

@@ -1,0 +1,11 @@
+--- current/lib/formats.orig	2017-10-09 16:02:37.884785158 +0200
++++ current/lib/formats.c	2017-10-09 16:03:20.640862788 +0200
+@@ -101,7 +101,7 @@
+ 	val = xstrdup(_("(not a number)"));
+     } else {
+ 	struct tm * tstruct;
+-	char buf[50];
++	char buf[1024];
+ 	time_t dateint = rpmtdGetNumber(td);
+ 	tstruct = localtime(&dateint);
+ 

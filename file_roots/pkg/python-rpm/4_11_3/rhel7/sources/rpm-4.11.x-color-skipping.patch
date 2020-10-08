@@ -1,0 +1,30 @@
+From 2f31395dcd49459c775caaadefa0513181cd12ff Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@localhost.localdomain>
+Date: Wed, 17 Dec 2014 12:53:30 +0100
+Subject: [PATCH] Fix color skipping of multiple files with the same content.
+
+- If we process some file and we find another file with the same path
+  and the same content and this other file is skipped for color then
+  the currently being processed file has to be skipped for color too.
+  (RhBug:1170124)
+---
+ lib/transaction.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/lib/transaction.c b/lib/transaction.c
+index 736f64d..2d1432e 100644
+--- a/lib/transaction.c
++++ b/lib/transaction.c
+@@ -587,6 +587,9 @@ assert(otherFi != NULL);
+ 		    if (!(oflags & RPMFILE_GHOST)) {
+ 			rpmfsSetAction(fs, i, FA_SKIP);
+ 		    }
++		/* if the other file is color skipped then skip this file too */
++		} else if (oaction == FA_SKIPCOLOR) {
++		    rpmfsSetAction(fs, i, FA_SKIPCOLOR);
+ 		}
+ 	    }
+ 
+-- 
+2.1.0
+

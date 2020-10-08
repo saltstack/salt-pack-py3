@@ -1,0 +1,25 @@
+From 5dd555adbed5dae6a9255bb17074d2b043d0244e Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Fri, 27 Mar 2015 09:57:29 +0100
+Subject: [PATCH] Add deprecation warning to description of "--addsign"
+
+---
+ rpmpopt.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rpmpopt.in b/rpmpopt.in
+index fe4f40f..ca95702 100644
+--- a/rpmpopt.in
++++ b/rpmpopt.in
+@@ -188,7 +188,7 @@ rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#
+ # Minimally preserve rpmbuild's --sign functionality
+ rpmbuild alias --sign \
+ 	--pipe "grep '.*: .*\.rpm$'|cut -d: -f2|xargs -r rpm --addsign" \
+-	--POPTdesc=$"generate GPG signature"
++	--POPTdesc=$"generate GPG signature (deprecated, use command rpmsign instead)"
+ 
+ rpmsign alias --key-id  --define '_gpg_name !#:+' \
+ 	--POPTdesc=$"key id/name to sign with" \
+-- 
+2.1.0
+

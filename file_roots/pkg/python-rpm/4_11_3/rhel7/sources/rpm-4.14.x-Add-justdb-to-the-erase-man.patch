@@ -1,0 +1,44 @@
+From 7ebf34fc1b0b7b3fb149761fee01a92859b1a69e Mon Sep 17 00:00:00 2001
+From: Florian Festi <ffesti@redhat.com>
+Date: Mon, 18 Apr 2016 15:59:18 +0200
+Subject: [PATCH] Add --justdb to the erase section of the man page, too
+
+---
+ doc/rpm.8 | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/doc/rpm.8 b/doc/rpm.8
+index 2eb5ca5..ccd2e1e 100644
+--- a/doc/rpm.8
++++ b/doc/rpm.8
+@@ -37,7 +37,7 @@ rpm \- RPM Package Manager
+ 
+ 
+ 
+-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
++\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--justdb] [\fB--nodeps\fR] [\fB--noscripts\fR]
+     [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
+ 
+ .SS "MISCELLANEOUS:"
+@@ -377,7 +377,7 @@ potential conflicts.
+ The general form of an rpm erase command is 
+ .PP
+ 
+-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
++\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--justdb] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+ 
+ .PP
+ The following options may also be used:
+@@ -388,6 +388,9 @@ Remove all versions of the package which match
+ error is issued if \fIPACKAGE_NAME\fR
+ matches multiple packages.
+ .TP
++\fB--justdb\fR
++Update only the database, not the filesystem.
++.TP
+ \fB--nodeps\fR
+ Don't check dependencies before uninstalling the packages.
+ .TP
+-- 
+2.5.5
+

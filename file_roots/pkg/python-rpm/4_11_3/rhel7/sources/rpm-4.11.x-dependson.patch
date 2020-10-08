@@ -1,0 +1,13 @@
+diff -up rpm-4.11.3/lib/depends.c.dependson rpm-4.11.3/lib/depends.c
+--- rpm-4.11.3/lib/depends.c.dependson	2019-10-04 10:46:35.399545965 +0300
++++ rpm-4.11.3/lib/depends.c	2019-10-04 10:47:10.693542015 +0300
+@@ -117,7 +117,8 @@ static int removePackage(rpmts ts, Heade
+ 	tsmem->order = xrealloc(tsmem->order, sizeof(*tsmem->order) * tsmem->orderAlloced);
+     }
+ 
+-    rpmteSetDependsOn(p, depends);
++    if (depends)
++	rpmteSetDependsOn(p, depends);
+ 
+     tsmem->order[tsmem->orderCount] = p;
+     tsmem->orderCount++;

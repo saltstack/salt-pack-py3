@@ -1,0 +1,657 @@
+diff --git a/configure.ac b/configure.ac
+index 167491e..3bacc1d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -745,6 +745,16 @@ AS_IF([test "$enable_plugins" = yes],[
+ ])
+ AM_CONDITIONAL(ENABLE_PLUGINS,[test "$enable_plugins" = yes])
+ 
++with_dbus=no
++AS_IF([test "$enable_plugins" != no],[
++  PKG_CHECK_MODULES([DBUS],
++    [dbus-1 >= 1.0],
++    [AC_DEFINE(DBUS, 1, [Build with dbus support?]) with_dbus=yes],
++    [with_dbus=no])
++  AC_SUBST(DBUS_CFLAGS)
++  AC_SUBST(DBUS_LIBS)
++])
++AM_CONDITIONAL(DBUS, [test "$with_dbus" = yes])
+ 
+ with_dmalloc=no
+ AC_ARG_WITH(dmalloc, [AS_HELP_STRING([--with-dmalloc],[build with dmalloc debugging support])])
+diff --git a/lib/psm.c b/lib/psm.c
+index 8f5376d..e80a90e 100644
+--- a/lib/psm.c
++++ b/lib/psm.c
+@@ -23,8 +23,11 @@
+ #include "lib/rpmfi_internal.h" /* XXX replaced/states... */
+ #include "lib/rpmte_internal.h"	/* XXX internal apis */
+ #include "lib/rpmdb_internal.h" /* rpmdbAdd/Remove */
++#include "lib/rpmts_internal.h" /* ts->plugins */
+ #include "lib/rpmscript.h"
+ 
++#include "lib/rpmplugins.h"
++
+ #include "debug.h"
+ 
+ typedef enum pkgStage_e {
+@@ -421,7 +424,7 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
+ 
+     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+     rc = rpmScriptRun(script, arg1, arg2, sfd,
+-		      prefixes, warn_only, selinux);
++		      prefixes, warn_only, selinux, psm->ts->plugins);
+     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+ 
+     /* Map warn-only errors to "notfound" for script stop callback */
+@@ -1033,16 +1036,23 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
+ 	switch (goal) {
+ 	case PKG_INSTALL:
+ 	case PKG_ERASE:
+-	    op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
+-	    rpmswEnter(rpmtsOp(psm->ts, op), 0);
++	    /* Run pre transaction element hook for all plugins */
++	    if (rpmpluginsCallPsmPre(ts->plugins, te) != RPMRC_FAIL) {
++
++		op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
++		rpmswEnter(rpmtsOp(psm->ts, op), 0);
+ 
+-	    rc = rpmpsmNext(psm, PSM_INIT);
+-	    if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
+-	    if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
+-	    if (!rc) rc = rpmpsmNext(psm, PSM_POST);
+-	    (void) rpmpsmNext(psm, PSM_FINI);
++		rc = rpmpsmNext(psm, PSM_INIT);
++		if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
++		if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
++		if (!rc) rc = rpmpsmNext(psm, PSM_POST);
++		(void) rpmpsmNext(psm, PSM_FINI);
++
++		rpmswExit(rpmtsOp(psm->ts, op), 0);
++	    }
+ 
+-	    rpmswExit(rpmtsOp(psm->ts, op), 0);
++	    /* Run post transaction element hook for all plugins */
++	    rpmpluginsCallPsmPost(ts->plugins, te, rc);
+ 	    break;
+ 	case PKG_PRETRANS:
+ 	case PKG_POSTTRANS:
+diff --git a/lib/rpmplugins.c b/lib/rpmplugins.c
+index 9098aa5..7285f54 100644
+--- a/lib/rpmplugins.c
++++ b/lib/rpmplugins.c
+@@ -76,16 +76,16 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
+     return rpmpluginsCallInit(plugins, name, opts);
+ }
+ 
+-rpmRC rpmpluginsAddCollectionPlugin(rpmPlugins plugins, const char *name)
++rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name)
+ {
+     char *path;
+     char *options;
+     rpmRC rc = RPMRC_FAIL;
+ 
+-    path = rpmExpand("%{?__collection_", name, "}", NULL);
++    path = rpmExpand("%{?__", type, "_", name, "}", NULL);
+     if (!path || rstreq(path, "")) {
+-	rpmlog(RPMLOG_ERR, _("Failed to expand %%__collection_%s macro\n"),
+-	       name);
++	rpmlog(RPMLOG_ERR, _("Failed to expand %%__%s_%s macro\n"),
++	       type, name);
+ 	goto exit;
+     }
+ 
+@@ -195,3 +195,88 @@ rpmRC rpmpluginsCallCollectionPreRemove(rpmPlugins plugins, const char *name)
+     RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_COLL_PRE_REMOVE);
+     return hookFunc();
+ }
++
++rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
++{
++    rpmRC (*hookFunc)(rpmts);
++    int i;
++    rpmRC rc = RPMRC_OK;
++    const char *name = NULL;
++
++    for (i = 0; i < plugins->count; i++) {
++	name = plugins->names[i];
++	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_TSM_PRE);
++	if (hookFunc(ts) == RPMRC_FAIL)
++	    rc = RPMRC_FAIL;
++    }
++
++    return rc;
++}
++
++rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res)
++{
++    rpmRC (*hookFunc)(rpmts, int);
++    int i;
++    rpmRC rc = RPMRC_OK;
++    const char *name = NULL;
++
++    for (i = 0; i < plugins->count; i++) {
++	name = plugins->names[i];
++	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_TSM_POST);
++	if (hookFunc(ts, res) == RPMRC_FAIL)
++	    rc = RPMRC_FAIL;
++    }
++
++    return rc;
++}
++
++rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te)
++{
++    rpmRC (*hookFunc)(rpmte);
++    int i;
++    rpmRC rc = RPMRC_OK;
++    const char *name = NULL;
++
++    for (i = 0; i < plugins->count; i++) {
++	name = plugins->names[i];
++	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_PSM_PRE);
++	if (hookFunc(te) == RPMRC_FAIL)
++	    rc = RPMRC_FAIL;
++    }
++
++    return rc;
++}
++
++rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res)
++{
++    rpmRC (*hookFunc)(rpmte, int);
++    int i;
++    rpmRC rc = RPMRC_OK;
++    const char *name = NULL;
++
++    for (i = 0; i < plugins->count; i++) {
++	name = plugins->names[i];
++	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_PSM_POST);
++	if (hookFunc(te, res) == RPMRC_FAIL)
++	    rc = RPMRC_FAIL;
++    }
++
++    return rc;
++}
++
++rpmRC rpmpluginsCallScriptSetup(rpmPlugins plugins, char* path)
++{
++    rpmRC (*hookFunc)(char*);
++    int i;
++    rpmRC rc = RPMRC_OK;
++    const char *name = NULL;
++
++    for (i = 0; i < plugins->count; i++) {
++	name = plugins->names[i];
++	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPT_SETUP);
++	if (hookFunc(path) == RPMRC_FAIL)
++	    rc = RPMRC_FAIL;
++    }
++
++    return rc;
++}
+diff --git a/lib/rpmplugins.h b/lib/rpmplugins.h
+index 7985559..c462eae 100644
+--- a/lib/rpmplugins.h
++++ b/lib/rpmplugins.h
+@@ -11,11 +11,20 @@ extern "C" {
+ 
+ #define PLUGINHOOK_INIT_FUNC			pluginhook_init
+ #define PLUGINHOOK_CLEANUP_FUNC			pluginhook_cleanup
++
+ #define PLUGINHOOK_OPENTE_FUNC			pluginhook_opente
+ #define PLUGINHOOK_COLL_POST_ADD_FUNC		pluginhook_coll_post_add
+ #define PLUGINHOOK_COLL_POST_ANY_FUNC		pluginhook_coll_post_any
+ #define PLUGINHOOK_COLL_PRE_REMOVE_FUNC		pluginhook_coll_pre_remove
+ 
++#define PLUGINHOOK_TSM_PRE_FUNC        pluginhook_tsm_pre
++#define PLUGINHOOK_TSM_POST_FUNC        pluginhook_tsm_post
++
++#define PLUGINHOOK_PSM_PRE_FUNC        pluginhook_psm_pre
++#define PLUGINHOOK_PSM_POST_FUNC        pluginhook_psm_post
++ 
++#define PLUGINHOOK_SCRIPT_SETUP_FUNC    pluginhook_script_setup
++
+ enum rpmPluginHook_e {
+     PLUGINHOOK_NONE		= 0,
+     PLUGINHOOK_INIT		= 1 << 0,
+@@ -23,7 +32,12 @@ enum rpmPluginHook_e {
+     PLUGINHOOK_OPENTE		= 1 << 2,
+     PLUGINHOOK_COLL_POST_ADD	= 1 << 3,
+     PLUGINHOOK_COLL_POST_ANY	= 1 << 4,
+-    PLUGINHOOK_COLL_PRE_REMOVE	= 1 << 5
++    PLUGINHOOK_COLL_PRE_REMOVE	= 1 << 5,
++    PLUGINHOOK_TSM_PRE         = 1 << 6,
++    PLUGINHOOK_TSM_POST        = 1 << 7,
++    PLUGINHOOK_PSM_PRE         = 1 << 8,
++    PLUGINHOOK_PSM_POST        = 1 << 9,
++    PLUGINHOOK_SCRIPT_SETUP    = 1 << 10
+ };
+ 
+ typedef rpmFlags rpmPluginHook;
+@@ -53,12 +67,13 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins);
+ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path, const char *opts);
+ 
+ /** \ingroup rpmplugins
+- * Add and open a collection plugin
++ * Add and open a rpm plugin
+  * @param plugins	plugins structure to add a collection plugin to
+- * @param name		name of collection to open
++ * @param type     type of plugin
++ * @param name		name of plugin
+  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+  */
+-rpmRC rpmpluginsAddCollectionPlugin(rpmPlugins plugins, const char *name);
++rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name);
+ 
+ /** \ingroup rpmplugins
+  * Determine if a plugin has been added already
+@@ -119,6 +134,48 @@ rpmRC rpmpluginsCallCollectionPostAny(rpmPlugins plugins, const char *name);
+  */
+ rpmRC rpmpluginsCallCollectionPreRemove(rpmPlugins plugins, const char *name);
+ 
++/** \ingroup rpmplugins
++ * Call the pre transaction plugin hook
++ * @param plugins	plugins structure
++ * @param ts		processed transaction
++ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
++ */
++rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts);
++
++/** \ingroup rpmplugins
++ * Call the post transaction plugin hook
++ * @param plugins	plugins structure
++ * @param ts		processed transaction
++ * @param res		transaction result code
++ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
++ */
++rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res);
++
++/** \ingroup rpmplugins
++ * Call the pre transaction element plugin hook
++ * @param plugins	plugins structure
++ * @param te		processed transaction element
++ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
++ */
++rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te);
++
++/** \ingroup rpmplugins
++ * Call the post transaction element plugin hook
++ * @param plugins	plugins structure
++ * @param te		processed transaction element
++ * @param res		transaction element result code
++ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
++ */
++rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res);
++
++/** \ingroup rpmplugins
++ * Call the script setup plugin hook
++ * @param plugins	plugins structure
++ * @param path		script path
++ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
++ */
++rpmRC rpmpluginsCallScriptSetup(rpmPlugins plugins, char* path);
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/lib/rpmscript.c b/lib/rpmscript.c
+index 57c24c6..f8c5fc7 100644
+--- a/lib/rpmscript.c
++++ b/lib/rpmscript.c
+@@ -14,6 +14,8 @@
+ #include "rpmio/rpmlua.h"
+ #include "lib/rpmscript.h"
+ 
++#include "lib/rpmplugins.h"     /* rpm plugins hooks */
++
+ #include "debug.h"
+ 
+ struct rpmScript_s {
+@@ -91,7 +93,7 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
+ 
+ static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
+ 
+-static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
++static void doScriptExec(rpmPlugins plugins, int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
+ 			FD_t scriptFd, FD_t out)
+ {
+     int pipes[2];
+@@ -169,7 +171,10 @@ static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
+ 	}
+ 
+ 	if (xx == 0) {
+-	    xx = execv(argv[0], argv);
++	    /* Run script setup hook for all plugins */
++	    if (rpmpluginsCallScriptSetup(plugins, argv[0]) != RPMRC_FAIL) {
++		xx = execv(argv[0], argv);
++	    }
+ 	}
+     }
+     _exit(127); /* exit 127 for compatibility with bash(1) */
+@@ -202,7 +207,7 @@ exit:
+ /**
+  * Run an external script.
+  */
+-static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
++static rpmRC runExtScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes,
+ 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
+ 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
+ {
+@@ -258,7 +263,7 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
+     } else if (pid == 0) {/* Child */
+ 	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
+ 	       sname, *argvp[0], (unsigned)getpid());
+-	doScriptExec(selinux, *argvp, prefixes, scriptFd, out);
++	doScriptExec(plugins, selinux, *argvp, prefixes, scriptFd, out);
+     }
+ 
+     do {
+@@ -297,7 +302,7 @@ exit:
+ }
+ 
+ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
+-		   ARGV_const_t prefixes, int warn_only, int selinux)
++		   ARGV_const_t prefixes, int warn_only, int selinux, rpmPlugins plugins)
+ {
+     ARGV_t args = NULL;
+     rpmlogLvl lvl = warn_only ? RPMLOG_WARNING : RPMLOG_ERR;
+@@ -315,7 +320,7 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
+     if (rstreq(args[0], "<lua>")) {
+ 	rc = runLuaScript(selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+     } else {
+-	rc = runExtScript(selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
++	rc = runExtScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+     }
+     argvFree(args);
+ 
+diff --git a/lib/rpmscript.h b/lib/rpmscript.h
+index 7d584bc..852735b 100644
+--- a/lib/rpmscript.h
++++ b/lib/rpmscript.h
+@@ -29,7 +29,7 @@ rpmScript rpmScriptFree(rpmScript script);
+ 
+ RPM_GNUC_INTERNAL
+ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
+-                   ARGV_const_t prefixes, int warn_only, int selinux);
++                   ARGV_const_t prefixes, int warn_only, int selinux, rpmPlugins plugins);
+ 
+ RPM_GNUC_INTERNAL
+ rpmTagVal rpmScriptTag(rpmScript script);
+diff --git a/lib/rpmte.c b/lib/rpmte.c
+index 87fb391..9fc5522 100644
+--- a/lib/rpmte.c
++++ b/lib/rpmte.c
+@@ -889,7 +889,7 @@ rpmRC rpmteSetupCollectionPlugins(rpmte te)
+     rpmteOpen(te, 0);
+     for (; colls && *colls; colls++) {
+ 	if (!rpmpluginsPluginAdded(plugins, *colls)) {
+-	    rc = rpmpluginsAddCollectionPlugin(plugins, *colls);
++	    rc = rpmpluginsAddPlugin(plugins, "collection", *colls);
+ 	    if (rc != RPMRC_OK) {
+ 		break;
+ 	    }
+diff --git a/lib/transaction.c b/lib/transaction.c
+index 45c30b5..08a5643 100644
+--- a/lib/transaction.c
++++ b/lib/transaction.c
+@@ -22,6 +22,8 @@
+ #include "lib/rpmts_internal.h"
+ #include "rpmio/rpmhook.h"
+ 
++#include "lib/rpmplugins.h"
++
+ /* XXX FIXME: merge with existing (broken?) tests in system.h */
+ /* portability fiddles */
+ #if STATFS_IN_SYS_STATVFS
+@@ -1435,12 +1437,43 @@ static int rpmtsProcess(rpmts ts)
+     return rc;
+ }
+ 
++static rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
++{
++    rpmRC rc = RPMRC_OK;
++    char *plugins = NULL, *plugin = NULL;
++    const char *delims = ",";
++
++    plugins = rpmExpand("%{?__transaction_plugins}", NULL);
++    if (!plugins || rstreq(plugins, "")) {
++	goto exit;
++    }
++
++    plugin = strtok(plugins, delims);
++    while(plugin != NULL) {
++	rpmlog(RPMLOG_DEBUG, "plugin is %s\n", plugin);
++	if (!rpmpluginsPluginAdded(ts->plugins, (const char*)plugin)) {
++	    if (rpmpluginsAddPlugin(ts->plugins, "transaction",
++				    (const char*)plugin) == RPMRC_FAIL) {
++		/* any configured plugin failing to load is a failure */
++		rc = RPMRC_FAIL;
++	    }
++	}
++	plugin = strtok(NULL, delims);
++    }
++
++exit:
++    free(plugins);
++    return rc;
++}
++
+ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+ {
+     int rc = -1; /* assume failure */
+     tsMembers tsmem = rpmtsMembers(ts);
+     rpmlock lock = NULL;
+     rpmps tsprobs = NULL;
++    int TsmPreDone = 0; /* TsmPre hook hasn't been called */
++    
+     /* Force default 022 umask during transaction for consistent results */
+     mode_t oldmask = umask(022);
+ 
+@@ -1462,11 +1495,21 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+ 	goto exit;
+     }
+ 
++    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL) {
++	goto exit;
++    }
++
+     rpmtsSetupCollections(ts);
+ 
+     /* Check package set for problems */
+     tsprobs = checkProblems(ts);
+ 
++    /* Run pre transaction hook for all plugins */
++    TsmPreDone = 1;
++    if (rpmpluginsCallTsmPre(ts->plugins, ts) == RPMRC_FAIL) {
++	goto exit;
++    }
++
+     /* Run pre-transaction scripts, but only if there are no known
+      * problems up to this point and not disabled otherwise. */
+     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRE))
+@@ -1511,6 +1554,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+     }
+ 
+ exit:
++    /* Run post transaction hook for all plugins */
++    if (TsmPreDone) /* If TsmPre hook has been called, call the TsmPost hook */
++	rpmpluginsCallTsmPost(ts->plugins, ts, rc);
++
+     /* Finish up... */
+     (void) umask(oldmask);
+     (void) rpmtsFinish(ts);
+diff --git a/macros.in b/macros.in
+index 3aaebcd..fb030b5 100644
+--- a/macros.in
++++ b/macros.in
+@@ -1032,6 +1032,9 @@ done \
+ %__collection_sepolicy		%{__plugindir}/sepolicy.so
+ %__collection_sepolicy_flags	1
+ 
++# Transaction plugin macros
++%__transaction_systemd_inhibit	%{__plugindir}/systemd_inhibit.so
++
+ #------------------------------------------------------------------------------
+ # Macros for further automated spec %setup and patch application
+ 
+diff --git a/plugins/Makefile.am b/plugins/Makefile.am
+index a9c962c..0c0a410 100644
+--- a/plugins/Makefile.am
++++ b/plugins/Makefile.am
+@@ -24,3 +24,10 @@ sepolicy_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmi
+ 
+ plugins_LTLIBRARIES += sepolicy.la
+ endif
++
++if DBUS
++systemd_inhibit_la_SOURCES = systemd_inhibit.c
++systemd_inhibit_la_CPPFLAGS = $(AM_CPPFLAGS) @DBUS_CFLAGS@
++systemd_inhibit_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @DBUS_LIBS@
++plugins_LTLIBRARIES += systemd_inhibit.la
++endif
+diff --git a/plugins/plugin.h b/plugins/plugin.h
+index 5156f93..ad4171a 100644
+--- a/plugins/plugin.h
++++ b/plugins/plugin.h
+@@ -7,9 +7,23 @@
+ #include "lib/rpmplugins.h"
+ #include "lib/rpmchroot.h"
+ 
++/* general plugin hooks */
+ rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char * name, const char * opts);
+ rpmRC PLUGINHOOK_CLEANUP_FUNC(void);
++
++/* collection plugin hooks */
+ rpmRC PLUGINHOOK_OPENTE_FUNC(rpmte te);
+ rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void);
+ rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(void);
+ rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(void);
++
++/* per transaction plugin hooks */
++rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts);
++rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res);
++
++/* per transaction element plugin hooks */
++rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te);
++rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmte te, int res);
++
++/*per script plugin hooks */
++rpmRC PLUGINHOOK_SCRIPT_SETUP_FUNC(char* path);
+diff --git a/plugins/systemd_inhibit.c b/plugins/systemd_inhibit.c
+new file mode 100644
+index 0000000..e990bec
+--- /dev/null
++++ b/plugins/systemd_inhibit.c
+@@ -0,0 +1,111 @@
++#include <dbus/dbus.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <unistd.h>
++#include <rpm/rpmlog.h>
++#include <rpm/rpmts.h>
++#include "plugin.h"
++
++rpmPluginHook PLUGIN_HOOKS = (
++    PLUGINHOOK_INIT |
++    PLUGINHOOK_CLEANUP |
++    PLUGINHOOK_TSM_PRE |
++    PLUGINHOOK_TSM_POST
++);
++
++static int lock_fd = -1;
++
++rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
++{
++    struct stat st;
++
++    if (lstat("/run/systemd/system/", &st) == 0) {
++        if (S_ISDIR(st.st_mode)) {
++            return RPMRC_OK;
++        }
++    }
++
++    return RPMRC_NOTFOUND;
++}
++
++rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
++{
++    return RPMRC_OK;
++}
++
++static int inhibit(void)
++{
++    DBusError err;
++    DBusConnection *bus = NULL;
++    DBusMessage *msg = NULL;
++    DBusMessage *reply = NULL;
++    int fd = -1;
++
++    dbus_error_init(&err);
++    bus = dbus_bus_get_private(DBUS_BUS_SYSTEM, &err);
++
++    if (bus) {
++	msg = dbus_message_new_method_call("org.freedesktop.login1",
++					   "/org/freedesktop/login1",
++					   "org.freedesktop.login1.Manager",
++					   "Inhibit");
++    }
++
++    if (msg) {
++	const char *what = "shutdown";
++	const char *mode = "block";
++	const char *who = "RPM";
++	const char *reason = "Transaction running";
++
++	dbus_message_append_args(msg,
++				 DBUS_TYPE_STRING, &what,
++				 DBUS_TYPE_STRING, &who,
++				 DBUS_TYPE_STRING, &reason,
++				 DBUS_TYPE_STRING, &mode,
++				 DBUS_TYPE_INVALID);
++
++	reply = dbus_connection_send_with_reply_and_block(bus, msg, -1, &err);
++	dbus_message_unref(msg);
++    }
++
++    if (reply) {
++	dbus_message_get_args(reply, &err,
++			      DBUS_TYPE_UNIX_FD, &fd,
++			      DBUS_TYPE_INVALID);
++	dbus_message_unref(reply);
++    }
++    
++    if (dbus_error_is_set(&err))
++	dbus_error_free(&err);
++    if (bus)
++	dbus_connection_close(bus);
++
++    return fd;
++}
++
++rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
++{
++    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
++	return RPMRC_OK;
++
++    lock_fd = inhibit();
++
++    if (lock_fd < 0) {
++	rpmlog(RPMLOG_WARNING,
++	       "Unable to get systemd shutdown inhibition lock\n");
++    } else {
++	rpmlog(RPMLOG_DEBUG, "System shutdown blocked (fd %d)\n", lock_fd);
++    }
++
++    return RPMRC_OK;
++}
++
++rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
++{
++    if (lock_fd >= 0) {
++	close(lock_fd);
++	lock_fd = -1;
++	rpmlog(RPMLOG_DEBUG, "System shutdown unblocked\n");
++    }
++    return RPMRC_OK;
++}

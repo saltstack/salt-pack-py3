@@ -1,0 +1,32 @@
+From f0a58d1dced6215b7caaa70db17d54834e0cd44e Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Fri, 18 Sep 2015 15:29:25 +0200
+Subject: [PATCH] Define PY_SSIZE_T_CLEAN
+
+When PyArg_ParseTupleAndKeywords() is used with format argument "s#"
+that means get a string and his length then the length is returned as
+as a Py_ssize_t in python3 but as an int in python2, which casues
+a problem because rpmfd_write() that uses PyArg_ParseTupleAndKeywords()
+expects the length as a Py_ssize_t always. This problem affects big
+endian systems with python2 as default. If PY_SSIZE_T_CLEAN is defined
+then PyArg_ParseTupleAndKeywords() returns the length as a Py_ssize_t
+in both python2 and python3.
+---
+ python/rpmsystem-py.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/python/rpmsystem-py.h b/python/rpmsystem-py.h
+index 50e8770..c8423e3 100644
+--- a/python/rpmsystem-py.h
++++ b/python/rpmsystem-py.h
+@@ -5,6 +5,7 @@
+ #include <sys/types.h>
+ #endif
+ 
++#define PY_SSIZE_T_CLEAN
+ #include <Python.h>
+ #include <structmember.h>
+ 
+-- 
+1.9.3
+
