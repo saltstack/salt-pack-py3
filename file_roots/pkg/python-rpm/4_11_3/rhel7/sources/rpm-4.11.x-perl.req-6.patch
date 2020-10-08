@@ -1,0 +1,81 @@
+--- rpm-4.11.3/scripts/perl.req.old	2019-05-26 15:41:33.316395021 +0200
++++ rpm-4.11.3/scripts/perl.req	2019-05-26 14:08:38.248028422 +0200
+@@ -90,10 +90,10 @@
+ 
+ sub compute_global_requires {
+  
+-# restrict require to all non provided by the file
+-  foreach my $moduler (sort keys %require) {
+-    if (exists $provide{$moduler} && length($require{$moduler}) == 0) {
+-      $require = delete $require{$moduler};
++# restrict require_removable to all non provided by the file
++  foreach my $moduler (sort keys %require_removable) {
++    if (exists $provide{$moduler} && length($require_removable{$moduler}) == 0) {
++      $require_removable = delete $require_removable{$moduler};
+     } 
+   }
+ # store requires to global_requires
+@@ -107,8 +107,21 @@
+       $global_require{$module} = $newver;
+     }
+   }
++
++# store requires_removable to global_requires
++  foreach my $module (sort keys %require_removable) {
++    my $oldver = $global_require{$module};
++    my $newver = $require_removable{$module};
++    if ($oldver) {
++      $global_require{$module} = $newver
++        if ($HAVE_VERSION && $newver && version->new($oldver) < $newver);
++    } else {
++      $global_require{$module} = $newver;
++    }
++  }
+ # remove all local requires and provides
+   undef %require;
++  undef %require_removable;
+   undef %provide;
+ }
+ 
+@@ -124,6 +137,18 @@
+   }
+ }
+ 
++sub add_require_removable {
++  my ($module, $newver) = @_;
++  my $oldver = $require_removable{$module};
++  if ($oldver) {
++    $require_removable{$module} = $newver
++      if ($HAVE_VERSION && $newver && version->new($oldver) < $newver);
++  }
++  else {
++    $require_removable{$module} = $newver;
++  }
++}
++
+ sub process_file {
+ 
+   my ($file) = @_;
+@@ -286,7 +311,6 @@
+ 
+       # if the module starts with /, it is an absolute path to a file
+       if ($module =~ m(^/)) {
+-        print "$module\n";
+         next;
+       }
+ 
+@@ -346,7 +370,13 @@
+           add_require($_, undef) for split(' ', $1);
+         }
+         elsif ($version =~ /(["'])([^"']+)\1/) {
+-          add_require($2, undef);
++          # requires like "use base name" can be removed if they are 
++          # provided in the same file
++          if (($whitespace eq "") && ($statement eq "use") && ($module eq "base"))  {
++            add_require_removable($2, undef);
++          } else {
++            add_require($2, undef);
++          }
+         }
+         next;
+       }

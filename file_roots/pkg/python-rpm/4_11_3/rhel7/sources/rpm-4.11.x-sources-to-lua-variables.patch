@@ -1,0 +1,43 @@
+From 344f938670b8f7400ef177945cef5552783d450f Mon Sep 17 00:00:00 2001
+From: Lubos Kardos <lkardos@redhat.com>
+Date: Fri, 10 Apr 2015 17:28:17 +0200
+Subject: [PATCH] Fix adding of sources to lua variables during recursive
+ parsing of spec
+
+- Before this fix sources and patches weren't added to lua variables
+  "sources" and "patches" if they were located in spec file after tag
+  "BuildArch". Now it works.(rhbz:#1084309)
+---
+ build/parsePreamble.c | 2 +-
+ build/spec.c          | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/build/parsePreamble.c b/build/parsePreamble.c
+index 21160cd..521068c 100644
+--- a/build/parsePreamble.c
++++ b/build/parsePreamble.c
+@@ -308,7 +308,7 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
+ 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+ 	free(buf);
+ #ifdef WITH_LUA
+-	if (!spec->recursing) {
++	{
+ 	    rpmlua lua = NULL; /* global state */
+ 	    const char * what = (flag & RPMBUILD_ISPATCH) ? "patches" : "sources";
+ 	    rpmluaPushTable(lua, what);
+diff --git a/build/spec.c b/build/spec.c
+index d06e2c1..1db5d15 100644
+--- a/build/spec.c
++++ b/build/spec.c
+@@ -239,6 +239,8 @@ rpmSpec newSpec(void)
+     {
+     /* make sure patches and sources tables always exist */
+     rpmlua lua = NULL; /* global state */
++    rpmluaDelVar(lua, "patches");
++    rpmluaDelVar(lua, "sources");
+     rpmluaPushTable(lua, "patches");
+     rpmluaPushTable(lua, "sources");
+     rpmluaPop(lua);
+-- 
+2.9.3
+

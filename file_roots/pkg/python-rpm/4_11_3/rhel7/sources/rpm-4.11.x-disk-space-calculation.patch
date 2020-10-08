@@ -1,0 +1,77 @@
+--- rpm-4.11.3/lib/transaction.c.old	2019-01-02 13:14:10.304068576 +0100
++++ rpm-4.11.3/lib/transaction.c	2019-02-28 11:03:32.164403544 +0100
+@@ -368,6 +368,11 @@
+     return rConflicts;
+ }
+ 
++static rpm_loff_t DivideHardlinkSize(int nlink, rpm_loff_t originalSize)
++{
++    return (originalSize / nlink) + 1;
++}
++
+ /**
+  * handleInstInstalledFiles.
+  * @param ts		transaction set
+@@ -384,6 +389,8 @@
+ {
+     rpmfs fs = rpmteGetFileStates(p);
+     int isCfgFile = ((rpmfiFFlagsIndex(otherFi, ofx) | rpmfiFFlagsIndex(fi, fx)) & RPMFILE_CONFIG);
++    rpm_loff_t otherFileSize;
++    int nlink;
+ 
+     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
+ 	return;
+@@ -445,7 +452,15 @@
+ 	action = rpmfiDecideFateIndex(otherFi, ofx, fi, fx, skipMissing);
+ 	rpmfsSetAction(fs, fx, action);
+     }
+-    rpmfiSetFReplacedSizeIndex(fi, fx, rpmfiFSizeIndex(otherFi, ofx));
++
++    otherFileSize = rpmfiFSizeIndex(otherFi, ofx);
++
++    /* Only an appropriate fraction of the file size of a hardlink */
++    nlink = rpmfiFNlinkIndex(otherFi, ofx);
++    if (nlink > 1)
++	otherFileSize = DivideHardlinkSize(nlink, otherFileSize);
++
++    rpmfiSetFReplacedSizeIndex(fi, fx, otherFileSize);
+ }
+ 
+ /**
+@@ -470,6 +485,8 @@
+ 	rpmfileAttrs FFlags;
+ 	struct rpmffi_s * recs;
+ 	int numRecs;
++	rpm_loff_t fileSize;
++	int nlink;
+ 
+ 	if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+ 	    continue;
+@@ -633,9 +650,15 @@
+ 	    break;
+ 	}
+ 
++	fileSize = rpmfiFSizeIndex(fi, i);
++	nlink = rpmfiFNlinkIndex(fi, i);
++	/* Only an appropriate fraction of the file sizeof a hardlink */
++	if (nlink > 1)
++	    fileSize = DivideHardlinkSize(nlink, fileSize);
++
+ 	/* Update disk space info for a file. */
+ 	rpmtsUpdateDSI(ts, fpEntryDev(fpc, fiFps), fpEntryDir(fpc, fiFps),
+-		       rpmfiFSizeIndex(fi, i), rpmfiFReplacedSizeIndex(fi, i),
++		       fileSize, rpmfiFReplacedSizeIndex(fi, i),
+ 		       fixupSize, rpmfsGetAction(fs, i));
+ 
+     }
+--- rpm-4.11.3/lib/rpmfi.h.old	2014-02-05 14:04:02.000000000 +0100
++++ rpm-4.11.3/lib/rpmfi.h	2019-01-07 09:57:40.407787724 +0100
+@@ -396,7 +396,7 @@
+ 
+ #define RPMFI_FLAGS_ERASE \
+     (RPMFI_NOFILECLASS | RPMFI_NOFILELANGS | \
+-     RPMFI_NOFILEMTIMES | RPMFI_NOFILERDEVS | RPMFI_NOFILEINODES | \
++     RPMFI_NOFILEMTIMES | RPMFI_NOFILERDEVS | \
+      RPMFI_NOFILEVERIFYFLAGS)
+ 
+ #define RPMFI_FLAGS_INSTALL \

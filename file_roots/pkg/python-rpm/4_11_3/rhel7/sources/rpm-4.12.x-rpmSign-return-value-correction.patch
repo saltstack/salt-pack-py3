@@ -1,0 +1,10 @@
+--- rpm-4.11.3/sign/rpmgensig.c.old	2014-09-05 13:49:16.000000000 +0200
++++ rpm-4.11.3/sign/rpmgensig.c	2018-05-03 10:58:37.104522827 +0200
+@@ -506,6 +506,7 @@
+ 	    }
+ 	    goto exit;
+ 	}
++	res = -1;
+     }
+ 
+     /* Reallocate the signature into one contiguous region. */

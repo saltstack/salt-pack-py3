@@ -1,0 +1,25 @@
+From 3c74e34e8d8c5b3db024dbe04a352e807ed2b627 Mon Sep 17 00:00:00 2001
+From: Florian Festi <ffesti@redhat.com>
+Date: Wed, 23 Sep 2015 11:30:12 +0200
+Subject: [PATCH] Fix error handling in rpmio Python binding test case
+
+---
+ tests/rpmpython.at | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/rpmpython.at b/tests/rpmpython.at
+index 949673b..eac31b2 100644
+--- a/tests/rpmpython.at
++++ b/tests/rpmpython.at
+@@ -53,7 +53,7 @@ for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
+     fd = rpm.fd(fn, 'r', iot)
+     rdata = fd.read()
+     if rdata != data:
+-        myprint('%s read fail (got %d bytes)' % (iot, len(rdata), rdata))
++        myprint('%s read fail (got %d bytes)\n%s' % (iot, len(rdata), rdata))
+     # compressed io types can't seek
+     if iot == 'ufdio':
+         fd.seek(0)
+-- 
+1.9.3
+

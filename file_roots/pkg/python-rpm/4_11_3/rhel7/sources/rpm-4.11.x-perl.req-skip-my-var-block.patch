@@ -1,0 +1,39 @@
+From 4a9b7f547ce1bb6b0b352d2e29ae4b0d3bddebfb Mon Sep 17 00:00:00 2001
+From: Florian Festi <ffesti@redhat.com>
+Date: Mon, 13 Mar 2017 11:20:11 +0100
+Subject: [PATCH] perl.req: Also skip blocks with my var = <<
+
+Before only
+var = <<BLOCK
+ foo
+BLOCK
+
+was skipped.
+
+But
+
+my var = <<BLOCK
+
+is also valid perl and needs to be skipped for dependency scanning.
+---
+ scripts/perl.req | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/perl.req b/scripts/perl.req
+index 7155518..52bd301 100755
+--- a/scripts/perl.req
++++ b/scripts/perl.req
+@@ -104,8 +104,8 @@ sub process_file {
+ 
+     # skip the "= <<" block
+ 
+-    if (m/^\s*\$(?:.*)\s*=\s*<<\s*(["'`])(.+?)\1/ ||
+-        m/^\s*\$(.*)\s*=\s*<<(\w+)\s*;/) {
++    if (m/^\s*(?:my\s*)?\$(?:.*)\s*=\s*<<\s*(["'`])(.+?)\1/ ||
++        m/^\s*(?:my\s*)?\$(.*)\s*=\s*<<(\w+)\s*;/) {
+       $tag = $2;
+       while (<FILE>) {
+         chomp;
+-- 
+2.9.3
+

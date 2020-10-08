@@ -1,0 +1,59 @@
+From 89e6317c75b494905590903fadbfdc3c8d31e2b8 Mon Sep 17 00:00:00 2001
+From: Stefan Berger <stefanb@us.ibm.com>
+Date: Fri, 29 Apr 2016 07:09:49 -0400
+Subject: [PATCH] Extend header size to 256MB due to file signatures
+
+Extend the header size to 256MB in case an RPM has a lot of files
+and the file signatures do not fit within the current limit of 16MB.
+
+An example for an RPM with many files is kcbench-data-4.0. It contains
+more than 52000 files. With each signature with a 2048 bit key requiring
+256 bytes plus a preamble, its representation in text from, and other
+overhead, the size of the header (index length and data length) exceeds
+32Mb.
+
+If this particular RPM's files have been signed using this patch, older
+versions of the rpm tool will report the header being too large. So this
+failure is expected then.
+
+By setting the limit to 256MB we create a lot of room for the future.
+
+Signed-off-by: Stefan Berger <stefanb@linux.vnet.ibm.com>
+---
+ lib/header.c          | 2 +-
+ lib/header_internal.h | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/lib/header.c b/lib/header.c
+index 81f2038..7f7c115 100644
+--- a/lib/header.c
++++ b/lib/header.c
+@@ -99,7 +99,7 @@ struct headerToken_s {
+ /** \ingroup header
+  * Maximum no. of bytes permitted in a header.
+  */
+-static const size_t headerMaxbytes = (32*1024*1024);
++static const size_t headerMaxbytes = (256*1024*1024);
+ 
+ #define	INDEX_MALLOC_SIZE	8
+ 
+diff --git a/lib/header_internal.h b/lib/header_internal.h
+index bbe2097..aed3977 100644
+--- a/lib/header_internal.h
++++ b/lib/header_internal.h
+@@ -45,9 +45,10 @@ struct indexEntry_s {
+ 
+ /**
+  * Sanity check on data size and/or offset and/or count.
+- * This check imposes a limit of 16 MB, more than enough.
++ * This check imposes a limit of 256 MB -- file signatures
++ * may require a lot of space in the header.
+  */
+-#define HEADER_DATA_MAX 0x00ffffff
++#define HEADER_DATA_MAX 0x0fffffff
+ #define hdrchkData(_nbytes) ((_nbytes) & (~HEADER_DATA_MAX))
+ 
+ /**
+-- 
+2.9.5
+

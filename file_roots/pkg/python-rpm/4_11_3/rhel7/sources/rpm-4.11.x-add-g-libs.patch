@@ -1,0 +1,86 @@
+--- rpm-4.11.3/scripts/find-debuginfo.sh.old	2019-01-02 13:14:10.283068553 +0100
++++ rpm-4.11.3/scripts/find-debuginfo.sh	2019-03-21 09:36:06.196400883 +0100
+@@ -3,6 +3,7 @@
+ #for inclusion in an rpm spec file.
+ #
+ # Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m]
++#			   [--g-libs]
+ #	 		   [-o debugfiles.list]
+ #			   [--run-dwz] [--dwz-low-mem-die-limit N]
+ #			   [--dwz-max-die-limit N]
+@@ -10,6 +11,8 @@
+ #			   [builddir]
+ #
+ # The -g flag says to use strip -g instead of full strip on DSOs or EXEs.
++# The --g-libs flag says to use strip -g instead of full strip ONLY on DSOs.
++# Options -g and --g-libs are mutually exclusive.
+ # The --strict-build-id flag says to exit with failure status if
+ # any ELF binary processed fails to contain a build-id note.
+ # The -r flag says to use eu-strip --reloc-debug-sections.
+@@ -32,6 +35,9 @@
+ # With -g arg, pass it to strip on libraries or executables.
+ strip_g=false
+ 
++# With --g-libs arg, pass it to strip on libraries.
++strip_glibs=false
++
+ # with -r arg, pass --reloc-debug-sections to eu-strip.
+ strip_r=false
+ 
+@@ -65,6 +71,9 @@
+     dwz_max_die_limit=$2
+     shift
+     ;;
++  --g-libs)
++    strip_glibs=true
++    ;;
+   -g)
+     strip_g=true
+     ;;
+@@ -100,6 +109,11 @@
+   shift
+ done
+ 
++if ("$strip_g" = "true") && ("$strip_glibs" = "true"); then
++  echo >&2 "*** ERROR: -g  and --g-libs cannot be used together"
++  exit 2
++fi
++
+ i=0
+ while ((i < nout)); do
+   outs[$i]="$BUILDDIR/${outs[$i]}"
+@@ -132,6 +146,9 @@
+   application/x-sharedlib*) g=-g ;;
+   application/x-executable*) g=-g ;;
+   esac
++  $strip_glibs && case "$(file -bi "$2")" in
++    application/x-sharedlib*) g=-g ;;
++  esac
+   eu-strip --remove-comment $r $g -f "$1" "$2" || exit
+   chmod 444 "$1" || exit
+ }
+@@ -317,7 +334,23 @@
+     chmod u-w "$f"
+   fi
+ 
+-  $include_minidebug && add_minidebug "${debugfn}" "$f"
++  # strip -g implies we have full symtab, don't add mini symtab in that case.
++  # It only makes sense to add a minisymtab for executables and shared
++  # libraries. Other executable ELF files (like kernel modules) don't need it.
++  if [ "$include_minidebug" = "true" -a "$strip_g" = "false" ]; then
++    skip_mini=true
++    if [ "$strip_glibs" = "false" ]; then
++      case "$(file -bi "$f")" in
++        application/x-sharedlib*) skip_mini=false ;;
++      esac
++    fi
++    case "$(file -bi "$f")" in
++      application/x-sharedlib*) skip_mini=false ;;
++      application/x-executable*) skip_mini=false ;;
++      application/x-pie-executable*) skip_mini=false ;;
++    esac
++    $skip_mini || add_minidebug "${debugfn}" "$f"
++  fi
+ 
+   echo "./${f#$RPM_BUILD_ROOT}" >> "$ELFBINSFILE"
+   
