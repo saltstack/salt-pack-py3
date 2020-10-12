@@ -8,6 +8,7 @@ build_pkgs:
       - build-essential
       - ubuntu-dev-tools
       - devscripts
+      - dh-exec
       - dh-make
       - fakeroot
       - debootstrap
