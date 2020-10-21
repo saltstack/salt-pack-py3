@@ -1,0 +1,38 @@
+diff -Naur a/salt/ext/tornado/gen.py b/salt/ext/tornado/gen.py
+--- a/salt/ext/tornado/gen.py	2020-01-29 17:38:10.071860102 +0000
++++ b/salt/ext/tornado/gen.py	2020-01-29 17:39:22.323469981 +0000
+@@ -484,9 +484,8 @@
+         self.current_future = done
+         self.current_index = self._unfinished.pop(done)
+ 
+-    @coroutine
+     def __aiter__(self):
+-        raise Return(self)
++        raise self
+ 
+     def __anext__(self):
+         if self.done():
+diff -Naur a/salt/ext/tornado/queues.py b/salt/ext/tornado/queues.py
+--- a/salt/ext/tornado/queues.py	2020-01-29 17:38:10.072860097 +0000
++++ b/salt/ext/tornado/queues.py	2020-01-29 17:39:52.327307976 +0000
+@@ -254,7 +254,6 @@
+         """
+         return self._finished.wait(timeout)
+ 
+-    @gen.coroutine
+     def __aiter__(self):
+         return _QueueIterator(self)
+ 
+diff -Naur a/salt/ext/tornado/test/asyncio_test.py b/salt/ext/tornado/test/asyncio_test.py
+--- a/salt/ext/tornado/test/asyncio_test.py	2020-01-29 17:38:10.069860113 +0000
++++ b/salt/ext/tornado/test/asyncio_test.py	2020-01-29 17:41:06.313908487 +0000
+@@ -47,7 +47,8 @@
+         if hasattr(asyncio, 'ensure_future'):
+             ensure_future = asyncio.ensure_future
+         else:
+-            ensure_future = asyncio.async
++            # async is a reserved word in Python 3.7
++            ensure_future = getattr(asyncio, "async")
+ 
+         x = yield ensure_future(
+             asyncio.get_event_loop().run_in_executor(None, lambda: 42))
