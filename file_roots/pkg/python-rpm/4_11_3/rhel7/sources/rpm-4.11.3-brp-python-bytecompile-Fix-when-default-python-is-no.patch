@@ -1,0 +1,27 @@
+--- rpm-4.11.3/scripts/brp-python-bytecompile.old	2014-02-05 14:04:02.000000000 +0100
++++ rpm-4.11.3/scripts/brp-python-bytecompile	2019-03-25 09:43:06.272804044 +0100
+@@ -6,12 +6,6 @@
+ 	exit 0
+ fi
+ 
+-# If we don't have a python interpreter, avoid changing anything.
+-default_python=${1:-/usr/bin/python}
+-if [ ! -x "$default_python" ]; then
+-	exit 0
+-fi
+-
+ # Figure out how deep we need to descend.  We could pick an insanely high
+ # number and hope it's enough, but somewhere, somebody's sure to run into it.
+ depth=`(find "$RPM_BUILD_ROOT" -type f -name "*.py" -print0 ; echo /) | \
+@@ -55,6 +49,11 @@
+ 	fi
+ done
+ 
++# If we don't have a python interpreter, avoid changing anything.
++default_python=${1:-/usr/bin/python}
++if [ ! -x "$default_python" ]; then
++	exit 0
++fi
+ 
+ # Handle other locations in the filesystem using the default python
+ # implementation:

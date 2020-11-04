@@ -1,0 +1,109 @@
+From 454285b3a259c6bbf5fee4300fac2f50a40e4ac4 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Tue, 24 Jun 2014 15:11:32 +0300
+Subject: [PATCH] Add disabler flag + --noplugins cli switch for plugins
+
+- Always knew we'd need a plugin disabler flag sooner than later but
+  didn't realize enabled plugins would fail basically the entire
+  test-suite :)
+- Enable --noplugins for entire test-suite for now, but eventually
+  we'll need to come up with ways to test plugins as well
+---
+ lib/poptALL.c      | 5 +++++
+ lib/rpmts.h        | 2 +-
+ lib/transaction.c  | 2 +-
+ python/rpmmodule.c | 1 +
+ tests/atlocal.in   | 2 +-
+ 5 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/lib/poptALL.c b/lib/poptALL.c
+index 31e1210..2e894e0 100644
+--- a/lib/poptALL.c
++++ b/lib/poptALL.c
+@@ -187,6 +187,11 @@ struct poptOption rpmcliAllPoptTable[] = {
+ 	N_("read <FILE:...> instead of default file(s)"),
+ 	N_("<FILE:...>") },
+ 
++ /* XXX this is a bit out of place here but kinda unavoidable... */
++ { "noplugins", '\0', POPT_BIT_SET,
++	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOPLUGINS,
++	N_("don't enable any plugins"), NULL },
++
+  { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
+         N_("don't verify package digest(s)"), NULL },
+  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
+diff --git a/lib/rpmts.h b/lib/rpmts.h
+index e1b260d..5231c80 100644
+--- a/lib/rpmts.h
++++ b/lib/rpmts.h
+@@ -34,7 +34,7 @@ enum rpmtransFlags_e {
+     RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
+     RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
+     RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
+-    /* bit 7 unused */
++    RPMTRANS_FLAG_NOPLUGINS	= (1 <<  7),	/*!< from --noplugins */
+     RPMTRANS_FLAG_NOCONTEXTS	= (1 <<  8),	/*!< from --nocontexts */
+     /* bits 9-15 unused */
+     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
+diff --git a/lib/transaction.c b/lib/transaction.c
+index 0317c1e..736f64d 100644
+--- a/lib/transaction.c
++++ b/lib/transaction.c
+@@ -1361,6 +1361,9 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
+      * (verification of non-installed package) where this is not true
+      * currently but that's not a new issue.
+      */
++
++    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOPLUGINS)
++ 	return RPMRC_OK;
+ 
+     dsoPath = rpmExpand("%{__plugindir}/*.so", NULL);
+     if (rpmGlob(dsoPath, &nfiles, &files) == 0) {
+diff --git a/python/rpmmodule.c b/python/rpmmodule.c
+index e0fcef0..4e6fe27 100644
+--- a/python/rpmmodule.c
++++ b/python/rpmmodule.c
+@@ -428,6 +428,7 @@ static int initModule(PyObject *m)
+     REGISTER_ENUM(RPMTRANS_FLAG_NOTRIGGERS);
+     REGISTER_ENUM(RPMTRANS_FLAG_NODOCS);
+     REGISTER_ENUM(RPMTRANS_FLAG_ALLFILES);
++    REGISTER_ENUM(RPMTRANS_FLAG_NOPLUGINS);
+     REGISTER_ENUM(RPMTRANS_FLAG_KEEPOBSOLETE);
+     REGISTER_ENUM(RPMTRANS_FLAG_NOCONTEXTS);
+     REGISTER_ENUM(RPMTRANS_FLAG_REPACKAGE);
+diff --git a/tests/atlocal.in b/tests/atlocal.in
+index 10ff27a..c2a07d5 100644
+--- a/tests/atlocal.in
++++ b/tests/atlocal.in
+@@ -30,6 +30,6 @@ function run()
+ function runroot()
+ {
+     (cd ${RPMTEST} && \
+-     MAGIC="/magic/magic" FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir /build"
++     MAGIC="/magic/magic" FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir /build" --noplugins
+     )
+ }
+-- 
+2.5.5
+
+--- current/doc/rpm.8.orig	2016-07-14 14:34:14.286125290 +0200
++++ current/doc/rpm.8	2016-07-14 14:36:29.715481426 +0200
+@@ -86,7 +86,7 @@
+  [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
+  [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
+  [\fB--includedocs\fR] [\fB--justdb\fR] [\fB--nocollections\fR]
+- [\fB--nodeps\fR] [\fB--nodigest\fR] [\fB--nosignature\fR]
++ [\fB--nodeps\fR] [\fB--nodigest\fR] [\fB--nosignature\fR] [\fB--noplugins\fR]
+  [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] 
+  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
+  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
+@@ -269,6 +269,9 @@
+ Don't reorder the packages for an install. The list of
+ packages would normally be reordered to satisfy dependencies.
+ .TP
++\fB--noplugins\fR
++Do not load and execute plugins.
++.TP
+ \fB--noscripts\fR
+ .TP
+ \fB--nopre\fR

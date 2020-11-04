@@ -1,0 +1,53 @@
+--- rpm-4.11.3/build/files.c.old	2019-01-02 13:14:10.217068479 +0100
++++ rpm-4.11.3/build/files.c	2019-03-20 13:18:38.290142740 +0100
+@@ -2015,23 +2015,32 @@
+ 	    flp->fl_mode &= S_IFMT;
+ 	    flp->fl_mode |= fl.def.ar.ar_fmode;
+ 	}
++
+ 	if (fl.def.ar.ar_user) {
+ 	    flp->uname = fl.def.ar.ar_user;
+ 	} else {
+ 	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(flp->fl_uid), 1);
+ 	}
++	if (! flp->uname) {
++	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(getuid()), 1);
++	}
++	if (! flp->uname) {
++	    flp->uname = rpmstrPoolId(fl.pool, "root", 1);
++	}
++
+ 	if (fl.def.ar.ar_group) {
+ 	    flp->gname = fl.def.ar.ar_group;
+ 	} else {
+ 	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(flp->fl_gid), 1);
+ 	}
+-	flp->langs = xstrdup("");
+-	
+-	if (! (flp->uname && flp->gname)) {
+-	    rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), diskPath);
+-	    fl.processingFailed = 1;
++	if (! flp->gname) {
++	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(getgid()), 1);
++	}
++	if (! flp->gname) {
++	    flp->gname = rpmstrPoolId(fl.pool, "root", 1);
+ 	}
+ 
++	flp->langs = xstrdup("");
+ 	fl.files.used++;
+     }
+     argvFree(files);
+--- rpm-4.11.3/build/parsePrep.c.old	2013-11-22 11:31:31.000000000 +0100
++++ rpm-4.11.3/build/parsePrep.c	2019-03-20 13:19:33.705172465 +0100
+@@ -29,10 +29,6 @@
+ 		urlfn, strerror(errno));
+ 	return RPMRC_FAIL;
+     }
+-    if (!rpmugUname(sb.st_uid) || !rpmugGname(sb.st_gid)) {
+-	rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), urlfn);
+-	return RPMRC_FAIL;
+-    }
+ 
+     return RPMRC_OK;
+ }

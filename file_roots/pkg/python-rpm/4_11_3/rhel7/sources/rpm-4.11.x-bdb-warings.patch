@@ -1,0 +1,10 @@
+--- rpm-4.11.3/lib/backend/db3.c.orig	2016-04-22 09:16:15.019084419 +0200
++++ rpm-4.11.3/lib/backend/db3.c	2016-04-22 09:17:16.448291533 +0200
+@@ -190,6 +190,7 @@
+     dbenv->set_alloc(dbenv, rmalloc, rrealloc, NULL);
+     dbenv->set_errcall(dbenv, NULL);
+     dbenv->set_errpfx(dbenv, _errpfx);
++    dbenv->set_msgfile(dbenv, stderr);
+ 
+     /* 
+      * These enable automatic stale lock removal. 

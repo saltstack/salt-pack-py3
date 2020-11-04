@@ -1,0 +1,21 @@
+--- rpm-4.11.3/lib/fprint.c.old	2014-02-05 14:04:01.000000000 +0100
++++ rpm-4.11.3/lib/fprint.c	2019-08-21 16:28:03.255538275 +0200
+@@ -484,7 +484,7 @@
+ 	(void) rpmdbCheckSignals();
+ 
+ 	if ((fi = rpmteFI(p)) == NULL)
+-	    continue;	/* XXX can't happen */
++	    continue;
+ 
+ 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+ 	rpmfiFpLookup(fi, fpc);
+@@ -518,6 +518,9 @@
+     while ((p = rpmtsiNext(pi, 0)) != NULL) {
+ 	(void) rpmdbCheckSignals();
+ 
++	if ((fi = rpmteFI(p)) == NULL)
++	    continue;
++
+ 	fs = rpmteGetFileStates(p);
+ 	fc = rpmfsFC(fs);
+ 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);

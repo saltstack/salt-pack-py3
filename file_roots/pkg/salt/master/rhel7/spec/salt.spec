@@ -93,6 +93,7 @@ Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
+Requires: python%{python3_pkgversion}-rpm
 
 ## Tornado removed in Neon, hence need its BuildRequires
 ## %%if 0%%{?rhel} == 7

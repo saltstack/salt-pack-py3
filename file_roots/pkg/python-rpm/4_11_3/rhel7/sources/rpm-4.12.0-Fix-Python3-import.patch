@@ -1,0 +1,29 @@
+From 97989236c0f39ccbc7f2c1d52cc30f167fd827fe Mon Sep 17 00:00:00 2001
+From: Florian Festi <ffesti@redhat.com>
+Date: Mon, 26 Jan 2015 14:22:34 +0100
+Subject: [PATCH] Fix Python import directive for more strict Python3 search
+ rules
+
+Fixes http://rpm.org/ticket/885
+---
+ python/rpm/transaction.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/python/rpm/transaction.py b/python/rpm/transaction.py
+index db7ca67..91a6cc1 100644
+--- a/python/rpm/transaction.py
++++ b/python/rpm/transaction.py
+@@ -37,8 +37,8 @@ class TransactionSet(TransactionSetCore):
+         return self._wrapSetGet('_probFilter', ignoreSet)
+ 
+     def parseSpec(self, specfile):
+-        import _rpmb
+-        return _rpmb.spec(specfile)
++        import rpm._rpmb
++        return rpm._rpmb.spec(specfile)
+ 
+     def getKeys(self):
+         keys = []
+-- 
+2.1.0
+

@@ -74,5 +74,8 @@ build_additional_py3_pkgs:
       - libcurl
       - libcurl-devel
 
+epel-rpm-macros:
+  pkg.installed
+
 ##  - desktop-file-utils
 ##  - libappstream-glib

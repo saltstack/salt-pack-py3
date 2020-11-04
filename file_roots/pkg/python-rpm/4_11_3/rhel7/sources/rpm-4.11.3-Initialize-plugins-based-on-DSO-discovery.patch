@@ -1,0 +1,91 @@
+From b62a75b137bde84ec8bac92c0238502b422c56ce Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Tue, 24 Jun 2014 14:37:38 +0300
+Subject: [PATCH] Initialize plugins based on DSO discovery
+
+- %__transaction_plugins style configuration is problematic for plugins
+  because we want plugins to be, well, pluggable. As in drop-in to
+  enable, which is not achievable with a single macro entry. Look up
+  all DSO's from the plugin dir and enable if a matching
+  %__transaction_foo macro is defined.
+- This isn't optimal but it'll buy us the drop-in capability, which
+  is what matters most right now. We'll want to have forcability as
+  well later on (ie it should be possible to require given plugins
+  to be present)
+
+Conflicts:
+	lib/transaction.c
+---
+ lib/rpmplugins.c  |  3 ++-
+ lib/transaction.c | 34 +++++++++++++++++-----------------
+ 2 files changed, 19 insertions(+), 18 deletions(-)
+
+diff --git a/lib/rpmplugins.c b/lib/rpmplugins.c
+index 7285f54..4e600db 100644
+--- a/lib/rpmplugins.c
++++ b/lib/rpmplugins.c
+@@ -84,8 +84,9 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
+ 
+     path = rpmExpand("%{?__", type, "_", name, "}", NULL);
+     if (!path || rstreq(path, "")) {
+-	rpmlog(RPMLOG_ERR, _("Failed to expand %%__%s_%s macro\n"),
++	rpmlog(RPMLOG_DEBUG, _("Plugin %%__%s_%s not configured\n"),
+ 	       type, name);
++	rc = RPMRC_NOTFOUND;
+ 	goto exit;
+     }
+ 
+diff --git a/lib/transaction.c b/lib/transaction.c
+index 08a5643..386f107 100644
+--- a/lib/transaction.c
++++ b/lib/transaction.c
+@@ -1440,29 +1440,29 @@ static int rpmtsProcess(rpmts ts)
+ static rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
+ {
+     rpmRC rc = RPMRC_OK;
+-    char *plugins = NULL, *plugin = NULL;
+-    const char *delims = ",";
++    ARGV_t files = NULL;
++    int nfiles = 0;
++    char *dsoPath = NULL;
+ 
+-    plugins = rpmExpand("%{?__transaction_plugins}", NULL);
+-    if (!plugins || rstreq(plugins, "")) {
+-	goto exit;
+-    }
++    /*
++     * Assume allocated equals initialized. There are some oddball cases
++     * (verification of non-installed package) where this is not true
++     * currently but that's not a new issue.
++     */
+ 
+-    plugin = strtok(plugins, delims);
+-    while(plugin != NULL) {
+-	rpmlog(RPMLOG_DEBUG, "plugin is %s\n", plugin);
+-	if (!rpmpluginsPluginAdded(ts->plugins, (const char*)plugin)) {
+-	    if (rpmpluginsAddPlugin(ts->plugins, "transaction",
+-				    (const char*)plugin) == RPMRC_FAIL) {
+-		/* any configured plugin failing to load is a failure */
++    dsoPath = rpmExpand("%{__plugindir}/*.so", NULL);
++    if (rpmGlob(dsoPath, &nfiles, &files) == 0) {
++	rpmPlugins tsplugins = rpmtsPlugins(ts);
++	for (int i = 0; i < nfiles; i++) {
++	    char *bn = basename(files[i]);
++	    bn[strlen(bn)-strlen(".so")] = '\0';
++	    if (rpmpluginsAddPlugin(tsplugins, "transaction", bn) == RPMRC_FAIL)
+ 		rc = RPMRC_FAIL;
+-	    }
+ 	}
+-	plugin = strtok(NULL, delims);
++	files = argvFree(files);
+     }
++    free(dsoPath);
+ 
+-exit:
+-    free(plugins);
+     return rc;
+ }
+ 
+-- 
+2.1.0
+

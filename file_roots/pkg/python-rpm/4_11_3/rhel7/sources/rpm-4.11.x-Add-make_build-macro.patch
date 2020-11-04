@@ -1,0 +1,37 @@
+From 89df36524bace71decee4ab4f979d4ffb449c9a7 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Wed, 22 Jan 2014 10:56:00 +0200
+Subject: [PATCH] Add %make_build macro for hiding parallel-build magic from
+ specs (ticket #115)
+
+- This allows simplifying the make invokations from specs. In particular
+  the parallel build options no longer need to be messed with from specs,
+  and %__make can be overridden to force a different make implementation
+  to be used throughout the spec.
+- While a lot of software builds correctly in parallel, there are always
+  exceptions... together with _smp_ncpus_max macro this can now be
+  expressed with a separate "%global _smp_ncpus_max 1" (or any other
+  arbitrary value beyond which parallel build is buggy) line which
+  is easy to grep for and experiment with.
+---
+ macros.in | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/macros.in b/macros.in
+index 5a075a3..9c7a111 100644
+--- a/macros.in
++++ b/macros.in
+@@ -861,6 +861,10 @@ package or when debugging this package.\
+ 	--infodir=%{_infodir}
+ 
+ #------------------------------------------------------------------------------
++# The "make" analogue, hiding the _smp_mflags magic from specs
++%make_build %{__make} %{?_smp_mflags}
++
++#------------------------------------------------------------------------------
+ # The make install analogue of %configure for modern autotools:
+ %make_install %{__make} install DESTDIR=%{?buildroot}
+ 
+-- 
+2.1.0
+

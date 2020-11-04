@@ -1,0 +1,28 @@
+--- rpm-4.11.3/rpmpopt.in.old	2019-01-02 13:14:10.222068485 +0100
++++ rpm-4.11.3/rpmpopt.in	2019-01-02 13:36:46.212326391 +0100
+@@ -52,6 +52,25 @@
+         --pipe "(echo 'ch() { chown -h -- \"$1\" \"$3\";chgrp -h -- \"$2\" \"$3\"; }';grep '^ch '|grep -v \(none\))|sh" \
+ 	--POPTdesc=$"set user/group ownership of files in a package"
+ 
++
++rpm	alias --setcaps -q --qf \
++        "[if \[ -f %{FILENAMES:shescape} -a ! -L %{FILENAMES:shescape} \]; then\n\
++%|FILECAPS?{  if \[ -n %{FILECAPS:shescape} \]; then\n\
++    setcap %{FILECAPS:shescape} %{FILENAMES:shescape}\n\
++  el}:{  }|if \[ -n \"\$(getcap %{FILENAMES:shescape})\" \]; then\n\
++    setcap -r %{FILENAMES:shescape}\n\
++  fi\n\
++fi\n]" \
++    --pipe "sh" \
++    --POPTdesc=$"set capabilities of files in a package"
++
++rpm	alias --restore -q --qf \
++    '[  rpm --setugids %{NAME:shescape}; \
++        rpm --setperms %{NAME:shescape}; \
++        rpm --setcaps  %{NAME:shescape}; \n]' --pipe "sh" \
++    --POPTdesc=$"restore file/directory permissions"
++
++
+ rpm	alias --conflicts	--qf \
+   "[%|VERBOSE?{%{CONFLICTFLAGS:deptype}: }:{}|%{CONFLICTNEVRS}\n]" \
+ 	--POPTdesc=$"list capabilities this package conflicts with"

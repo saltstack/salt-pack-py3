@@ -461,6 +461,18 @@ pkgbuild_registry:
         - python-idna
       results:
         - python36-requests
+    python-rpm:
+      version: 4.11.3-8
+      build_deps:
+        - rpm
+        - rpm-build
+        - rpm-build-libs
+        - rpm-libs
+        - rpm-plugin-systemd-inhibit
+        - rpm-python
+        - rpm-sign
+      results:
+        - python36-rpm
     python-setuptools:
       version: 39.2.0-4
       noarch: True

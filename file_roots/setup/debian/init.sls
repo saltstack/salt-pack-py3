@@ -6,6 +6,7 @@ build_pkgs:
     - pkgs:
       - build-essential
       - devscripts
+      - dh-exec
       - dh-make
       - fakeroot
       - debootstrap
