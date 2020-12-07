@@ -35,6 +35,7 @@ build_additional_py3_pkgs:
     - pkgs:
       - python36
       - python36-devel
+      - python3-gnupg
       - python3-setuptools
       - createrepo_c
       - rpm-sign

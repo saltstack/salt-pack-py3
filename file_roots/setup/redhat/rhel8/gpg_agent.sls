@@ -16,7 +16,7 @@
 {% set pinentry_parms = '
         pinentry-timeout 30
         allow-loopback-pinentry' %}
-{% set pinentry_text = 'pinentry-program /usr/bin/pinentry-tty' %}
+{% set pinentry_text = 'pinentry-program /usr/bin/pinentry-curses' %}
 {% set kill_gpg_agent_text = 'gpgconf --kill gpg-agent' %}
 
 {% set pkg_pub_key_absfile = gpg_key_dir ~ '/' ~ pkg_pub_key_file %}
