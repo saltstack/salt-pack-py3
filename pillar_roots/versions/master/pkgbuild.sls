@@ -150,6 +150,13 @@ pkgbuild_registry:
         - python-mock
       results:
         - python3-cherrypy
+    python-contextvars:
+      version: 2.4-1
+      noarch: True
+      build_deps:
+        - python3-immutables
+      results:
+        - python3-contextvars
     python-distro:
       version: 1.2.0-4
       noarch: True
@@ -165,6 +172,10 @@ pkgbuild_registry:
       noarch: True
       results:
         - python3-gnupg
+    python-immutables:
+      version: 0.14-1
+      results:
+        - python3-immutables
     python-libcloud:
       version: 2.4.0-1
       noarch: True
@@ -323,6 +334,13 @@ pkgbuild_registry:
         - python-mock
       results:
         - python36-cherrypy
+    python-contextvars:
+      version: 2.4-1
+      noarch: True
+      build_deps:
+        - python36-immutables
+      results:
+        - python36-contextvars
     python-distro:
       version: 1.2.0-4
       noarch: True
@@ -349,6 +367,10 @@ pkgbuild_registry:
       noarch: True
       results:
         - python36-idna
+    python-immutables:
+      version: 0.14-1
+      results:
+        - python36-immutables
     python-jinja2:
       version: 2.8.1-3
       noarch: True

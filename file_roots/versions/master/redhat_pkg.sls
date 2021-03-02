@@ -17,9 +17,11 @@ include:
     - pkg.mock-core-configs.30_3.rhel8      ## B
     - pkg.python36.3_6_8.rhel7
     - pkg.python-cherrypy.5_6_0.rhel8       ## B
+    - pkg.python-contextvars.2_4.rhel8
     - pkg.python-distro.1_2_0.rhel8         ## B
     - pkg.python-funcsigs.1_0_2.rhel8       ## B
     - pkg.python-gnupg.0_4_4.rhel8          ## B
+    - pkg.python-immutables.0_14.rhel8
     - pkg.python-libcloud.2_4_0.rhel8       ## B
     - pkg.python-m2crypto.0_33_0.rhel8      ## B
     - pkg.python-msgpack.0_6_1.rhel8        ## B EPEL-7 python36-msgpack 0.5.6-5.el7,doing latest
@@ -44,9 +46,11 @@ include:
     - pkg.python-bottle.0_12_13.rhel7       ##   EPEL python36-bottle.0.12.13-3
     - pkg.python-chardet.3_0_4.rhel7        ##   EPEL python36-chardet 3.0-4-1.el7
     - pkg.python-cherrypy.5_6_0.rhel7
+    - pkg.python-contextvars.2_4.rhel7
     - pkg.python-crypto.2_6_1.rhel7         ##   EPEL python36-crypto 2.6.1-16.el7  not needed since M2Crypto
     - pkg.python-gnupg.0_4_4.rhel7          ## B
     - pkg.python-idna.2_7.rhel7             ## EPEL python36-idna.2.7-5.el7
+    - pkg.python-immutables.0_14.rhel7
     - pkg.python-jinja2.2_8_1.rhel7         ## EPEL python36-jinja2.2.8.1-2.el7
     - pkg.python-libcloud.2_0_0.rhel7       ## B
     - pkg.python-m2crypto.0_33_0.rhel7      ## B

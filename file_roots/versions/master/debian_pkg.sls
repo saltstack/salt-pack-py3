@@ -7,6 +7,8 @@ include:
 
 {% elif buildcfg.build_release == 'debian9' %}
 
+    - pkg.python-contextvars.2_4.debian9
+    - pkg.python-immutables.0_14.debian9
     - pkg.python-jinja2.2_9_4.debian9
     - pkg.python-msgpack.0_6_2.debian9
     - pkg.python-pycryptodome.3_6_1.debian9
