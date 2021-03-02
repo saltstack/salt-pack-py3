@@ -2,8 +2,8 @@
 {% set force = salt['pillar.get']('build_force.all', False) or salt['pillar.get']('build_force.' ~ slspath, False) %}
 
 {% set pypi_name = 'contextvars' %}
-{% set name = 'python-' ~ 'immutables' %}
-{% set name3 = 'python3-' ~ 'immutables' %}
+{% set name = 'python-' ~ pypi_name %}
+{% set name3 = 'python3-' ~ pypi_name %}
 {% set version = '2.4' %}
 {% set release_ver = '1' %}
 
