@@ -153,8 +153,6 @@ pkgbuild_registry:
     python-contextvars:
       version: 2.4-1
       noarch: True
-      build_deps:
-        - python3-immutables
       results:
         - python3-contextvars
     python-distro:
@@ -337,8 +335,6 @@ pkgbuild_registry:
     python-contextvars:
       version: 2.4-1
       noarch: True
-      build_deps:
-        - python36-immutables
       results:
         - python36-contextvars
     python-distro:

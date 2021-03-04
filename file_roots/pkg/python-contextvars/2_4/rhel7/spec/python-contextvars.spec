@@ -10,7 +10,6 @@ BuildArch: noarch
 BuildRequires: python%{python3_pkgversion}-setuptools
 BuildRequires: epel-rpm-macros
 BuildRequires: python3-rpm-macros
-BuildRequires: python%{python3_pkgversion}-immutables
 Requires: python%{python3_pkgversion}
 Requires: python%{python3_pkgversion}-immutables
 

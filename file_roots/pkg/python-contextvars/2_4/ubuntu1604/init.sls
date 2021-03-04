@@ -11,7 +11,7 @@
   pkgbuild.built:
     - runas: {{buildcfg.build_runas}}
     - results:
-      - {{name3}}_{{version}}-{{release_ver}}_{{buildcfg.build_arch}}.deb
+      - {{name3}}_{{version}}-{{release_ver}}_all.deb
       - {{pypi_name}}_{{version}}.orig.tar.gz
       - {{pypi_name}}_{{version}}-{{release_ver}}.dsc
       - {{pypi_name}}_{{version}}-{{release_ver}}.debian.tar.xz
