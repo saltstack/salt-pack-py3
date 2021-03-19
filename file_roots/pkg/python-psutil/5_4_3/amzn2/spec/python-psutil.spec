@@ -16,7 +16,7 @@
 
 Name:           python-%{srcname}
 Version:        5.4.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        %{sum}
 
 License:        BSD
@@ -68,6 +68,7 @@ ifconfig, nice, ionice, iostat, iotop, uptime, pidof, tty, who, taskset, pmap.
 %package -n python%{python3_pkgversion}-psutil
 Summary:        %{sum}
 %if 0%{?with_amzn2}
+Provides: python37-psutil = %{version}-%{release}
 BuildRequires:  python3-rpm-macros
 %endif
 BuildRequires:  python%{python3_pkgversion}-devel
@@ -148,6 +149,9 @@ make test-memleaks PYTHON=%%{__python3}
 
 
 %changelog
+* Fri Mar 29 2021 SaltStack Packaging Team <packaging@saltstackcom> - 5.4.3-9
+- Provide python37-psutil to avoid conflicts with epel
+
 * Thu Jun 20 2019 SaltStack Packaging Team <packaging@saltstack.com> - 5.4.3-8
 - Made support for Python 2 optional
 

@@ -799,7 +799,7 @@ pkgbuild_registry:
       results:
         - python3-pluggy
     python-psutil:
-      version: 5.4.3-8
+      version: 5.4.3-9
       build_deps:
         - python-mock
         - python-six
@@ -813,7 +813,7 @@ pkgbuild_registry:
       results:
         - python3-py
     python-pycryptodome:
-      version: 3.6.1-4
+      version: 3.6.1-5
       build_deps:
         - libtommath
         - libtomcrypt

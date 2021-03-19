@@ -88,7 +88,8 @@ BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
-Requires: python%{python3_pkgversion}-pycryptodomex
+# not using python3_pkgversion to avoid epel conflicts
+Requires: python37-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
@@ -107,7 +108,8 @@ Requires: python%{python3_pkgversion}-rpm
 Requires: python%{python3_pkgversion}-pycurl
 
 Requires: python%{python3_pkgversion}-six
-Requires: python%{python3_pkgversion}-psutil
+# not using python3_pkgversion to avoid epel conflicts
+Requires: python37-psutil
 %if 0%{?with_amzn2}
 Requires: python%{python3_pkgversion}-pyyaml
 Requires: python%{python3_pkgversion}-distro
