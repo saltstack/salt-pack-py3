@@ -48,6 +48,7 @@ include:
     - pkg.python-cherrypy.5_6_0.rhel7
     - pkg.python-contextvars.2_4.rhel7
     - pkg.python-crypto.2_6_1.rhel7         ##   EPEL python36-crypto 2.6.1-16.el7  not needed since M2Crypto
+    - pkg.python-distro.1_2_0.rhel7         ## B
     - pkg.python-gnupg.0_4_4.rhel7          ## B
 #    - pkg.python-idna.2_7.rhel7             ## EPEL python36-idna.2.7-5.el7
     - pkg.python-immutables.0_14.rhel7
@@ -57,9 +58,9 @@ include:
     - pkg.python-markupsafe.0_23.rhel7      ## EPEL python36-markupsafe-0.23-3.el7
     - pkg.python-msgpack.0_6_2.rhel7        ##   EPEL python36-msgpack 0.5.6-5.el7
     - pkg.python-mock.2_0_0.rhel7           ##   EPEL python36-mock-2.0.0-2.el7
-#    - pkg.python-pycryptodomex.3_7_3.rhel7  ##   EPEL python36-pycryptodomex-3.7.3-2
-#    - pkg.python-psutil.2_2_1.rhel7         ##   EPEL python36-psutil 2.2.1-5.el7
     - pkg.python-pbr.4_2_0.rhel7            ## EPEL python36-pbr.4.2.0-2.el7
+#    - pkg.python-psutil.2_2_1.rhel7         ##   EPEL python36-psutil 2.2.1-5.el7
+#    - pkg.python-pycryptodomex.3_7_3.rhel7  ##   EPEL python36-pycryptodomex-3.7.3-2
     - pkg.python-pycurl.7_43_0.rhel7        ## EPEL python36-pycurl.7.43.0-7
     - pkg.python-pyOpenSSL.17_3_0.rhel7     ## EPEL python36-pyOpenSSL.17.3.0-1
 #    - pkg.python-pysocks.1_6_8.rhel7        ## EPEL python36-pysocks.1.6.8-6.el7
@@ -75,7 +76,6 @@ include:
 #    - pkg.python-yaml.3_11.rhel7            ##   EPEL python36-PyYaml-3.12-1.el7
     - pkg.salt.master.rhel7
     - pkg.zeromq.4_1_4.rhel7                ##   EPEL zeromq-4.1.4-6.el7
-    - pkg.python-distro.1_2_0.rhel7         ## B
 
 {% elif buildcfg.build_release == 'fedora' %}
 

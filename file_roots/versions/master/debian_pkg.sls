@@ -3,6 +3,8 @@
 include:
 {% if buildcfg.build_release == 'debian10' %}
 
+    - pkg.python-contextvars.2_4.debian10
+    - pkg.python-immutables.0_14.debian10
     - pkg.salt.master.debian10
 
 {% elif buildcfg.build_release == 'debian9' %}

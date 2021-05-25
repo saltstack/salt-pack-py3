@@ -3,6 +3,8 @@
 include:
 {% if buildcfg.build_release == 'ubuntu2004' %}
 
+    - pkg.python-contextvars.2_4.ubuntu2004
+    - pkg.python-immutables.0_14.ubuntu2004
     - pkg.salt.master.ubuntu2004
 
 {% elif buildcfg.build_release == 'ubuntu1804' %}
