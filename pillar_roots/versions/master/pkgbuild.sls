@@ -648,16 +648,16 @@ pkgbuild_registry:
       noarch: True
       results:
         - python3-backports_abc
-    python-bottle:
-      version: 0.12.13-8
-      noarch: True
-      results:
-        - python3-bottle
-    python-chardet:
-      version: 3.0.4-11
-      noarch: True
-      results:
-        - python3-chardet
+#    python-bottle:
+#      version: 0.12.13-8
+#      noarch: True
+#      results:
+#        - python3-bottle
+#    python-chardet:
+#      version: 3.0.4-11
+#      noarch: True
+#      results:
+#        - python3-chardet
     python-cherrypy:
       version: 5.6.0-6
       noarch: True
@@ -665,6 +665,11 @@ pkgbuild_registry:
         - python3-cherrypy
       build_deps:
         - python-nose
+    python-contextvars:
+      version: 2.4-1
+      noarch: True
+      results:
+        - python3-contextvars
     python-coverage:
       version: 4.5.1-5
       results:
@@ -723,11 +728,15 @@ pkgbuild_registry:
         - python-coverage
       results:
         - python3-hypothesis
-    python-idna:
-      version: 2.7-5
-      noarch: True
+#    python-idna:
+#      version: 2.7-5
+#      noarch: True
+#      results:
+#        - python3-idna
+    python-immutables:
+      version: 0.14-1
       results:
-        - python3-idna
+        - python3-immutables
     python-jinja2:
       version: 2.10-8
       noarch: True
@@ -754,14 +763,14 @@ pkgbuild_registry:
       version: 1.0-3
       results:
         - python3-markupsafe
-    python-mock:
-      version: 2.0.0-15
-      noarch: True
-      build_deps:
-        - python-pbr
-        - python-six
-      results:
-        - python3-mock
+#    python-mock:
+#      version: 2.0.0-15
+#      noarch: True
+#      build_deps:
+#        - python-pbr
+#        - python-six
+#      results:
+#        - python3-mock
     python-more-itertools:
       version: 4.1.0-6
       noarch: True
@@ -776,21 +785,21 @@ pkgbuild_registry:
         - python-funcsigs
       results:
         - python3-msgpack
-    python-nose:
-      version: 1.3.7-23
-      noarch: True
-      build_deps:
-        - python-setuptools
-        - python-mock
-        - python-coverage
-        - python-six
-      results:
-        - python3-nose
-    python-pbr:
-      version: 5.1.2-4
-      noarch: True
-      results:
-        - python3-pbr
+#    python-nose:
+#      version: 1.3.7-23
+#      noarch: True
+#      build_deps:
+#        - python-setuptools
+#        - python-mock
+#        - python-coverage
+#        - python-six
+#      results:
+#        - python3-nose
+#    python-pbr:
+#      version: 5.1.2-4
+#      noarch: True
+#      results:
+#        - python3-pbr
     python-pluggy:
       version: 0.7.1-3
       noarch: True
@@ -798,13 +807,13 @@ pkgbuild_registry:
         - python-setuptools_scm
       results:
         - python3-pluggy
-    python-psutil:
-      version: 5.4.3-9
-      build_deps:
-        - python-mock
-        - python-six
-      results:
-        - python3-psutil
+#    python-psutil:
+#      version: 5.4.3-9
+#      build_deps:
+#        - python-mock
+#        - python-six
+#      results:
+#        - python3-psutil
     python-py:
       version: 1.5.4-5
       noarch: True
@@ -838,11 +847,11 @@ pkgbuild_registry:
       noarch: True
       results:
         - python3-pyroute2
-    python-pysocks:
-      version: 1.6.8-6
-      noarch: True
-      results:
-        - python3-pysocks
+#    python-pysocks:
+#      version: 1.6.8-6
+#      noarch: True
+#      results:
+#        - python3-pysocks
     python-pytest:
       version: 3.6.4-3
       noarch: True
@@ -881,15 +890,15 @@ pkgbuild_registry:
         - zeromq
       results:
         - python3-zmq
-    python-requests:
-      version: 2.19.1-5
-      noarch: True
-      build_deps:
-        - python-chardet
-        - python-idna
-        - python-urllib3
-      results:
-        - python3-requests
+#    python-requests:
+#      version: 2.19.1-5
+#      noarch: True
+#      build_deps:
+#        - python-chardet
+#        - python-idna
+#        - python-urllib3
+#      results:
+#        - python3-requests
     python-rpm:
       version: 4.11.3-5
       build_deps:
@@ -920,11 +929,11 @@ pkgbuild_registry:
         - python-six
       results:
         - python3-singledispatch
-    python-six:
-      version: 1.11.0-8
-      noarch: True
-      results:
-        - python3-six
+#    python-six:
+#      version: 1.11.0-8
+#      noarch: True
+#      results:
+#        - python3-six
     python-sure:
       version: 1.4.11-5
       noarch: True
@@ -962,14 +971,14 @@ pkgbuild_registry:
         - python-six
       results:
         - python3-unittest2
-    python-urllib3:
-      version: 1.23-6
-      noarch: True
-      build_deps:
-        - python-six
-        - python-pysocks
-      results:
-        - python3-urllib3
+#    python-urllib3:
+#      version: 1.23-6
+#      noarch: True
+#      build_deps:
+#        - python-six
+#        - python-pysocks
+#      results:
+#        - python3-urllib3
     python-yaml:
       name: PyYAML
       version: 4.2-0.1.b5

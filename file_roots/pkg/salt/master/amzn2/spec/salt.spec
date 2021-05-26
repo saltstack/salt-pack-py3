@@ -94,6 +94,8 @@ Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-rpm
+# Only needed for python < 3.7 (including salt-ssh targets)
+Requires: python%{python3_pkgversion}-contextvars
 
 ## Tornado removed in Neon
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
@@ -108,8 +110,7 @@ Requires: python%{python3_pkgversion}-rpm
 Requires: python%{python3_pkgversion}-pycurl
 
 Requires: python%{python3_pkgversion}-six
-# not using python3_pkgversion to avoid epel conflicts
-Requires: python37-psutil
+Requires: python%{python3_pkgversion}-psutil
 %if 0%{?with_amzn2}
 Requires: python%{python3_pkgversion}-pyyaml
 Requires: python%{python3_pkgversion}-distro
