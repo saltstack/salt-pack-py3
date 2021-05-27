@@ -150,11 +150,11 @@ pkgbuild_registry:
 #        - python-mock
 #      results:
 #        - python3-cherrypy
-    python-contextvars:
-      version: 2.4-1
-      noarch: True
-      results:
-        - python3-contextvars
+#    python-contextvars:
+#      version: 2.4-1
+#      noarch: True
+#      results:
+#        - python3-contextvars
 #    python-distro:
 #      version: 1.2.0-4
 #      noarch: True
@@ -170,10 +170,10 @@ pkgbuild_registry:
 #      noarch: True
 #      results:
 #        - python3-gnupg
-    python-immutables:
-      version: 0.14-1
-      results:
-        - python3-immutables
+#    python-immutables:
+#      version: 0.14-1
+#      results:
+#        - python3-immutables
     python-libcloud:
       version: 2.4.0-1
       noarch: True
