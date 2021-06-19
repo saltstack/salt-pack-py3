@@ -17,11 +17,11 @@ include:
 #    - pkg.mock-core-configs.30_3.rhel8      ## B
 #    - pkg.python36.3_6_8.rhel7
 #    - pkg.python-cherrypy.5_6_0.rhel8       ## B
-    - pkg.python-contextvars.2_4.rhel8
+#    - pkg.python-contextvars.2_4.rhel8
 #    - pkg.python-distro.1_2_0.rhel8         ## B
     - pkg.python-funcsigs.1_0_2.rhel8       ## B
 #    - pkg.python-gnupg.0_4_4.rhel8          ## B
-    - pkg.python-immutables.0_14.rhel8
+#    - pkg.python-immutables.0_14.rhel8
     - pkg.python-libcloud.2_4_0.rhel8       ## B
 #    - pkg.python-m2crypto.0_33_0.rhel8      ## B
 #    - pkg.python-msgpack.0_6_1.rhel8        ## B EPEL-7 python36-msgpack 0.5.6-5.el7,doing latest

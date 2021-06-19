@@ -804,7 +804,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Wed May 26 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3003.1-1
+* Sat Jun 19 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3003.1-1
 - Update to feature release 3003.1-1
 
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
