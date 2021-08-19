@@ -164,7 +164,11 @@ build_pbldrc:
           mkdir -p ${APTCACHE}
         fi
         HOOKDIR="${HOME}/.pbuilder-hooks"
+{%- if build_cfg.build_arch == 'amd64' %}
         OTHERMIRROR="deb [trusted=yes] file:${LOCAL_REPO} ./ | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}} main restricted | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}}-updates main restricted | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}} universe | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}}-updates universe | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}} multiverse | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}}-updates multiverse | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}}-backports main restricted universe multiverse | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}}-security main restricted | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}}-security universe | deb http://us.archive.ubuntu.com/ubuntu {{os_codename}}-security multiverse"
+{%- else %}
+        OTHERMIRROR="deb [trusted=yes] file:${LOCAL_REPO} ./ | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}} main restricted | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}}-updates main restricted | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}} universe | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}}-updates universe | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}} multiverse | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}}-updates multiverse | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}}-backports main restricted universe multiverse | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}}-security main restricted | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}}-security universe | deb http://ports.ubuntu.com/ubuntu-ports {{os_codename}}-security multiverse"
+{%- endif %}
 
 
 build_prefs:
