@@ -22,7 +22,7 @@ include:
         ORIGIN : 'SaltStack'
         LABEL : 'salt_ubuntu2004'
         CODENAME : 'focal'
-{%- if build_cfg.build_arch == 'arm64' %}
+{%- if buildcfg.build_arch == 'arm64' %}
         ARCHS : 'arm64 source'
 {%- else %}
         ARCHS : 'amd64 source'
