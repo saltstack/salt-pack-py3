@@ -16,6 +16,7 @@
 %define __rc_ver %{nil}
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
+%define zsh_dir %{_datadir}/zsh/site-functions
 
 Name:    salt
 Version: 3001rc1%{?__rc_ver}
@@ -282,6 +283,10 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
+# ZSH completion
+mkdir -p %{buildroot}%{zsh_dir}
+install -p -m 0644 pkg/salt.zsh  %{buildroot}%{zsh_dir}/salt.zsh
+
 popd
 %endif
 
@@ -308,6 +313,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
+%{zsh_dir}
 
 ## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/LICENSE
 ## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
@@ -319,6 +325,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
 %config(noreplace) %{fish_dir}/salt*.fish
+%config(noreplace) %{zsh_dir}/salt*.zsh
 
 %files master
 %defattr(-,root,root)
