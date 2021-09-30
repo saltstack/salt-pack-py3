@@ -285,7 +285,7 @@ install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
 # ZSH completion
 mkdir -p %{buildroot}%{zsh_dir}
-install -p -m 0644 pkg/salt.zsh  %{buildroot}%{zsh_dir}/salt.zsh
+install -p -m 0644 pkg/salt.zsh %{buildroot}%{zsh_dir}/salt.zsh
 
 popd
 %endif
@@ -325,7 +325,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
 %config(noreplace) %{fish_dir}/salt*.fish
-%config(noreplace) %{zsh_dir}/salt*.zsh
+%config(noreplace) %{zsh_dir}/salt.zsh
 
 %files master
 %defattr(-,root,root)
