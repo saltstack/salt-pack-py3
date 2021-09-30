@@ -336,6 +336,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
 %config(noreplace) %{fish_dir}/salt*.fish
+%config(noreplace) %{zsh_dir}/salt.zsh
 
 %files master
 %defattr(-,root,root)
