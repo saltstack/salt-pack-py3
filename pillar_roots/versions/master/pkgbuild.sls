@@ -463,7 +463,7 @@ pkgbuild_registry:
 #        - python36-pysocks
     python-pyzmq:
       name: python-zmq
-      version: 17.0.0-5
+      version: 17.0.0-6
       build_deps:
 #        - python36
         - zeromq
