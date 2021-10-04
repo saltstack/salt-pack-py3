@@ -1,7 +1,13 @@
 {% import "setup/debian/map.jinja" as buildcfg %}
 
 include:
-{% if buildcfg.build_release == 'debian10' %}
+{% if buildcfg.build_release == 'debian11' %}
+
+    - pkg.python-contextvars.2_4.debian11
+    - pkg.python-immutables.0_14.debian11
+    - pkg.salt.master.debian11
+
+{% elif buildcfg.build_release == 'debian10' %}
 
     - pkg.python-contextvars.2_4.debian10
     - pkg.python-immutables.0_14.debian10
