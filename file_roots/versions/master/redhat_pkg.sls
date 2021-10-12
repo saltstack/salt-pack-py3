@@ -22,7 +22,7 @@ include:
     - pkg.python-funcsigs.1_0_2.rhel8       ## B
 #    - pkg.python-gnupg.0_4_4.rhel8          ## B
 #    - pkg.python-immutables.0_14.rhel8
-    - pkg.python-libcloud.2_4_0.rhel8       ## B
+    - pkg.python-libcloud.3_2_0.rhel8       ## B
 #    - pkg.python-m2crypto.0_33_0.rhel8      ## B
 #    - pkg.python-msgpack.0_6_1.rhel8        ## B EPEL-7 python36-msgpack 0.5.6-5.el7,doing latest
     - pkg.python-mock.2_0_0.rhel8           ## B EPEL-7 python36-mock-2.0.0-1.el7
@@ -53,7 +53,7 @@ include:
 #    - pkg.python-idna.2_7.rhel7             ## EPEL python36-idna.2.7-5.el7
     - pkg.python-immutables.0_14.rhel7
 #    - pkg.python-jinja2.2_8_1.rhel7         ## EPEL python36-jinja2.2.8.1-2.el7
-#    - pkg.python-libcloud.2_0_0.rhel7       ## B
+    - pkg.python-libcloud.3_2_0.rhel7       ## B
 #    - pkg.python-m2crypto.0_33_0.rhel7      ## B
     - pkg.python-markupsafe.0_23.rhel7      ## EPEL python36-markupsafe-0.23-3.el7
     - pkg.python-msgpack.0_6_2.rhel7        ##   EPEL python36-msgpack 0.5.6-5.el7

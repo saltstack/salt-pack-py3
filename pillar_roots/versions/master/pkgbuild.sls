@@ -175,7 +175,7 @@ pkgbuild_registry:
 #      results:
 #        - python3-immutables
     python-libcloud:
-      version: 2.4.0-1
+      version: 3.2.0-1
       noarch: True
       results:
         - python3-libcloud
@@ -376,13 +376,13 @@ pkgbuild_registry:
 #        - python-setuptools
 #      results:
 #        - python36-jinja2
-#    python-libcloud:
-#      version: 2.0.0-4
-#      noarch: True
-#      build_deps:
-#        - python36
-#      results:
-#        - python36-libcloud
+    python-libcloud:
+      version: 3.2.0-1
+      noarch: True
+      build_deps:
+        - python36
+      results:
+        - python36-libcloud
     python-libnacl:
       version: 1.6.1-3
       noarch: True
@@ -747,7 +747,7 @@ pkgbuild_registry:
       results:
         - python3-jinja2
     python-libcloud:
-      version: 2.2.1-10
+      version: 3.2.0-1
       noarch: True
       build_deps:
         - python-pytest-runner
