@@ -11,7 +11,7 @@
 
 # Get the release and architecture
 {% set build_release = pillar.get('build_release', 'debian9') %}
-{% set build_arch = pillar.get('build_arch', 'amd64') %}
+{% set build_arch = pillar.get('build_arch', grains.get('osarch')) %}
 
 # determine which version of Python to build for
 {% set build_py3 = basecfg.build_py3 %}

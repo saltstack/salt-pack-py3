@@ -20,7 +20,7 @@
 
 Name:           python-%{srcname}
 Version:        3.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Self-contained Python package of low-level cryptographic primitives
 
 # Only OCB blockcipher mode is patented, but according to
@@ -93,6 +93,7 @@ Python 2 version.
 %if %{with python3}
 %package -n python%{python3_pkgversion}-%{eggname}
 Summary:        %{summary}
+Provides: python37-pycryptodomex = %{version}-%{release}
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-setuptools
 %if 0%{?with_amzn2}
@@ -166,6 +167,9 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 %endif
 
 %changelog
+* Fri Mar 19 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.1-5
+- Provide python37-pycryptodomex to avoid conflicts with epel
+
 * Mon Jun 17 2019 SaltStack Packaging Team <packaging@saltstack.com> - 3.6.1-4
 - Made support for Python 2 optional
 

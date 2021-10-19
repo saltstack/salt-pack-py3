@@ -14,7 +14,7 @@
 
 Name:           python-zmq
 Version:        17.0.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Software library for fast, message-based applications
 
 License:        LGPLv3+ and ASL 2.0 and BSD
@@ -73,6 +73,7 @@ This package contains the python bindings.
 %if %{with python2}
 %package -n python2-zmq
 Summary:        Software library for fast, message-based applications
+Requires:       zeromq
 %{?python_provide:%python_provide python2-%{modname}}
 %description -n python2-zmq
 The 0MQ lightweight messaging kernel is a library which extends the
@@ -108,6 +109,7 @@ This package contains the testsuite for the python bindings.
 %package -n python%{python3_pkgversion}-zmq
 Summary:        Software library for fast, message-based applications
 License:        LGPLv3+
+Requires:       zeromq
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{modname}}
 
 %description -n python%{python3_pkgversion}-zmq

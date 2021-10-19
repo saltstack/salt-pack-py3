@@ -16,6 +16,7 @@
 %define __rc_ver tobereplaced_date
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
+%define zsh_dir %{_datadir}/zsh/site-functions
 
 
 Name:    salt
@@ -88,11 +89,14 @@ BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
-Requires: python%{python3_pkgversion}-pycryptodomex
+# not using python3_pkgversion to avoid epel conflicts
+Requires: python37-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq >= 17.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-rpm
+# Only needed for python < 3.7 (including salt-ssh targets)
+Requires: python%{python3_pkgversion}-contextvars
 
 ## Tornado removed in Neon
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
@@ -418,8 +422,11 @@ install -p -m 0644  %{SOURCE18} %{buildroot}%{fish_dir}/salt-master.fish
 install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
-%endif  ## with python3
 
+# ZSH completion
+mkdir -p %{buildroot}%{zsh_dir}
+install -p -m 0644 pkg/salt.zsh %{buildroot}%{zsh_dir}/_salt
+%endif  ## with python3
 
 %if %{with python2}
 ## Python 2
@@ -486,6 +493,9 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
+# ZSH completion
+mkdir -p %{buildroot}%{zsh_dir}
+install -p -m 0644 pkg/salt.zsh %{buildroot}%{zsh_dir}/_salt
 %endif  ## %if %{with python2}
 
 
@@ -511,6 +521,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
+%{zsh_dir}
 
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
@@ -607,6 +618,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
 %config(noreplace) %{fish_dir}/salt*.fish
+%config(noreplace) %{zsh_dir}/_salt
 
 %files master
 %defattr(-,root,root)
