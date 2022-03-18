@@ -140,7 +140,7 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 
 %if %{with python2}
 %files -n python2-%{pypi_name}
-%doc README.rst CHANGES README.md
+%doc CHANGELOG.md README.md
 %license LICENSE
 %{python2_sitelib}/%{pypi_name}-*.egg-info/
 %{python2_sitelib}/%{pypi_name}.py*
@@ -148,7 +148,7 @@ CFLAGS="%{optflags}" %{__python3} setup.py %{?py_setup_args} install -O1 --skip-
 
 %if %{with python3}
 %files -n python%{python3_pkgversion}-%{pypi_name}
-%doc README.rst CHANGES README.md
+%doc CHANGELOG.md README.md
 %license LICENSE
 %{python3_sitelib}/%{pypi_name}-*.egg-info/
 %{python3_sitelib}/%{pypi_name}.py
