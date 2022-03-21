@@ -16,10 +16,10 @@ Package-List:
  python3-distro deb python extra arch=all
 Checksums-Sha1:
  a8f1fc582ae196aeefe93dbb89931094f9234704 distro_1.5.0.orig.tar.gz
- 38f9672483ad340ed37426c8cf853f0fa4cd5b4c distro_1.5.0-1.debian.tar.xz
+ 335f0922c2a7eba335ee8757c58a05423b8ab1dc distro_1.5.0-1.debian.tar.xz
 Checksums-Sha256:
  041f191644efd0c50b53af819c201a3ec27cca61781800aa31a7235699b4918f distro_1.5.0.orig.tar.gz
- 58e25731e3a87f35516a24b023a029d833cca475916d66759c418b3de03691f5 distro_1.5.0-1.debian.tar.xz
+ 5b3b8839b2f48e27d88a9a2af33914918a6f712af941fd48ccd8ac7969ecd99c distro_1.5.0-1.debian.tar.xz
 Files:
  da1cab49e8aad7bd6ae5c9f66657bd2e distro_1.5.0.orig.tar.gz
- 93a65d1bd8d6d23c04bbc5331cc2699f distro_1.5.0-1.debian.tar.xz
+ 2ba39e55981fb125ade6577c0837136d distro_1.5.0-1.debian.tar.xz
