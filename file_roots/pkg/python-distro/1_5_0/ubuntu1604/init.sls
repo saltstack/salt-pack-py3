@@ -10,10 +10,9 @@
   pkgbuild.built:
     - runas: {{buildcfg.build_runas}}
     - results:
-      - {{name}}_{{version}}-{{release_ver}}_all.deb
       - {{name3}}_{{version}}-{{release_ver}}_all.deb
       - {{name}}_{{version}}-{{release_ver}}.dsc
-      - {{pypi_name}}-{{version}}.tar.xz
+      - {{pypi_name}}-{{version}}.tar.gz
     - force: {{force}}
     - dest_dir: {{buildcfg.build_dest_dir}}
     - spec: salt://{{slspath}}/spec/{{name}}_{{version}}-{{release_ver}}.dsc
