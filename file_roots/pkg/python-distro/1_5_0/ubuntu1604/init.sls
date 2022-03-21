@@ -11,7 +11,9 @@
     - runas: {{buildcfg.build_runas}}
     - results:
       - {{name3}}_{{version}}-{{release_ver}}_all.deb
+      - {{pypi_name}}_{{version}}.orig.tar.gz
       - {{name}}_{{version}}-{{release_ver}}.dsc
+      - {{pypi_name}}_{{version}}-{{release_ver}}.debian.tar.xz
     - force: {{force}}
     - dest_dir: {{buildcfg.build_dest_dir}}
     - spec: salt://{{slspath}}/spec/{{name}}_{{version}}-{{release_ver}}.dsc
@@ -20,5 +22,6 @@
     - env:
         DEB_BUILD_OPTIONS : 'nocheck'
     - sources:
-      - salt://{{slspath}}/sources/{{pypi_name}}-{{version}}.tar.gz
+      - salt://{{slspath}}/sources/{{pypi_name}}_{{version}}.orig.tar.gz
+      - salt://{{slspath}}/sources/{{pypi_name}}_{{version}}-{{release_ver}}.debian.tar.xz
 
