@@ -109,7 +109,7 @@ Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 %if 0%{?rhel} == 7
 Requires: python%{python3_pkgversion}-PyYAML
-Requires: python%{python3_pkgversion}-distro
+Requires: python%{python3_pkgversion}-distro >= 1.5.0
 %else
 Requires: python%{python3_pkgversion}-pyyaml
 %endif
@@ -497,7 +497,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Wed Mar 16 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3002.8-1
+* Fri Mar 18 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3002.8-1
 - Update to feature release 3002.8-1 for Python 3
 
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
