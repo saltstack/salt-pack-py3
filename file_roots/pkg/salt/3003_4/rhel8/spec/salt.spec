@@ -293,7 +293,6 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
-
 popd
 %endif
 
@@ -507,8 +506,11 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Wed Mar 16 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3003.4-1
+* Thu Mar 24 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3003.4-1
 - Update to feature release 3003.4-1 for Python 3
+
+* Tue Aug 24 2021 Salt Project Packaging <saltproject-packaging@vmware.com> - 3003.3-1
+- Update to feature release 3003.3-1 for Python 3
 
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
 - Update to feature release 3000.2-1  for Python 3
