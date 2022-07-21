@@ -607,7 +607,7 @@ rm -rf %{buildroot}
 %{python2_sitelib}/%{name}/*
 #%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
 %{python2_sitelib}/%{name}-*-py?.?.egg-info
-%{_sysconfdir}/logrotate.d/salt
+%config(noreplace) %{_sysconfdir}/logrotate.d/salt
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt

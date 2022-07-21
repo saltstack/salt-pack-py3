@@ -309,7 +309,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{python3_sitelib}/%{name}/*
 %{python3_sitelib}/%{name}-*-py?.?.egg-info
-%{_sysconfdir}/logrotate.d/salt
+%config(noreplace) %{_sysconfdir}/logrotate.d/salt
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
@@ -606,7 +606,7 @@ rm -rf %{buildroot}
 - Revised versions of cherrypy acceptable
 
 * Tue Jul 24 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-5
-- Fix version of python used, multiple addition of 2.7 
+- Fix version of python used, multiple addition of 2.7
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.2-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
