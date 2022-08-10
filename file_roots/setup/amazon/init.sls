@@ -11,7 +11,7 @@ build_pkgs:
   pkg.installed:
     - allow_updates: True
     - pkgs:
-      - createrepo
+      - createrepo_c
       - mock
       - rpmdevtools
       - rpm-sign

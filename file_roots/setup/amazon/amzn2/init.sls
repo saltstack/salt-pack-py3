@@ -45,6 +45,9 @@ build_additional_pkgs_{{build_cfg.build_release}}:
       - automake
       - libtool
       - chrpath
+      - python3-libcloud
+      - python3-devel
+      - python3-mock
 
 
 build_additional_{{build_cfg.build_release}}_{{build_cfg.build_runas}}:
