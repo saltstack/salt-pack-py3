@@ -44,4 +44,7 @@ build_additional_py3_pkgs:
       - texlive-latex2man
       - krb5-devel
       - chrpath
+      - python3-libcloud
+      - git
+      - python3-mock
 
