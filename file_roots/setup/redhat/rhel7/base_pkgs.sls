@@ -90,7 +90,7 @@ ensure_gpg_rights:
 ensure_pub_gpg_rights:
   module.run:
     - file.check_perms:
-      - m_name: {{gpg_key_dir}}/gpg_pkg_key.pub
+      - name: {{gpg_key_dir}}/gpg_pkg_key.pub
       - user: {{build_cfg.build_runas}}
       - group: {{build_cfg.build_runas}}
       - mode: 644

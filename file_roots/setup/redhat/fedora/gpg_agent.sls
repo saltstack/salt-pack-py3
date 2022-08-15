@@ -64,7 +64,7 @@ gpg_agent_conf_file:
 ensure_gpg_conf_rights:
   module.run:
     - file.check_perms:
-      - m_name: {{gpg_config_file}}
+      - name: {{gpg_config_file}}
       - user: {{build_cfg.build_runas}}
       - group: {{build_cfg.build_runas}}
       - mode: 644
@@ -75,7 +75,7 @@ ensure_gpg_conf_rights:
 ensure_gpg_agent_conf_rights:
   module.run:
     - file.check_perms:
-      - m_name: {{gpg_agent_config_file}}
+      - name: {{gpg_agent_config_file}}
       - user: {{build_cfg.build_runas}}
       - group: {{build_cfg.build_runas}}
       - mode: 644
