@@ -4,7 +4,7 @@
 
 ensure_latest:
   module.run:
-    - name: pkg.upgrade
+    - pkg.upgrade:
 
 
 build_pkgs:

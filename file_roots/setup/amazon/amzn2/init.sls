@@ -104,22 +104,20 @@ manage_pub_key_{{build_cfg.build_release}}:
 
 gpg_load_pub_key_{{build_cfg.build_release}}:
   module.run:
-    - name: gpg.import_key
-    - kwargs:
-        user: {{build_cfg.build_runas}}
-        filename: {{pkg_pub_key_absfile}}
-        gnupghome: {{gpg_key_dir}}
+    - gpg.import_key:
+      - user: {{build_cfg.build_runas}}
+      - filename: {{pkg_pub_key_absfile}}
+      - gnupghome: {{gpg_key_dir}}
     - require:
       - file: manage_pub_key_{{build_cfg.build_release}}
 
 
 gpg_load_priv_key_{{build_cfg.build_release}}:
   module.run:
-    - name: gpg.import_key
-    - kwargs:
-        user: {{build_cfg.build_runas}}
-        filename: {{pkg_priv_key_absfile}}
-        gnupghome: {{gpg_key_dir}}
+    - gpg.import_key:
+      - user: {{build_cfg.build_runas}}
+      - filename: {{pkg_priv_key_absfile}}
+      - gnupghome: {{gpg_key_dir}}
     - require:
       - module: gpg_load_pub_key_{{build_cfg.build_release}}
 
@@ -141,12 +139,12 @@ ensure_gpg_rights_{{build_cfg.build_release}}:
 
 ensure_pub_gpg_rights_{{build_cfg.build_release}}:
   module.run:
-    - name: file.check_perms
-    - m_name: {{gpg_key_dir}}/gpg_pkg_key.pub
-    - user: {{build_cfg.build_runas}}
-    - group: {{build_cfg.build_runas}}
-    - mode: 644
-    - ret: False
+    - file.check_perms:
+      - m_name: {{gpg_key_dir}}/gpg_pkg_key.pub
+      - user: {{build_cfg.build_runas}}
+      - group: {{build_cfg.build_runas}}
+      - mode: 644
+      - ret: False
     - require:
       - file: ensure_gpg_rights_{{build_cfg.build_release}}
 
