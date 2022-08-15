@@ -542,13 +542,11 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-key.1*
 %doc %{_mandir}/man1/salt-master.1*
 %doc %{_mandir}/man1/salt-run.1*
-## %doc %{_mandir}/man1/salt-unity.1*
 %{_bindir}/salt
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
-## %{_bindir}/salt-unity
 %{_unitdir}/salt-master.service
 %config(noreplace) %{_sysconfdir}/salt/master
 %config(noreplace) %{_sysconfdir}/salt/master.d
@@ -628,13 +626,11 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-key.1*
 %doc %{_mandir}/man1/salt-master.1*
 %doc %{_mandir}/man1/salt-run.1*
-%doc %{_mandir}/man1/salt-unity.1*
 %{_bindir}/salt
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
-%{_bindir}/salt-unity
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 %attr(0755, root, root) %{_initrddir}/salt-master
 %else
