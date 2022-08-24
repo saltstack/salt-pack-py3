@@ -501,7 +501,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Tue Aug 23 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005-1
+* Wed Aug 24 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005-1
 - Update to feature release 3005-1 for Python 3
 
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
