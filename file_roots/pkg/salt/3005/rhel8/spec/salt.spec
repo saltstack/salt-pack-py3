@@ -96,7 +96,7 @@ Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq >= 17.0.0
+Requires: python%{python3_pkgversion}-zmq >= 20.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-rpm
 # Only needed for python < 3.7 (including salt-ssh targets)

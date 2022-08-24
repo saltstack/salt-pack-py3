@@ -223,13 +223,13 @@ pkgbuild_registry:
 #      noarch: True
 #      results:
 #        - python3-pyroute2
-#    python-pyzmq:
-#      name: python-zmq
-#      version: 17.0.0-5
-#      build_deps:
-#        - zeromq
-#      results:
-#        - python3-zmq
+    python-pyzmq:
+      name: python-zmq
+      version: 20.0.0-1
+      build_deps:
+        - zeromq
+      results:
+        - python3-zmq
 #    python-simplejson:
 #      version: 3.16.0-3
 #      results:
@@ -257,7 +257,7 @@ pkgbuild_registry:
       noarch: True
       build_deps:
         - python-mock
-#        - python-pyzmq
+        - python-pyzmq
         - python-libcloud
       results:
         - salt
@@ -463,7 +463,7 @@ pkgbuild_registry:
 #        - python36-pysocks
     python-pyzmq:
       name: python-zmq
-      version: 17.0.0-6
+      version: 18.0.0-1
       build_deps:
 #        - python36
         - zeromq
@@ -885,7 +885,7 @@ pkgbuild_registry:
         - python3-pytz
     python-pyzmq:
       name: python-zmq
-      version: 17.0.0-5
+      version: 18.0.1-1
       build_deps:
         - zeromq
       results:
