@@ -211,9 +211,9 @@ gpg_agent_ps_kill_script_file_exists:
 #ensure all gpg activity completed before killing gpg
 gpg_agent_ps_kill_run:
   module.run:
-    - name: cmd.shell
-    - cmd: {{gpg_ps_kill_script_file}}
-    - runas: 'root'
+    - cmd.shell:
+      - cmd: {{gpg_ps_kill_script_file}}
+      - runas: 'root'
     - require:
       - file: manage_priv_key
       - file: manage_pub_key
@@ -229,11 +229,11 @@ gpg_agent_ps_kill_run:
 
 gpg_agent_start:
   module.run:
-    - name: cmd.shell
-    - cmd: {{gpg_agent_script_file}}
-    - cwd: {{build_cfg.build_homedir}}
-    - runas: {{build_cfg.build_runas}}
-    - use_vt: True
+    - cmd.shell:
+      - cmd: {{gpg_agent_script_file}}
+      - cwd: {{build_cfg.build_homedir}}
+      - runas: {{build_cfg.build_runas}}
+      - use_vt: True
     - require:
 {%- if build_cfg.build_release in ['ubuntu1804', 'ubuntu2004'] %}
       - module: gpg_agent_ps_kill_run
@@ -244,22 +244,20 @@ gpg_agent_start:
 
 gpg_load_pub_key:
   module.run:
-    - name: gpg.import_key
-    - kwargs:
-        user: {{build_cfg.build_runas}}
-        filename: {{pkg_pub_key_absfile}}
-        gnupghome: {{gpg_key_dir}}
+    - gpg.import_key:
+      - user: {{build_cfg.build_runas}}
+      - filename: {{pkg_pub_key_absfile}}
+      - gnupghome: {{gpg_key_dir}}
     - require:
         - module: gpg_agent_start
 
 
 gpg_load_priv_key:
   module.run:
-    - name: gpg.import_key
-    - kwargs:
-        user: {{build_cfg.build_runas}}
-        filename: {{pkg_priv_key_absfile}}
-        gnupghome: {{gpg_key_dir}}
+    - gpg.import_key:
+      - user: {{build_cfg.build_runas}}
+      - filename: {{pkg_priv_key_absfile}}
+      - gnupghome: {{gpg_key_dir}}
 
 {% endif %}
 

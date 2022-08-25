@@ -39,40 +39,43 @@ build_additional_py3_pkgs:
       - python3
       - python3-devel
       - python3-setuptools
+      - createrepo_c
       - createrepo
       - rpm-sign
       - nfs-utils
-      - autoconf 
-      - bluez-libs-devel 
-      - bzip2 
-      - bzip2-devel 
-      - expat-devel 
-      - findutils 
-      - gcc-c++ 
-      - gdb 
-      - glibc-devel 
-      - gmp-devel 
-      - libffi-devel 
-      - mesa-libGL-devel 
-      - libX11-devel 
-      - ncurses-devel 
-      - net-tools 
-      - openssl-devel 
-      - pkgconfig 
-      - python-rpm-macros 
-      - readline-devel 
-      - sqlite-devel 
-      - tar 
-      - tcl-devel 
-      - tix-devel 
-      - tk-devel 
-      - valgrind-devel 
+      - autoconf
+      - bluez-libs-devel
+      - bzip2
+      - bzip2-devel
+      - expat-devel
+      - findutils
+      - gcc-c++
+      - gdb
+      - glibc-devel
+      - gmp-devel
+      - libffi-devel
+      - mesa-libGL-devel
+      - libX11-devel
+      - ncurses-devel
+      - net-tools
+      - openssl-devel
+      - pkgconfig
+      - python-rpm-macros
+      - readline-devel
+      - sqlite-devel
+      - tar
+      - tcl-devel
+      - tix-devel
+      - tk-devel
+      - valgrind-devel
       - vsftpd
-      - xz-devel 
-      - zlib-devel 
+      - xz-devel
+      - zlib-devel
       - curl
       - libcurl
       - libcurl-devel
+      - python36-gnupg
+      - python36-libcloud
 
 epel-rpm-macros:
   pkg.installed

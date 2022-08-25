@@ -92,7 +92,7 @@ Requires: python%{python3_pkgversion}-msgpack >= 0.4
 # not using python3_pkgversion to avoid epel conflicts
 Requires: python37-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq >= 17.0.0
+Requires: python%{python3_pkgversion}-zmq >= 18.0.1
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-rpm
 # Only needed for python < 3.7 (including salt-ssh targets)
@@ -542,13 +542,11 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-key.1*
 %doc %{_mandir}/man1/salt-master.1*
 %doc %{_mandir}/man1/salt-run.1*
-%doc %{_mandir}/man1/salt-unity.1*
 %{_bindir}/salt
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
-%{_bindir}/salt-unity
 %{_unitdir}/salt-master.service
 %config(noreplace) %{_sysconfdir}/salt/master
 %config(noreplace) %{_sysconfdir}/salt/master.d
@@ -628,13 +626,11 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-key.1*
 %doc %{_mandir}/man1/salt-master.1*
 %doc %{_mandir}/man1/salt-run.1*
-%doc %{_mandir}/man1/salt-unity.1*
 %{_bindir}/salt
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
-%{_bindir}/salt-unity
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 %attr(0755, root, root) %{_initrddir}/salt-master
 %else

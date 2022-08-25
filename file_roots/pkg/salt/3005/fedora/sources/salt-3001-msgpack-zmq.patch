@@ -1,0 +1,22 @@
+diff -Naur a/requirements/base.txt b/requirements/base.txt
+--- a/requirements/base.txt	2020-06-02 15:42:02.000000000 -0600
++++ b/requirements/base.txt	2020-06-03 12:09:35.534741001 -0600
+@@ -1,5 +1,6 @@
+ Jinja2
+-msgpack>=0.5,!=0.5.5,<1.0.0
++## msgpack>=0.5,!=0.5.5,<1.0.0
++msgpack>=0.5.6
+ PyYAML
+ MarkupSafe
+ requests>=1.0.0
+diff -Naur a/requirements/zeromq.txt b/requirements/zeromq.txt
+--- a/requirements/zeromq.txt	2020-06-02 15:42:02.000000000 -0600
++++ b/requirements/zeromq.txt	2020-06-03 12:10:00.205931146 -0600
+@@ -1,5 +1,5 @@
+ -r base.txt
+ -r crypto.txt
+ 
+-pyzmq>=2.2.0; python_version < '3.8'
+-pyzmq>=19.0.0; python_version >= '3.8'
++pyzmq>=17.0.0; python_version < '3.8'
++pyzmq>=17.0.0; python_version >= '3.8'
