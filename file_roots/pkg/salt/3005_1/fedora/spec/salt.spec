@@ -10,8 +10,8 @@
 %global py3_shebang_flags %(echo %py3_shebang_flags | sed s/s//)
 
 Name:    salt
-Version: master%{?__rc_ver}
-Release: 0%{?dist}
+Version: 3005.1%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -317,6 +317,9 @@ install -p -m 0644 pkg/%{name}.zsh %{buildroot}%{zsh_dir}/_%{name}
 
 
 %changelog
+* Tue Oct 04 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - %{version}-1
+- Update to feature release %{version}-1 for Python 3
+
 * Thu Aug 25 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005-1
 - Update to feature release 3005-1 for Python 3
 
