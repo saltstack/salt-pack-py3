@@ -1,31 +1,22 @@
-## For Python 3 only RHEL 7 & 8
-
-%bcond_with python2
-%bcond_without python3
-
-%bcond_with tests
-%bcond_with docs
-
-%if 0%{?rhel} > 7
-%global python3_pkgversion 3
-%else
-%{!?python3_pkgversion:%global python3_pkgversion 3}
-%endif
+## For Python 3 only 
 
 # Release Candidate
-%define __rc_ver %{nil}
+%global __rc_ver %{nil}
 
-%define fish_dir %{_datadir}/fish/vendor_functions.d
-%define zsh_dir %{_datadir}/zsh/site-functions
+%global fish_dir %{_datadir}/fish/vendor_functions.d
+%global zsh_dir %{_datadir}/zsh/site-functions
+
+# py3_shbang_flags is '-s' and causing issues with pip install.
+%global py3_shebang_flags %(echo %py3_shebang_flags | sed s/s//)
 
 Name:    salt
-Version: 3001rc1%{?__rc_ver}
-Release: 2%{?dist}
+Version: master%{?__rc_ver}
+Release: 0%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
-URL:     http://saltstack.org/
-Source0: https://pypi.io/packages/source/s/%{name}/%{name}-%{version}.tar.gz
+URL:     https://saltproject.io/
+Source0: %{pypi_source}
 Source1: %{name}-proxy@.service
 Source2: %{name}-master
 Source3: %{name}-syndic
@@ -37,20 +28,18 @@ Source8: %{name}-minion.service
 Source9: %{name}-api.service
 Source10: README.fedora
 Source11: %{name}-common.logrotate
-Source12: salt.bash
-Source13: salt.fish
-Source14: salt_common.fish
-Source15: salt-call.fish
-Source16: salt-cp.fish
-Source17: salt-key.fish
-Source18: salt-master.fish
-Source19: salt-minion.fish
-Source20: salt-run.fish
-Source21: salt-syndic.fish
+Source12: %{name}.bash
+Source13: %{name}.fish
+Source14: %{name}_common.fish
+Source15: %{name}-call.fish
+Source16: %{name}-cp.fish
+Source17: %{name}-key.fish
+Source18: %{name}-master.fish
+Source19: %{name}-minion.fish
+Source20: %{name}-run.fish
+Source21: %{name}-syndic.fish
 
-Patch: salt-3001-msgpack-zmq.patch
-
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Patch0: contextvars.patch
 BuildArch: noarch
 
 %ifarch %{ix86} x86_64
@@ -59,62 +48,11 @@ Requires: dmidecode
 
 Requires: pciutils
 Requires: which
-
-%if 0%{?fedora} >= 26
 Requires: dnf-utils
-%else
-Requires: yum-utils
-%endif
+Requires: logrotate
 
-
-%if 0%{?systemd_preun:1}
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-%endif
-
-BuildRequires: systemd-units
-
-
-%if %{with python3}
-BuildRequires: python%{python3_pkgversion}-devel
-BuildRequires: python%{python3_pkgversion}-requests
-BuildRequires: python%{python3_pkgversion}-mock
-BuildRequires: python%{python3_pkgversion}-libcloud
-BuildRequires: python%{python3_pkgversion}-six
-%if 0%{?rhel} == 7
-BuildRequires: python%{python3_pkgversion}-PyYAML
-%else
-BuildRequires: python%{python3_pkgversion}-pyyaml
-## BuildRequires: python%%{python3_pkgversion}-distro
-%endif
-BuildRequires: git
-
-%if 0%{?fedora} >= 31
-BuildRequires: python%{python3_pkgversion}-distro
-Requires: python%{python3_pkgversion}-distro
-%endif
-
-Requires: python%{python3_pkgversion}-jinja2
-Requires: python%{python3_pkgversion}-msgpack >= 0.5.6
-Requires: python%{python3_pkgversion}-pycryptodomex >= 3.7
-Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq
-Requires: python%{python3_pkgversion}-markupsafe
-
-## Tornado removed in Neon
-## %%if 0%%{?rhel} == 7
-## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
-## %%else
-## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
-## %%endif
-Requires: python%{python3_pkgversion}-pycurl
-
-Requires: python%{python3_pkgversion}-six
-Requires: python%{python3_pkgversion}-psutil
-Requires: python%{python3_pkgversion}-pyyaml
-Requires: python%{python3_pkgversion}-distro
-%endif
+BuildRequires: systemd-rpm-macros
+BuildRequires: python3-devel
 
 
 %description
@@ -126,12 +64,11 @@ information, and not just dozens, but hundreds or even thousands of individual
 servers, handle them quickly and through a simple and manageable interface.
 
 
-%if %{with python3}
 %package    master
 Summary:    Management component for salt, a parallel remote execution system
 Group:      System Environment/Daemons
 Requires:   %{name} = %{version}-%{release}
-Requires: python%{python3_pkgversion}-systemd
+Requires:   python3-systemd
 
 %description master
 The Salt master is the central server to which all minions connect.
@@ -165,7 +102,7 @@ Supports Python 3.
 Summary:    REST API for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
+Requires:   python3-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
@@ -176,7 +113,7 @@ Supports Python 3.
 Summary:    Cloud provisioner for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-Requires:   python%{python3_pkgversion}-libcloud
+Requires:   python3-libcloud
 
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
@@ -193,66 +130,46 @@ Requires:   %{name} = %{version}-%{release}
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 Supports Python 3.
-%endif
 
 
 %prep
-## %%autosetup
-%setup -q -c
-cd %{name}-%{version}
-%patch0 -p1
-
-%if %{with python3}
-rm -rf %{py3dir}
-cp -a . %{py3dir}
-%endif
+%autosetup -p1
+%generate_buildrequires
+%pyproject_buildrequires
 
 
 %build
-%if %{with python3}
-pushd %{py3dir}
-## %%py3_build
-## py3_shbang_opts is '-s' and causing issues with pip install
-## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
-CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3}" %{?*}
-sleep 1
-popd
-%endif
+%pyproject_wheel
 
 
 %install
-rm -rf %{buildroot}
-cd $RPM_BUILD_DIR/%{name}-%{version}
-
-%if %{with python3}
-## rm -rf %%{buildroot}
-pushd %{py3dir}
-%py3_install
+%pyproject_install
+%pyproject_save_files salt
 
 # Add some directories
-install -d -m 0755 %{buildroot}%{_var}/log/salt
-touch %{buildroot}%{_var}/log/salt/minion
-touch %{buildroot}%{_var}/log/salt/master
-install -d -m 0755 %{buildroot}%{_var}/cache/salt
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/master.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/minion.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/master
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/minion
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
-install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
+install -d -m 0755 %{buildroot}%{_var}/log/%{name}
+touch %{buildroot}%{_var}/log/%{name}/minion
+touch %{buildroot}%{_var}/log/%{name}/master
+install -d -m 0755 %{buildroot}%{_var}/cache/%{name}
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/master.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/minion.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/pki
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/pki/master
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/pki/minion
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/cloud.conf.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/cloud.deploy.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/cloud.maps.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/cloud.profiles.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/cloud.providers.d
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}/proxy.d
 
 # Add the config files
-install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
-install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
-install -p -m 0600 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
-install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
-install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/salt/proxy
+install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/%{name}/minion
+install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/%{name}/master
+install -p -m 0600 conf/cloud  %{buildroot}%{_sysconfdir}/%{name}/cloud
+install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/%{name}/roster
+install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/%{name}/proxy
 
 # Add the unit files
 mkdir -p %{buildroot}%{_unitdir}
@@ -265,243 +182,216 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/
 # Logrotate
 install -p %{SOURCE10} .
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
-install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
+install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # Bash completion
 mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d/
-install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/bash_completion.d/salt.bash
+install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}.bash
 
 # Fish completion (TBD remove -v)
 mkdir -p %{buildroot}%{fish_dir}
-install -p -m 0644  %{SOURCE13} %{buildroot}%{fish_dir}/salt.fish
-install -p -m 0644  %{SOURCE14} %{buildroot}%{fish_dir}/salt_common.fish
-install -p -m 0644  %{SOURCE15} %{buildroot}%{fish_dir}/salt-call.fish
-install -p -m 0644  %{SOURCE16} %{buildroot}%{fish_dir}/salt-cp.fish
-install -p -m 0644  %{SOURCE17} %{buildroot}%{fish_dir}/salt-key.fish
-install -p -m 0644  %{SOURCE18} %{buildroot}%{fish_dir}/salt-master.fish
-install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
-install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
-install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
+install -p -m 0644  %{SOURCE13} %{buildroot}%{fish_dir}/%{name}.fish
+install -p -m 0644  %{SOURCE14} %{buildroot}%{fish_dir}/%{name}_common.fish
+install -p -m 0644  %{SOURCE15} %{buildroot}%{fish_dir}/%{name}-call.fish
+install -p -m 0644  %{SOURCE16} %{buildroot}%{fish_dir}/%{name}-cp.fish
+install -p -m 0644  %{SOURCE17} %{buildroot}%{fish_dir}/%{name}-key.fish
+install -p -m 0644  %{SOURCE18} %{buildroot}%{fish_dir}/%{name}-master.fish
+install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/%{name}-minion.fish
+install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/%{name}-run.fish
+install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/%{name}-syndic.fish
 
 # ZSH completion
 mkdir -p %{buildroot}%{zsh_dir}
-install -p -m 0644 pkg/salt.zsh %{buildroot}%{zsh_dir}/_salt
-
-popd
-%endif
+install -p -m 0644 pkg/%{name}.zsh %{buildroot}%{zsh_dir}/_%{name}
 
 
-%if (%{with python2} && 0%{with tests})
 %check
-## cd $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}
-cd $RPM_BUILD_DIR/%{name}-%{version}
-mkdir %{_tmppath}/salt-test-cache
-PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
-%endif
+%pyproject_check_import -t
 
 
-%clean
-rm -rf %{buildroot}
-
-
-%files
-%if %{with python3}
-%defattr(-,root,root,-)
-%{python3_sitelib}/%{name}/*
-%{python3_sitelib}/%{name}-*-py?.?.egg-info
-%{_sysconfdir}/logrotate.d/salt
-%{_sysconfdir}/bash_completion.d/salt.bash
-%{_var}/cache/salt
-%{_var}/log/salt
-%{zsh_dir}
-
-## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/LICENSE
-## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
-%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
-%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
-
-/%{_bindir}/spm
+%files -f %{pyproject_files}
+%license LICENSE
+%doc README.fedora
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
+%config(noreplace) %{_sysconfdir}/bash_completion.d/%{name}.bash
+%{_var}/cache/%{name}
+%{_var}/log/%{name}
+%{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
-%config(noreplace) %{_sysconfdir}/salt/
-%config(noreplace) %{_sysconfdir}/salt/pki
-%config(noreplace) %{fish_dir}/salt*.fish
-%config(noreplace) %{zsh_dir}/_salt
+%dir %{zsh_dir}
+%dir %{_sysconfdir}/%{name}/
+%dir %{_sysconfdir}/%{name}/pki/
+%{fish_dir}/%{name}*.fish
+%{zsh_dir}/_%{name}
 
 %files master
-%defattr(-,root,root)
-%doc %{_mandir}/man7/salt.7*
-%doc %{_mandir}/man1/salt.1*
-%doc %{_mandir}/man1/salt-cp.1*
-%doc %{_mandir}/man1/salt-key.1*
-%doc %{_mandir}/man1/salt-master.1*
-%doc %{_mandir}/man1/salt-run.1*
-%doc %{_mandir}/man1/salt-unity.1*
-%{_bindir}/salt
-%{_bindir}/salt-cp
-%{_bindir}/salt-key
-%{_bindir}/salt-master
-%{_bindir}/salt-run
-%{_bindir}/salt-unity
-%{_unitdir}/salt-master.service
-%config(noreplace) %{_sysconfdir}/salt/master
-%config(noreplace) %{_sysconfdir}/salt/master.d
-%config(noreplace) %{_sysconfdir}/salt/pki/master
+%doc %{_mandir}/man7/%{name}.7*
+%doc %{_mandir}/man1/%{name}.1*
+%doc %{_mandir}/man1/%{name}-cp.1*
+%doc %{_mandir}/man1/%{name}-key.1*
+%doc %{_mandir}/man1/%{name}-master.1*
+%doc %{_mandir}/man1/%{name}-run.1*
+%{_bindir}/%{name}
+%{_bindir}/%{name}-cp
+%{_bindir}/%{name}-key
+%{_bindir}/%{name}-master
+%{_bindir}/%{name}-run
+%{_unitdir}/%{name}-master.service
+%config(noreplace) %{_sysconfdir}/%{name}/master
+%config(noreplace) %{_sysconfdir}/%{name}/master.d
+%config(noreplace) %{_sysconfdir}/%{name}/pki/master
 
 %files minion
-%defattr(-,root,root)
-%doc %{_mandir}/man1/salt-call.1*
-%doc %{_mandir}/man1/salt-minion.1*
-%doc %{_mandir}/man1/salt-proxy.1*
-%{_bindir}/salt-minion
-%{_bindir}/salt-call
-%{_bindir}/salt-proxy
-%{_unitdir}/salt-minion.service
-%{_unitdir}/salt-proxy@.service
-%config(noreplace) %{_sysconfdir}/salt/minion
-%config(noreplace) %{_sysconfdir}/salt/proxy
-%config(noreplace) %{_sysconfdir}/salt/minion.d
-%config(noreplace) %{_sysconfdir}/salt/pki/minion
+%doc %{_mandir}/man1/%{name}-call.1*
+%doc %{_mandir}/man1/%{name}-minion.1*
+%doc %{_mandir}/man1/%{name}-proxy.1*
+%{_bindir}/%{name}-minion
+%{_bindir}/%{name}-call
+%{_bindir}/%{name}-proxy
+%{_unitdir}/%{name}-minion.service
+%{_unitdir}/%{name}-proxy@.service
+%config(noreplace) %{_sysconfdir}/%{name}/minion
+%config(noreplace) %{_sysconfdir}/%{name}/proxy
+%config(noreplace) %{_sysconfdir}/%{name}/minion.d
+%config(noreplace) %{_sysconfdir}/%{name}/pki/minion
 
 %files syndic
-%doc %{_mandir}/man1/salt-syndic.1*
-%{_bindir}/salt-syndic
-%{_unitdir}/salt-syndic.service
+%doc %{_mandir}/man1/%{name}-syndic.1*
+%{_bindir}/%{name}-syndic
+%{_unitdir}/%{name}-syndic.service
 
 %files api
-%defattr(-,root,root)
-%doc %{_mandir}/man1/salt-api.1*
-%{_bindir}/salt-api
-%{_unitdir}/salt-api.service
+%doc %{_mandir}/man1/%{name}-api.1*
+%{_bindir}/%{name}-api
+%{_unitdir}/%{name}-api.service
 
 %files cloud
-%doc %{_mandir}/man1/salt-cloud.1*
-%{_bindir}/salt-cloud
-%{_sysconfdir}/salt/cloud.conf.d
-%{_sysconfdir}/salt/cloud.deploy.d
-%{_sysconfdir}/salt/cloud.maps.d
-%{_sysconfdir}/salt/cloud.profiles.d
-%{_sysconfdir}/salt/cloud.providers.d
-%config(noreplace) %{_sysconfdir}/salt/cloud
+%doc %{_mandir}/man1/%{name}-cloud.1*
+%{_bindir}/%{name}-cloud
+%{_sysconfdir}/%{name}/cloud.conf.d
+%{_sysconfdir}/%{name}/cloud.deploy.d
+%{_sysconfdir}/%{name}/cloud.maps.d
+%{_sysconfdir}/%{name}/cloud.profiles.d
+%{_sysconfdir}/%{name}/cloud.providers.d
+%config(noreplace) %{_sysconfdir}/%{name}/cloud
 
 %files ssh
-%doc %{_mandir}/man1/salt-ssh.1*
-%{_bindir}/salt-ssh
-%config(noreplace) %{_sysconfdir}/salt/roster
-%endif
+%doc %{_mandir}/man1/%{name}-ssh.1*
+%{_bindir}/%{name}-ssh
+%config(noreplace) %{_sysconfdir}/%{name}/roster
 
 
 # assumes systemd for RHEL 7 & 8
 %preun master
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-syndic.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable salt-syndic.service > /dev/null 2>&1 || :
-    /bin/systemctl stop salt-syndic.service > /dev/null 2>&1 || :
-  fi
-%endif
+%systemd_preun %{name}-syndic.service
 
 %preun minion
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-minion.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable salt-minion.service > /dev/null 2>&1 || :
-    /bin/systemctl stop salt-minion.service > /dev/null 2>&1 || :
-  fi
-%endif
+%systemd_preun %{name}-minion.service
 
 %preun api
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-api.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable salt-api.service > /dev/null 2>&1 || :
-    /bin/systemctl stop salt-api.service > /dev/null 2>&1 || :
-  fi
-%endif
+%systemd_preun %{name}-api.service
 
 %post master
-%if 0%{?systemd_post:1}
-  if [ $1 -gt 1 ] ; then
-    /usr/bin/systemctl try-restart salt-master.service >/dev/null 2>&1 || :
-  else
-    %systemd_post salt-master.service
-  fi
-%else
-  /bin/systemctl daemon-reload &>/dev/null || :
-%endif
+%systemd_post %{name}-master.service
 
 %post syndic
-%if 0%{?systemd_post:1}
-  if [ $1 -gt 1 ] ; then
-    /usr/bin/systemctl try-restart salt-syndic.service >/dev/null 2>&1 || :
-  else
-    %systemd_post salt-syndic.service
-  fi
-%else
-  /bin/systemctl daemon-reload &>/dev/null || :
-%endif
+%systemd_post %{name}-syndic.service
 
 %post minion
-%if 0%{?systemd_post:1}
-  if [ $1 -gt 1 ] ; then
-    /usr/bin/systemctl try-restart salt-minion.service >/dev/null 2>&1 || :
-  else
-    %systemd_post salt-minion.service
-  fi
-%else
-  /bin/systemctl daemon-reload &>/dev/null || :
-%endif
+%systemd_post %{name}-minion.service
 
 %post api
-%if 0%{?systemd_post:1}
-  if [ $1 -gt 1 ] ; then
-    /usr/bin/systemctl try-restart salt-api.service >/dev/null 2>&1 || :
-  else
-    %systemd_post salt-api.service
-  fi
-%else
-  /bin/systemctl daemon-reload &>/dev/null || :
-%endif
+%systemd_post %{name}-api.service
 
 %postun master
-%if 0%{?systemd_post:1}
-  %systemd_postun_with_restart salt-master.service
-%else
-  /bin/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && /bin/systemctl try-restart salt-master.service &>/dev/null || :
-%endif
+%systemd_postun_with_restart %{name}-master.service
 
 %postun syndic
-%if 0%{?systemd_post:1}
-  %systemd_postun_with_restart salt-syndic.service
-%else
-  /bin/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && /bin/systemctl try-restart salt-syndic.service &>/dev/null || :
-%endif
+%systemd_postun_with_restart %{name}-syndic.service
 
 %postun minion
-%if 0%{?systemd_post:1}
-  %systemd_postun_with_restart salt-minion.service
-%else
-  /bin/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && /bin/systemctl try-restart salt-minion.service &>/dev/null || :
-%endif
+%systemd_postun_with_restart %{name}-minion.service
 
 %postun api
-%if 0%{?systemd_post:1}
-  %systemd_postun_with_restart salt-api.service
-%else
-  /bin/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && /bin/systemctl try-restart salt-api.service &>/dev/null || :
-%endif
+%systemd_postun_with_restart %{name}-api.service
 
 
 %changelog
+* Tue Oct 04 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - %{version}-1
+- Update to feature release %{version}-1 for Python 3
+
+* Thu Aug 25 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005-1
+- Update to feature release 3005-1 for Python 3
+
+* Thu Jul 28 2022 Robby Callicotte <rcallicotte@fedoraproject.org> - 3004.2-3
+- Cleaned up specfile
+
+* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 3004.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
+* Tue Jun 21 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3004.2-1
+- Update to CVE release 3004.2-1 for Python 3
+
+* Mon Jun 13 2022 Python Maint <python-maint@redhat.com> - 3004.1-2
+- Rebuilt for Python 3.11
+
+* Mon Mar 28 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3004.1-1
+- Update to CVE release 3004.1-1 for Python 3
+
+* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 3004-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Tue Oct 19 2021 Salt Project Packaging <saltproject-packaging@vmware.com> - 3004-1
+- Update to feature release 3004-1 for Python 3
+
+* Wed Sep 08 2021 SaltStack Packaging Team <saltproject-packaging@vmware.com> - 3003.3-1
+- Update to CVE release 3003.3-1 https://saltproject.io/security_announcements/salt-security-advisory-2021-sep-02/
+
+* Thu Aug 12 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3003.2-1
+- Update to bugfix release 3003.2-1 for Python 3
+
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3003.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
+* Thu Jul 01 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3003.1-1
+- Update to bugfix release 3003.1-1 for Python 3
+
+* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 3003-2
+- Rebuilt for Python 3.10
+
+* Mon Apr 26 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3003-1
+- Update to feature release 3003-1 for Python 3
+
+* Fri Mar 26 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3002.6-1
+- Update to bugfix release 3002.6-1 for Python 3
+
+* Tue Mar 02 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 3002.5-2
+- Rebuilt for updated systemd-rpm-macros
+  See https://pagure.io/fesco/issue/2583.
+
+* Fri Feb 26 2021 SaltStack Packaging Team <packaging@saltstack.com> - 3002.5-1
+- Update to CVE release 3002.5-1 for Python 3
+
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3002.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Wed Nov 18 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3002.2-1
+- Update to bugfix release 3002.2-1 for Python3
+- Revert _scope_id patch since it's been fixed upstream
+
+* Wed Nov 04 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3002.1-1
+- Update to CVE release 3002.1-1 for Python3
+
+* Sun Oct 25 2020 Gwyn Ciesla <gwync@protonmail.com> - 3002-1
+- 3002
+- Patch for _scope_id 3.9 error.
+
+* Mon Jul 27 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3001.1-1
+- Update to feature release 3001.1-1  for Python 3
+
+* Thu Jun 18 2020 SaltStack Packaging Team <packaging@saltstack.com.com> - 30001-1
+- Update to feature release 30001-1 for Python 3
+
 * Wed Jun 03 2020 SaltStack Packaging Team <packaging@saltstack.com.com> - 3001rc1-2
 - Altered msgpack and python-zmq versions limitation
 

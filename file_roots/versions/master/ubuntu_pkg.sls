@@ -5,6 +5,7 @@ include:
 
     - pkg.python-contextvars.2_4.ubuntu2004
     - pkg.python-immutables.0_14.ubuntu2004
+    - pkg.python-pyzmq.20_0_0.ubuntu2004
     - pkg.salt.master.ubuntu2004
 
 {% elif buildcfg.build_release == 'ubuntu1804' %}

@@ -180,9 +180,9 @@ gpg_agent_script_file_exists:
 
 gpg_agent_stop2:
   module.run:
-    - name: cmd.shell
-    - cmd: {{kill_gpg_agent_text}}
-    - runas: 'root'
+    - cmd.shell:
+      - cmd: {{kill_gpg_agent_text}}
+      - runas: 'root'
     - onlyif: ps -ef | grep -v 'grep' | grep  gpg-agent
     - require:
       - file: gpg_agent_script_file_exists
@@ -217,9 +217,9 @@ gpg_agent_ps_kill_script_file_exists:
 #ensure all gpg activity completed before killing gpg
 gpg_agent_ps_kill_run:
   module.run:
-    - name: cmd.shell
-    - cmd: {{gpg_ps_kill_script_file}}
-    - runas: 'root'
+    - cmd.shell:
+      - cmd: {{gpg_ps_kill_script_file}}
+      - runas: 'root'
     - require:
       - file: manage_priv_key
       - file: manage_pub_key
@@ -233,33 +233,31 @@ gpg_agent_ps_kill_run:
 
 gpg_agent_start:
   module.run:
-    - name: cmd.shell
-    - cmd: {{gpg_agent_script_file}}
-    - cwd: {{build_cfg.build_homedir}}
-    - runas: {{build_cfg.build_runas}}
-    - use_vt: True
+    - cmd.shell:
+      - cmd: {{gpg_agent_script_file}}
+      - cwd: {{build_cfg.build_homedir}}
+      - runas: {{build_cfg.build_runas}}
+      - use_vt: True
     - require:
       - module: gpg_agent_ps_kill_run
 
 
 gpg_load_pub_key:
   module.run:
-    - name: gpg.import_key
-    - kwargs:
-        user: {{build_cfg.build_runas}}
-        filename: {{pkg_pub_key_absfile}}
-        gnupghome: {{gpg_key_dir}}
+    - gpg.import_key:
+      - user: {{build_cfg.build_runas}}
+      - filename: {{pkg_pub_key_absfile}}
+      - gnupghome: {{gpg_key_dir}}
     - require:
         - module: gpg_agent_start
 
 
 gpg_load_priv_key:
   module.run:
-    - name: gpg.import_key
-    - kwargs:
-        user: {{build_cfg.build_runas}}
-        filename: {{pkg_priv_key_absfile}}
-        gnupghome: {{gpg_key_dir}}
+    - gpg.import_key:
+      - user: {{build_cfg.build_runas}}
+      - filename: {{pkg_priv_key_absfile}}
+      - gnupghome: {{gpg_key_dir}}
     - require:
       - module: gpg_load_pub_key
 
@@ -281,12 +279,12 @@ ensure_gpg_rights:
 
 ensure_pub_gpg_rights:
   module.run:
-    - name: file.check_perms
-    - m_name: {{gpg_key_dir}}/gpg_pkg_key.pub
-    - user: {{build_cfg.build_runas}}
-    - group: {{build_cfg.build_runas}}
-    - mode: 644
-    - ret: False
+    - file.check_perms:
+      - name: {{gpg_key_dir}}/gpg_pkg_key.pub
+      - user: {{build_cfg.build_runas}}
+      - group: {{build_cfg.build_runas}}
+      - mode: 644
+      - ret: False
     - require:
       - file: ensure_gpg_rights
 

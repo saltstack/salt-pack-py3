@@ -4,14 +4,14 @@
 
 ensure_latest:
   module.run:
-    - name: pkg.upgrade
+    - pkg.upgrade:
 
 
 build_pkgs:
   pkg.installed:
     - allow_updates: True
     - pkgs:
-      - createrepo
+      - createrepo_c
       - mock
       - rpmdevtools
       - rpm-sign
