@@ -115,6 +115,7 @@ Requires: python%{python3_pkgversion}-psutil
 %if 0%{?with_amzn2}
 Requires: python%{python3_pkgversion}-pyyaml
 Requires: python%{python3_pkgversion}-distro
+Requires: python%{python3_pkgversion}-jmespath
 %else
 Requires: python%{python3_pkgversion}-PyYAML
 %endif
@@ -809,6 +810,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Sep 30 2022 SaltStack Packaging Team <packaging@saltstack.com> - 3005.1-1
+- Added python3-jmespath as a requirment
+
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
 - Update to feature release 3000.2-1  for Python 3
 

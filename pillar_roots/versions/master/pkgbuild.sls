@@ -376,6 +376,11 @@ pkgbuild_registry:
 #        - python-setuptools
 #      results:
 #        - python36-jinja2
+    python-jmespath:
+      version: 0.9.0-4
+      noarch: True
+      results:
+        - python3-jmespath
     python-libcloud:
       version: 3.2.0-1
       noarch: True
@@ -548,6 +553,7 @@ pkgbuild_registry:
       build_deps:
 #        - python36
 #        - python-m2crypto
+        - python-jmespath
         - python-msgpack
 #        - python-yaml
 #        - python-requests
@@ -746,6 +752,11 @@ pkgbuild_registry:
         - python-pytest
       results:
         - python3-jinja2
+    python-jmespath:
+      version: 0.9.0-4
+      noarch: True
+      results:
+        - python3-jmespath
     python-libcloud:
       version: 3.2.0-1
       noarch: True
@@ -1012,6 +1023,7 @@ pkgbuild_registry:
       version: master-tobereplaced_date-0
       noarch: True
       build_deps:
+        - python-jmespath
         - python-pycryptodome
         - python-msgpack
         - python-yaml
