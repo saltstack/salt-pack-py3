@@ -32,6 +32,7 @@ include:
 #    - pkg.python-idna.2_7.amzn2
     - pkg.python-immutables.0_14.amzn2
     - pkg.python-jinja2.2_10.amzn2
+    - pkg.python-jmespath.0_9_0.amzn2
     - pkg.python-libcloud.3_2_0.amzn2
     - pkg.python-m2crypto.0_31_0.amzn2
     - pkg.python-markupsafe.1_0.amzn2

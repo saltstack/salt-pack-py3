@@ -53,6 +53,7 @@ include:
 #    - pkg.python-idna.2_7.rhel7             ## EPEL python36-idna.2.7-5.el7
     - pkg.python-immutables.0_14.rhel7
 #    - pkg.python-jinja2.2_8_1.rhel7         ## EPEL python36-jinja2.2.8.1-2.el7
+    - pkg.python-jmespath.0_9_0.rhel7       ## EPEL python-jmespath.0.9.0-3.el7
     - pkg.python-libcloud.3_2_0.rhel7       ## B
 #    - pkg.python-m2crypto.0_33_0.rhel7      ## B
     - pkg.python-markupsafe.0_23.rhel7      ## EPEL python36-markupsafe-0.23-3.el7
