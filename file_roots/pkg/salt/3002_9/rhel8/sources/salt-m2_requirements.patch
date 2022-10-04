@@ -1,0 +1,14 @@
+diff --git a/requirements/base.txt b/requirements/base.txt
+index 8390d492d7..40a48a06c7 100644
+--- a/requirements/base.txt
++++ b/requirements/base.txt
+@@ -6 +6 @@ requests>=1.0.0
+-distro>=1.5
++distro>=1.2
+diff --git a/requirements/crypto.txt b/requirements/crypto.txt
+index 00e98d3ec6..fa4a704bc4 100644
+--- a/requirements/crypto.txt
++++ b/requirements/crypto.txt
+@@ -1 +1 @@
+-pycryptodomex>=3.9.8
++M2Crypto>=0.33.0

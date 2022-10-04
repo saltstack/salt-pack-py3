@@ -29,7 +29,7 @@ include:
     - pkg.python-pbr.5_1_2.rhel8            ## B
 #    - pkg.python-psutil.5_4_3.rhel8         ## B EPEL-7 python36-psutil 2.2.1-4.el7
 #    - pkg.python-pyroute2.0_4_13.rhel8      ## B
-#    - pkg.python-pyzmq.17_0_0.rhel8         ## B
+#    - pkg.python-pyzmq.20_0_0.rhel8         ## B
 #    - pkg.python-simplejson.3_16_0.rhel8    ## B EPEL-7 python36-simplejson 3.10.0-2.el7
 ##    - pkg.python-tornado4.4_5_2.rhel8       ## B EPEL-7 python36-tornado 4.4.2-2.el7
     - pkg.python-typing.3_5_2_2.rhel8       ## B EPEL-7 python34-typing 3.5.2.2-4.el7
@@ -53,6 +53,7 @@ include:
 #    - pkg.python-idna.2_7.rhel7             ## EPEL python36-idna.2.7-5.el7
     - pkg.python-immutables.0_14.rhel7
 #    - pkg.python-jinja2.2_8_1.rhel7         ## EPEL python36-jinja2.2.8.1-2.el7
+    - pkg.python-jmespath.0_9_0.rhel7       ## EPEL python-jmespath.0.9.0-3.el7
     - pkg.python-libcloud.3_2_0.rhel7       ## B
 #    - pkg.python-m2crypto.0_33_0.rhel7      ## B
     - pkg.python-markupsafe.0_23.rhel7      ## EPEL python36-markupsafe-0.23-3.el7
@@ -64,7 +65,7 @@ include:
     - pkg.python-pycurl.7_43_0.rhel7        ## EPEL python36-pycurl.7.43.0-7
     - pkg.python-pyOpenSSL.17_3_0.rhel7     ## EPEL python36-pyOpenSSL.17.3.0-1
 #    - pkg.python-pysocks.1_6_8.rhel7        ## EPEL python36-pysocks.1.6.8-6.el7
-    - pkg.python-pyzmq.17_0_0.rhel7         ## B
+    - pkg.python-pyzmq.18_0_1.rhel7         ## B
 #    - pkg.python-requests.2_12_5.rhel7      ## EPEL python36-requests.2.12.5-3.el7
 #    - pkg.python-rpm.4_11_3.rhel7           ## EPEL python36-rpm.4.11.3-8.el7
 #    - pkg.python-setuptools.39_2_0.rhel7    ## EPEL python36-setuptools.309.2.0-4.el7

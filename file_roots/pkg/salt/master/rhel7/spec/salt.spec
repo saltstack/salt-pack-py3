@@ -92,7 +92,7 @@ Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.6
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq >= 17.0.0
+Requires: python%{python3_pkgversion}-zmq >= 18.0.1
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-rpm
 # Only needed for python < 3.7 (including salt-ssh targets)
@@ -111,6 +111,7 @@ Requires: python%{python3_pkgversion}-psutil
 %if 0%{?rhel} == 7
 Requires: python%{python3_pkgversion}-PyYAML
 Requires: python%{python3_pkgversion}-distro
+Requires: python%{python3_pkgversion}-jmespath
 %else
 Requires: python%{python3_pkgversion}-pyyaml
 %endif
@@ -310,7 +311,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{python3_sitelib}/%{name}/*
 %{python3_sitelib}/%{name}-*-py?.?.egg-info
-%{_sysconfdir}/logrotate.d/salt
+%config(noreplace) %{_sysconfdir}/logrotate.d/salt
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
@@ -336,13 +337,11 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-key.1*
 %doc %{_mandir}/man1/salt-master.1*
 %doc %{_mandir}/man1/salt-run.1*
-%doc %{_mandir}/man1/salt-unity.1*
 %{_bindir}/salt
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
-%{_bindir}/salt-unity
 %{_unitdir}/salt-master.service
 %config(noreplace) %{_sysconfdir}/salt/master
 %config(noreplace) %{_sysconfdir}/salt/master.d
@@ -503,6 +502,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Sep 30 2022 SaltStack Packaging Team <packaging@saltstack.com> - 3005.1-1
+- Added python3-jmespath as a requirment
+
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
 - Update to feature release 3000.2-1  for Python 3
 
