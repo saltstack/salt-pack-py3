@@ -76,6 +76,8 @@ build_additional_py3_pkgs:
       - libcurl-devel
       - python36-gnupg
       - python36-libcloud
+      - chrpath
+      - zeromq-devel
 
 epel-rpm-macros:
   pkg.installed

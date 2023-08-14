@@ -47,4 +47,5 @@ build_additional_py3_pkgs:
       - python3-libcloud
       - git
       - python3-mock
+      - zeromq-devel
 

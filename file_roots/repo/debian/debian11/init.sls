@@ -20,7 +20,7 @@ include:
 {%- endif %}
         ORIGIN : 'SaltStack'
         LABEL : 'salt_debian11'
-        SUITE: 'stable'
+        SUITE: 'oldstable'
         CODENAME : 'bullseye'
 {%- if buildcfg.build_arch == 'arm64' %}
         ARCHS : 'arm64 source'
