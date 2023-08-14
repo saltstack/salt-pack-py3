@@ -48,6 +48,7 @@ build_additional_pkgs_{{build_cfg.build_release}}:
       - python3-libcloud
       - python3-devel
       - python3-mock
+      - zeromq-devel
 
 
 build_additional_{{build_cfg.build_release}}_{{build_cfg.build_runas}}:

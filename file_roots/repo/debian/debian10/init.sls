@@ -20,7 +20,7 @@ include:
 {%- endif %}
         ORIGIN : 'SaltStack'
         LABEL : 'salt_debian10'
-        SUITE: 'stable'
+        SUITE: 'oldoldstable'
         CODENAME : 'buster'
 {%- if buildcfg.build_arch == 'armhf' %}
         ARCHS : '{{buildcfg.build_arch}} source'
