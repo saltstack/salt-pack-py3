@@ -1,0 +1,18 @@
+--- salt-3005/requirements/base.txt.fix	2022-08-25 17:13:58.740984435 -0600
++++ salt-3005/requirements/base.txt	2022-08-25 17:14:14.428036445 -0600
+@@ -4,5 +4,4 @@ PyYAML
+ MarkupSafe
+ requests>=1.0.0
+ distro>=1.0.1
+-contextvars
+ psutil>=5.0.0
+--- salt-3005/requirements/zeromq.txt.fix	2022-08-25 17:05:45.496349067 -0600
++++ salt-3005/requirements/zeromq.txt	2022-08-25 17:06:19.011460188 -0600
+@@ -1,6 +1,4 @@
+ -r base.txt
+ -r crypto.txt
+ 
+-pyzmq<=20.0.0 ; python_version < "3.6"
+-pyzmq>=17.0.0 ; python_version < "3.9"
+-pyzmq>19.0.2 ; python_version >= "3.9"
++pyzmq>=19.0.2
