@@ -511,6 +511,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Sep 18 2023 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005.3-1
+- Update to feature release 3005.3-1 for Python 3
+
+* Tue Aug 01 2023 SaltStack Packaging Team <packaging@saltstack.com> - 3005.2-1
+- Added python3-zmq >= 20.0.0 as a requirement
+
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
 - Update to feature release 3000.2-1  for Python 3
 

@@ -468,7 +468,7 @@ pkgbuild_registry:
 #        - python36-pysocks
     python-pyzmq:
       name: python-zmq
-      version: 18.0.1-1
+      version: 20.0.0-1
       build_deps:
 #        - python36
         - zeromq
@@ -896,7 +896,7 @@ pkgbuild_registry:
         - python3-pytz
     python-pyzmq:
       name: python-zmq
-      version: 18.0.1-1
+      version: 20.0.0-1
       build_deps:
         - zeromq
       results:
