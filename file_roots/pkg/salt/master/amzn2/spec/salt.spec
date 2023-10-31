@@ -92,7 +92,7 @@ Requires: python%{python3_pkgversion}-msgpack >= 0.4
 # not using python3_pkgversion to avoid epel conflicts
 Requires: python37-pycryptodomex
 Requires: python%{python3_pkgversion}-requests
-Requires: python%{python3_pkgversion}-zmq >= 18.0.1
+Requires: python%{python3_pkgversion}-zmq >= 20.0.0
 Requires: python%{python3_pkgversion}-markupsafe
 Requires: python%{python3_pkgversion}-rpm
 # Only needed for python < 3.7 (including salt-ssh targets)
@@ -810,6 +810,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Sep 18 2023 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005.3-1
+- Update to feature release 3005.3-1
+
+* Tue Aug 01 2023 SaltStack Packaging Team <packaging@saltstack.com> - 3005.2-1
+- Added python3-zmq >= 20.0.0 as a requirement
+
 * Fri Sep 30 2022 SaltStack Packaging Team <packaging@saltstack.com> - 3005.1-1
 - Added python3-jmespath as a requirment
 
