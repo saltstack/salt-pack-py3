@@ -52,7 +52,7 @@ include:
     - pkg.python-pytest.3_6_4.amzn2
     - pkg.python-pytest-runner.4_0.amzn2
     - pkg.python-pytz.2018_5.amzn2
-    - pkg.python-pyzmq.18_0_1.amzn2
+    - pkg.python-pyzmq.20_0_0.amzn2
 #    - pkg.python-requests.2_19_1.amzn2
 ##    - pkg.python-rpm.4_11_3.amzn2
     - pkg.python-setuptools_scm.3_1_0.amzn2
