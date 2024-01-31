@@ -2,10 +2,15 @@
 {% set force = salt['pillar.get']('build_force.all', False) or salt['pillar.get']('build_force.' ~ slspath, False) %}
 
 {% set name = 'salt' %}
+<<<<<<<< HEAD:file_roots/pkg/salt/3005_3/ubuntu1604/init.sls
 {% set release_rc_ver = 'tobereplaced_date' %}
 {% set version = 'tobereplaced_ver' ~ release_rc_ver %}
+========
+{% set release_rc_ver = '' %}
+{% set version = '3005.5' ~ release_rc_ver %}
+>>>>>>>> develop:file_roots/pkg/salt/3005_5/ubuntu2004/init.sls
 {% set release_nameadd = '+ds' %}
-{% set release_ver = '0' %}
+{% set release_ver = '1' %}
 
 {{name}}-{{version.replace('.', '_')}}:
   pkgbuild.built:

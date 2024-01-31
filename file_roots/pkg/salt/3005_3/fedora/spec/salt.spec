@@ -10,8 +10,13 @@
 %global py3_shebang_flags %(echo %py3_shebang_flags | sed s/s//)
 
 Name:    salt
+<<<<<<<< HEAD:file_roots/pkg/salt/3005_3/fedora/spec/salt.spec
 Version: master%{?__rc_ver}
 Release: 0%{?dist}
+========
+Version: 3005.5%{?__rc_ver}
+Release: 1%{?dist}
+>>>>>>>> develop:file_roots/pkg/salt/3005_5/rhel8/spec/salt.spec
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -51,8 +56,61 @@ Requires: which
 Requires: dnf-utils
 Requires: logrotate
 
+<<<<<<<< HEAD:file_roots/pkg/salt/3005_3/fedora/spec/salt.spec
 BuildRequires: systemd-rpm-macros
 BuildRequires: python3-devel
+========
+
+%if 0%{?systemd_preun:1}
+Requires(post): systemd-units
+Requires(preun): systemd-units
+Requires(postun): systemd-units
+%endif
+
+BuildRequires: systemd-units
+
+
+%if %{with python3}
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-requests
+BuildRequires: python%{python3_pkgversion}-mock
+BuildRequires: python%{python3_pkgversion}-libcloud
+BuildRequires: python%{python3_pkgversion}-six
+%if 0%{?rhel} == 7
+BuildRequires: python%{python3_pkgversion}-PyYAML
+%else
+BuildRequires: python%{python3_pkgversion}-pyyaml
+## BuildRequires: python%%{python3_pkgversion}-distro
+%endif
+BuildRequires: git
+Requires: python%{python3_pkgversion}-jinja2
+Requires: python%{python3_pkgversion}-msgpack >= 0.4
+Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
+Requires: python%{python3_pkgversion}-requests
+Requires: python%{python3_pkgversion}-zmq >= 20.0.0
+Requires: python%{python3_pkgversion}-markupsafe
+Requires: python%{python3_pkgversion}-rpm
+# Only needed for python < 3.7 (including salt-ssh targets)
+Requires: python%{python3_pkgversion}-contextvars
+
+## Tornado removed in Neon
+## %%if 0%%{?rhel} == 7
+## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
+## %%else
+## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
+## %%endif
+Requires: python%{python3_pkgversion}-pycurl
+
+Requires: python%{python3_pkgversion}-six
+Requires: python%{python3_pkgversion}-psutil
+%if 0%{?rhel} == 7
+Requires: python%{python3_pkgversion}-PyYAML
+%else
+Requires: python%{python3_pkgversion}-pyyaml
+Requires: python%{python3_pkgversion}-distro
+%endif
+%endif
+>>>>>>>> develop:file_roots/pkg/salt/3005_5/rhel8/spec/salt.spec
 
 
 %description
@@ -209,6 +267,7 @@ install -p -m 0644 pkg/%{name}.zsh %{buildroot}%{zsh_dir}/_%{name}
 %pyproject_check_import -t
 
 
+<<<<<<<< HEAD:file_roots/pkg/salt/3005_3/fedora/spec/salt.spec
 %files -f %{pyproject_files}
 %license LICENSE
 %doc README.fedora
@@ -217,6 +276,29 @@ install -p -m 0644 pkg/%{name}.zsh %{buildroot}%{zsh_dir}/_%{name}
 %{_var}/cache/%{name}
 %{_var}/log/%{name}
 %{_bindir}/spm
+========
+%clean
+rm -rf %{buildroot}
+
+
+%files
+%if %{with python3}
+%defattr(-,root,root,-)
+%{python3_sitelib}/%{name}/*
+%{python3_sitelib}/%{name}-*-py?.?.egg-info
+%config(noreplace) %{_sysconfdir}/logrotate.d/salt
+%{_sysconfdir}/bash_completion.d/salt.bash
+%{_var}/cache/salt
+%{_var}/log/salt
+%{zsh_dir}
+
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/LICENSE
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
+
+/%{_bindir}/spm
+>>>>>>>> develop:file_roots/pkg/salt/3005_5/rhel8/spec/salt.spec
 %doc %{_mandir}/man1/spm.1*
 %dir %{zsh_dir}
 %dir %{_sysconfdir}/%{name}/
@@ -225,6 +307,7 @@ install -p -m 0644 pkg/%{name}.zsh %{buildroot}%{zsh_dir}/_%{name}
 %{zsh_dir}/_%{name}
 
 %files master
+<<<<<<<< HEAD:file_roots/pkg/salt/3005_3/fedora/spec/salt.spec
 %doc %{_mandir}/man7/%{name}.7*
 %doc %{_mandir}/man1/%{name}.1*
 %doc %{_mandir}/man1/%{name}-cp.1*
@@ -240,6 +323,24 @@ install -p -m 0644 pkg/%{name}.zsh %{buildroot}%{zsh_dir}/_%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/master
 %config(noreplace) %{_sysconfdir}/%{name}/master.d
 %config(noreplace) %{_sysconfdir}/%{name}/pki/master
+========
+%defattr(-,root,root)
+%doc %{_mandir}/man7/salt.7*
+%doc %{_mandir}/man1/salt.1*
+%doc %{_mandir}/man1/salt-cp.1*
+%doc %{_mandir}/man1/salt-key.1*
+%doc %{_mandir}/man1/salt-master.1*
+%doc %{_mandir}/man1/salt-run.1*
+%{_bindir}/salt
+%{_bindir}/salt-cp
+%{_bindir}/salt-key
+%{_bindir}/salt-master
+%{_bindir}/salt-run
+%{_unitdir}/salt-master.service
+%config(noreplace) %{_sysconfdir}/salt/master
+%config(noreplace) %{_sysconfdir}/salt/master.d
+%config(noreplace) %{_sysconfdir}/salt/pki/master
+>>>>>>>> develop:file_roots/pkg/salt/3005_5/rhel8/spec/salt.spec
 
 %files minion
 %doc %{_mandir}/man1/%{name}-call.1*
@@ -317,8 +418,19 @@ install -p -m 0644 pkg/%{name}.zsh %{buildroot}%{zsh_dir}/_%{name}
 
 
 %changelog
+<<<<<<<< HEAD:file_roots/pkg/salt/3005_3/fedora/spec/salt.spec
 * Thu Aug 25 2022 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005-1
 - Update to feature release 3005-1 for Python 3
+========
+* Mon Jan 29 2024 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005.5-1
+- Update to feature release 3005.5-1 for Python 3
+
+* Mon Sep 18 2023 Salt Project Packaging <saltproject-packaging@vmware.com> - 3005.3-1
+- Update to feature release 3005.3-1 for Python 3
+
+* Tue Aug 01 2023 SaltStack Packaging Team <packaging@saltstack.com> - 3005.2-1
+- Added python3-zmq >= 20.0.0 as a requirement
+>>>>>>>> develop:file_roots/pkg/salt/3005_5/rhel8/spec/salt.spec
 
 * Thu Jul 28 2022 Robby Callicotte <rcallicotte@fedoraproject.org> - 3004.2-3
 - Cleaned up specfile
