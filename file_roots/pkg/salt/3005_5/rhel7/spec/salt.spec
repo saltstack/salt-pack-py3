@@ -48,9 +48,6 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-## %%if 0%%{?rhel} > 7
-## Patch0:  salt-py3-2019.2.2-tornado4.patch
-## %%endif
 Patch1: salt-m2_requirements.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -89,11 +86,10 @@ BuildRequires: python%{python3_pkgversion}-six
 BuildRequires: python%{python3_pkgversion}-PyYAML
 %else
 BuildRequires: python%{python3_pkgversion}-pyyaml
-## BuildRequires: python%%{python3_pkgversion}-distro
 %endif
 BuildRequires: git
 Requires: python%{python3_pkgversion}-jinja2
-Requires: python%{python3_pkgversion}-msgpack >= 0.4
+Requires: python%{python3_pkgversion}-msgpack >= 0.6
 Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq >= 20.0.0
@@ -102,7 +98,7 @@ Requires: python%{python3_pkgversion}-rpm
 # Only needed for python < 3.7 (including salt-ssh targets)
 Requires: python%{python3_pkgversion}-contextvars
 
-## Tornado removed in Neon
+## Tornado removed in Neon, hence need its BuildRequires
 ## %%if 0%%{?rhel} == 7
 ## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
 ## %%else
@@ -114,9 +110,10 @@ Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 %if 0%{?rhel} == 7
 Requires: python%{python3_pkgversion}-PyYAML
+Requires: python%{python3_pkgversion}-distro
+Requires: python%{python3_pkgversion}-jmespath
 %else
 Requires: python%{python3_pkgversion}-pyyaml
-Requires: python%{python3_pkgversion}-distro
 %endif
 %endif
 
@@ -205,13 +202,7 @@ Supports Python 3.
 
 
 %prep
-## %%autosetup
-%setup -c
-cd %{name}-%{version}
-## %%if 0%%{?rhel} > 7
-## %%patch0 -p1
-## %%endif
-%patch1 -p1
+%autosetup -p1
 
 %if %{with python3}
 rm -rf %{py3dir}
@@ -520,6 +511,9 @@ rm -rf %{buildroot}
 * Tue Aug 01 2023 SaltStack Packaging Team <packaging@saltstack.com> - 3005.2-1
 - Added python3-zmq >= 20.0.0 as a requirement
 
+* Fri Sep 30 2022 SaltStack Packaging Team <packaging@saltstack.com> - 3005.1-1
+- Added python3-jmespath as a requirment
+
 * Tue Apr 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.2-1
 - Update to feature release 3000.2-1  for Python 3
 
@@ -530,10 +524,9 @@ rm -rf %{buildroot}
 - Update to feature release 3000-1  for Python 3
 - Removed Torando since salt.ext.tornado, add dependencies for Tornado
 
-* Wed Jan 22 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.0.0rc2-1
+* Tue Jan 21 2020 SaltStack Packaging Team <packaging@saltstack.com> - 3000.0.0rc2-1
 - Update to Neon Release Candidate 2 for Python 3
 - Updated spec file to not use py3_build  due to '-s' preventing pip installs
-- Updated patch file to support Tornado4
 
 * Wed Jan 08 2020 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.3-1
 - Update to feature release 2019.2.3-1  for Python 3
@@ -544,11 +537,8 @@ rm -rf %{buildroot}
 * Thu Sep 12 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.1-1
 - Update to feature release 2019.2.1-1  for Python 3
 
-* Tue Sep 10 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-10
-- Support for point release, added distro as a requirement
-
 * Tue Jul 02 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-9
-- Support for point release, only rpmsign and tornado4 patches
+- Prep support for point release
 
 * Thu Jun 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-8
 - Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
