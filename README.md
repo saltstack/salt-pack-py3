@@ -1,3 +1,12 @@
+# !!Project is Archived!!
+
+> Salt Project has archived the this repository, and will no longer be updating it. This repository was used for packaging v3005.x and earlier releases of salt ("classic" packaging), which are now EOL.
+>
+> Salt Project now uses [relenv](https://github.com/saltstack/relenv) as part of creating more universal packages, that include a build of Python with other tools, and builds/releases packages via GitHub Action workflows:
+> - https://github.com/saltstack/salt/blob/master/.github/workflows/nightly.yml
+> - https://github.com/saltstack/salt/blob/master/.github/workflows/staging.yml
+> - https://github.com/saltstack/salt/blob/master/.github/workflows/release.yml
+
 # Salt Package Builder for Python 3 (salt-pack-py3)
 
 Salt-pack-py3 is an open-source package builder for Python 3 for most commonly used Linux platforms, for example: Redhat/CentOS and Debian/Ubuntu families, utilizing SaltStack states and execution modules to build Salt and a specified set of dependencies, from which a platform specific repository can be built.
